@@ -1,0 +1,131 @@
+package com.reliefoffice.pdic;
+
+import android.content.Context;
+import android.graphics.Typeface;
+import android.text.Editable;
+import android.text.Layout;
+import android.text.Selection;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.CharacterStyle;
+import android.text.style.StrikethroughSpan;
+import android.text.style.StyleSpan;
+import android.text.style.UnderlineSpan;
+import android.util.Log;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.File;
+import java.text.NumberFormat;
+
+/**
+ * Created by nishikawat on 2015/07/29.
+ */
+public class Utility {
+    public static final boolean isEmpty(String s){
+        return s==null || s.isEmpty();
+    }
+    public static final boolean isNotEmpty(String s){
+        return s!=null && !s.isEmpty();
+    }
+
+    // ３桁区切り
+    public static final String itocs(int value){
+        return NumberFormat.getNumberInstance().format(value);
+    }
+    public static final String itocs(long value){
+        return NumberFormat.getNumberInstance().format(value);
+    }
+
+    // general purpose for EditText
+    // 現在行を返す
+    //TODO: 動作未確認
+    public static final int getCurrentCursorLine(EditText editText){
+        int selectionStart = Selection.getSelectionStart(editText.getText());
+        Layout layout = editText.getLayout();
+        if (selectionStart != -1) {
+            return layout.getLineForOffset(selectionStart);
+        }
+        return -1;
+    }
+    // 指定行へ移動
+    // 超えていた場合は最後
+    public static final void setCursorLine(EditText editText, int line){
+        Layout layout = editText.getLayout();
+        int position;
+        try {
+            position = layout.getOffsetForHorizontal(line, 0);
+        } catch(IndexOutOfBoundsException e){
+            position = editText.length();
+        }
+        editText.setSelection(position);
+    }
+
+    // setup view style for EditText
+    public static final void setTextStyle(EditText editText, int start, int end, int style, int color, String text) {
+        if (text == null) {
+            text = editText.getText().toString().substring(start, end);
+        }
+        Spannable word = getStyleSpan(style, color, text);
+
+        //Log.d("PDD", "style=" + style + " color=" + color);
+        Editable editable = editText.getEditableText();
+        editable.replace(start, end, word);
+    }
+    public static final void setTextStyle(TextView textView, int style, int color, String text){
+        Spannable word = getStyleSpan(style, color, text);
+        textView.setText(word, TextView.BufferType.SPANNABLE);
+    }
+    public static final Spannable getStyleSpan(int style, int color, String text){
+        Spannable word = new SpannableString(text);
+        CharacterStyle styleSpan = null;
+
+        if (style == PdicJni.BOLD) {
+            styleSpan = new StyleSpan(Typeface.BOLD);
+        } else if (style == PdicJni.UNDERLINE) {
+            styleSpan = new UnderlineSpan();
+        } else if (style == PdicJni.ITALIC) {
+            styleSpan = new StyleSpan(Typeface.ITALIC);
+        } else if (style == PdicJni.STRIKEOUT) {
+            styleSpan = new StrikethroughSpan();
+        } else if (style==0){
+            removeSpannable(word);
+        }
+        if (color != 0) {
+            styleSpan = new BackgroundColorSpan(color);
+        } else {
+            word.removeSpan(new BackgroundColorSpan(0));
+        }
+        if (styleSpan != null) {
+            word.setSpan(styleSpan, 0, text.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        return word;
+    }
+
+    public static final Spannable removeSpannable(String text){
+        Spannable word = new SpannableString(text);
+        removeSpannable(word);
+        word.removeSpan(new BackgroundColorSpan(0));
+        return word;
+    }
+    public static final void removeSpannable( Spannable word){
+        word.removeSpan(new StyleSpan(Typeface.BOLD));
+        word.removeSpan(new StyleSpan(Typeface.ITALIC));
+        word.removeSpan(new UnderlineSpan());
+        word.removeSpan(new StrikethroughSpan());
+    }
+
+    public static final File getWorkDirectory(Context context){
+        File fileDir = context.getExternalFilesDir(null);
+        if (!fileDir.exists()){
+            if (!fileDir.mkdir()){
+                Toast ts = Toast.makeText(context, context.getString(R.string.failed_to_make_dir)+fileDir, Toast.LENGTH_LONG);
+                ts.show();
+                return null;
+            }
+        }
+        return fileDir;
+    }
+}

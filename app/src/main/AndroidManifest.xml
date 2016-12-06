@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.reliefoffice.pdic">
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".PSWinActivity"
+            android:label="@string/title_activity_pswin" />
+        <activity
+            android:name=".DicSettingActivity"
+            android:label="@string/title_activity_dic_setting" />
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/title_activity_settings" />
+        <activity
+            android:name=".DropboxDownloadActivity"
+            android:label="@string/title_activity_dropbox_download" />
+        <activity
+            android:name=".GoogleDriveDownloadActivity"
+            android:label="@string/title_activity_googledrive_download" />
+        <activity
+            android:name=".FileDirSelectionActivity"
+            android:label="@string/title_activity_file_selection" />
+        <activity
+            android:name=".Dropbox2FileSelectionActivity"
+            android:label="@string/title_activity_dropbox_file_selection" />
+        <activity
+            android:name=".FileSelectionActivity"
+            android:label="@string/title_activity_file_selection"/>
+        <activity
+            android:name=".DicDownloadList"
+            android:label="@string/title_activity_dic_download_list" />
+        <activity
+            android:name="com.dropbox.client2.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask">
+            <intent-filter>
+
+                <!-- 以下のxxxxxxに app キー を設定する -->
+                <data android:scheme="db-tz5htk9j7al608e" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.dropbox.core.android.AuthActivity"
+            android:configChanges="orientation|keyboard"
+            android:launchMode="singleTask">
+            <intent-filter>
+
+                <!-- 以下のxxxxxxに app キー を設定する -->
+                <data android:scheme="db-tkhiro" />
+
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".PSBookmarkActivity"
+            android:label="@string/title_activity_psbookmark" />
+        <activity
+            android:name=".FileHistoryActivity"
+            android:label="@string/title_activity_file_history" />
+        <activity
+            android:name=".FileHistorySelectionActivity"
+            android:label="@string/title_activity_file_history" />
+        <activity
+            android:name=".FileSaveActivity"
+            android:label="@string/title_activity_file_save" />
+    </application>
+
+</manifest>

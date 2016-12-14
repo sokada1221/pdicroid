@@ -28,10 +28,10 @@ int GetLastRight( );
 int GetLastTop();
 int GetDrawMaxRight();
 int GetDrawCYMax();
-int DrawText2( TNFONT &tnfont, const TCHAR *str, RECT *rc, int swidth, UINT flags, struct CharHT *cht=NULL, const EnphTextVec *et =NULL );
-int DrawText(TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et=NULL );
+int DrawText2( TNFONT &tnfont, const TCHAR *str, RECT *rc, int swidth, UINT flags, struct CharHT *cht=NULL, const EnphTextVec *et =NULL, THyperLinks *hls=NULL );
+int DrawText(TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et=NULL, THyperLinks *hls=NULL);
 int DrawTextUCP( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht=NULL, const EnphTextVec *et=NULL );
-int DrawText( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et, bool updatecp );
+int DrawText( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et, bool updatecp, THyperLinks *hls=NULL );
 
 // New style functions //
 void DrawText(TNFONT &tnfont, TDispLinesInfo &linesinfo, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et, TDrawSetting &setting);

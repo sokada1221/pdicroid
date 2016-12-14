@@ -19,8 +19,18 @@
 #pragma hdrstop
 #include "draw4.h"
 #include "CharHT.h"
+#include "hyplink.h"
 
 #pragma warn +use
+
+// temporary debug //
+#if 0
+#define	_DBW	DBW
+#define	_dbw	dbw
+#else
+inline void _DBW(...){}
+inline void _dbw(...){}
+#endif
 
 // Configuration //
 #define	CY_UNDERLINE_OFFSET		2	// underline表示のオフセット。行間(CY_LINEINTERVAL)はこれ以上の値にする必要あり。
@@ -116,9 +126,9 @@ int GetDrawCYMax()
 	return DefDrawSetting.CYMax;
 }
 
-int DrawText2( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et )
+int DrawText2( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et, THyperLinks *hls )
 {
-	return DrawText(tnfont, str, rc, swidth, flags, cht, et);
+	return DrawText(tnfont, str, rc, swidth, flags, cht, et, hls);
 }
 // End of compatibility //
 
@@ -134,17 +144,17 @@ int DrawText2( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flag
 // DF_UNREDRAWがあるとフルハイトの反転
 // ないと、アンダーライン
 // CharHTによる反転と、EnphTextによる反転は同時に表示出来ない！！
-int DrawText( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et )
+int DrawText( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et, THyperLinks *hls )
 {
-	return DrawText( tnfont, str, rc, swidth, flags, cht, et, false);
+	return DrawText( tnfont, str, rc, swidth, flags, cht, et, false, hls );
 }
 // DrawText with Update CP
 int DrawTextUCP( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et )
 {
-	return DrawText( tnfont, str, rc, swidth, flags, cht, et, true);
+	return DrawText( tnfont, str, rc, swidth, flags, cht, et, true );
 }
 
-int DrawText( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et, bool updatecp )
+int DrawText( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags, CharHT *cht, const EnphTextVec *et, bool updatecp, THyperLinks *hls )
 {
 #ifdef _DEBUG
 	static bool in = false;
@@ -159,7 +169,7 @@ int DrawText( TNFONT &tnfont, const tchar *str, RECT *rc, int swidth, UINT flags
 	tnfont.FontAttr.Color = GetTextColor(tnfont);
 	tnfont.FontAttr.BgColor = GetBkColor(tnfont);
 #endif
-	ParseText(tnfont, linesinfo, str, rc, setting, FontAttrs);
+	ParseText(tnfont, linesinfo, str, rc, setting, FontAttrs, hls);
 	if (flags&DF_CALCRECT){
 		HitTest(tnfont, linesinfo, str, rc, flags, cht, et, setting);
 	} else {
@@ -223,14 +233,16 @@ void HitTest( TNFONT &tnfont, TDispLinesInfo &linesinfo, const tchar *str, RECT 
 
 	bool hity = false;
 
-	const TFontAttr *faPrev = NULL;
-	foreach(linesinfo.Lines, it, vector<TDispLineInfo>){
+	const TFontAttrEx *faPrev = NULL;
+	foreach(linesinfo.Lines, it, vector<TDispLineInfo>)
+	//for(vector<TDispLineInfo>::reverse_iterator it = linesinfo.Lines.rbegin();it!=linesinfo.Lines.rend();it++)
+	{
 		TDispLineInfo &linfo = *it;
 		TNFONT &font = *linfo.pfont;
 
 		// Change font if attributes changed.
 		if (faPrev){
-			if (*faPrev!=linfo.FontAttr){
+			if (linfo.FontAttr.NeedFontSelect(*faPrev)){
 				font.Select();
 			}
 		} else {
@@ -257,6 +269,7 @@ void HitTest( TNFONT &tnfont, TDispLinesInfo &linesinfo, const tchar *str, RECT 
 		int top = linfo.pos.y;	// 現在行の頭の座標
 		int left = linfo.pos.x;
 		int right = linfo.pos.x+linfo.size.cx;	// 実際に表示される文字列の右端(+1ドット)座標(ただし、rc->left分は含んでいない）
+		//dbw("hittest: top=%d left=%d right=%d", top, left, right);
 
 		// ヒットテスト
 		if ( cht && !etw.Hit() ){
@@ -297,6 +310,10 @@ void HitTest( TNFONT &tnfont, TDispLinesInfo &linesinfo, const tchar *str, RECT 
 							cht->item = cht->curitem;
 							etw.SetHit(true);
 							return;
+							//FAQ: hitlocしているのにhitしない(cursorがHANDにならない等)
+							// →HyperLink.areaのrightがleftより小さい値になっている(Squre::HitTestHyperLink()で確認)
+							// ←DrawEnph()でstartがあってもendが呼ばれない
+							//   ↑parserでの間違いの可能性が高い
 						}
 					}
 				}
@@ -447,6 +464,7 @@ j0:;
 }
 #else
 // point to loc
+// cht.pt.xから文字位置を求める
 int HitTestX(TNFONT &tnfont, TDispLineInfo &linfo, const tchar *str, const RECT &rc, UINT flags, CharHT &cht, const TDrawSetting &setting)
 {
 	__assert(cht.pt.x>=rc.left);
@@ -648,6 +666,8 @@ j0:;
 
 #else
 // loc to point
+// linfoにある文字位置情報を、etw.ccLoc[cur以降]から探し、該当するものが見つかったらそのX座標をetw.ccPoint[]へ設定する
+//Memo: この関数はほとんどEnphTextWorkのメンバー関数っぽいが。。
 void HitTestX(TNFONT &tnfont, TDispLineInfo &linfo, const tchar *str, const RECT &rc, UINT flags, EnphTextWork &etw, const TDrawSetting &setting)
 {
 	HDC hdc = tnfont;
@@ -662,22 +682,29 @@ void HitTestX(TNFONT &tnfont, TDispLineInfo &linfo, const tchar *str, const RECT
 		loc = etw.GetNextLoc();
 		if (loc==-1)
 			return;
-		//DBW("loc=%d linfo.loc=%d length=%d tlength=%d", loc, linfo.loc, linfo.length, linfo.tlength);
-		if (loc>=linfo.loc+linfo.tlength)
-			break;
+		_DBW("HTX: loc=%d linfo.loc=%d length=%d tlength=%d", loc, linfo.loc, linfo.length, linfo.tlength);
+		if (loc>=linfo.loc+linfo.tlength){
+			// locはlinfoテキストより後ろ
+			//if (etw.MergeMode())
+				break;
+			//continue;
+		}
 
 		if (loc<linfo.loc){
 			// 前回の行末だった(etw.DrawReverse()でresetされている）
 			etw.SetPoint(left);
+			_dbw("SetPoint1: %d", left);
 			continue;
 		}
 			
 		// Get the extent of the text in loc.
 		if (!GetTextExtentExPoint(hdc, leftp, loc-linfo.loc, INT_MAX, NULL, NULL, &sz)){
 			__assert__;
+			DBW("%s:%d %d", __FUNC__, __LINE__, GetLastError());
 			return;	// undefined error.
 		}
 		etw.SetPoint(left+sz.cx);
+		_dbw("SetPoint2: %d", left+sz.cx);
 	}
 
 	if (!(linfo.delimtype & (DMT_TAB|DMT_ILLEGAL|DMT_CR|DMT_TERMINAL))){
@@ -740,6 +767,7 @@ void HitTestX(TNFONT &tnfont, TDispLineInfo &linfo, const tchar *str, const RECT
 			}
 			
 			etw.SetPoint(left+sz.cx);
+			_dbw("SetPoint3: %d", left+sz.cx);
 
 			loc = etw.GetNextLoc();
 			if (loc==-1)
@@ -791,7 +819,7 @@ void DrawText( TNFONT &org_tnfont, TDispLinesInfo &linesinfo, const tchar *str, 
 	bool fSingleByte = tnfont.fSingleByte;
 #endif
 
-	const TFontAttr *faPrev = NULL;
+	const TFontAttrEx *faPrev = NULL;
 	int last_right = 0;
 	foreach(linesinfo.Lines, it, vector<TDispLineInfo>){
 		TDispLineInfo &linfo = *it;
@@ -799,7 +827,7 @@ void DrawText( TNFONT &org_tnfont, TDispLinesInfo &linesinfo, const tchar *str, 
 
 		// Change font if attributes changed.
 		if (faPrev){
-			if (*faPrev!=linfo.FontAttr){
+			if (linfo.FontAttr.NeedFontSelect(*faPrev)){
 				font.SelectEx(flags&DF_REVERSE?true:false);
 			}
 		} else {
@@ -809,6 +837,27 @@ void DrawText( TNFONT &org_tnfont, TDispLinesInfo &linesinfo, const tchar *str, 
 		faPrev = &linfo.FontAttr;
 
 		const tchar *leftp = str + linfo.loc;
+		int tlength = linfo.tlength;
+
+		bool altmode = false;
+		if (linfo.FontAttr.HyperLink){
+			const THyperLink &hl = *linfo.FontAttr.HyperLink;
+			if (!hl.state){
+				altmode = true;
+				//tlength = hl.length;
+				leftp = hl.key + linfo.loc - hl.loc;
+				//endp = leftp + tlength;
+				//dbw("altmode: %ws len=%d", hl.key.c_str(), tlength);
+			}
+		}
+		tchar cc[2];
+		if (linfo.delimtype & DMT_SPCCHAR){
+			altmode = true;
+			tlength = 1;
+			cc[0] = CodeToChar(leftp+2, NULL);
+			cc[1] = '\0';
+			leftp = cc;
+		}
 
 #ifndef _UNICODE
 		if (linfo.single){
@@ -826,35 +875,40 @@ void DrawText( TNFONT &org_tnfont, TDispLinesInfo &linesinfo, const tchar *str, 
 		const int left = linfo.pos.x;
 		const int right = left+linfo.size.cx;	// 実際に表示される文字列の右端(+1ドット)座標(ただし、rc->left分は含んでいない）
 
-		if ( etw.CheckHit() ){
-			// 強調表示範囲のチェック
-			if (etw.IsIncluded(linfo.loc+linfo.length)){
-				HitTestX(font, linfo, str, *rc, flags, etw, setting);
-				last_right = right;
-			}
-		}
+		//if (setting.ExpVisible || !linfo.FontAttr.IsExp())
+		{	// 非表示時の用例でなければ描画
 
-		if ( (flags & DF_UNREDRAW) ){
-			// 反転表示処理
-			// start,endがダブることがないと仮定して処理している
-			if (linfo.line_end()){
-				const int cy = linesinfo.cyMaxes[lines];
-				const int revh = GetRevH(cy, flags, setting);
-				etw.DrawReverse(font, right, linfo.cr, rc, top, revh, cy-CY_UNDERLINE_OFFSET);
+			if ( etw.CheckHit() ){
+				// 強調表示範囲のチェック
+				if (etw.IsIncluded(linfo.loc+linfo.length)){	// etw.ccLoc[cur].loc が 現在のlinfoテキストの右端より左側か？
+					HitTestX(font, linfo, str, *rc, flags, etw, setting);
+					last_right = right;
+				}
 			}
-		} else {	// !(flags & DF_UNREDRAW)
-			int y = top+linesinfo.cyMaxes[lines] - font.cy - CY_UNDERLINE_OFFSET;
-			if (linfo.tabillchar()){
-				TabbedTextOutEx(font, rc->left+linfo.pos.x, y, leftp, linfo.length, linfo.tlength, font.GetSpcWidth() * setting.TabCol);
-			} else {
-				ExtTextOut( font, rc->left+left, y, 0, NULL, leftp, linfo.tlength, NULL );
-			}
-			if ( etw.CheckHit2() ){
+
+			if ( (flags & DF_UNREDRAW) ){
+				// 反転表示処理
+				// start,endがダブることがないと仮定して処理している
 				if (linfo.line_end()){
-					// 強調表示処理
 					const int cy = linesinfo.cyMaxes[lines];
 					const int revh = GetRevH(cy, flags, setting);
-					etw.DrawEnph(font, linfo, right, rc, top, revh, cy);
+					etw.DrawReverse(font, right, linfo.cr, rc, top, revh, cy-CY_UNDERLINE_OFFSET);
+				}
+			} else {	// !(flags & DF_UNREDRAW)
+				//dbw("%d: %ws", tlength, leftp);
+				int y = top+linesinfo.cyMaxes[lines] - font.cy - CY_UNDERLINE_OFFSET;
+				if (linfo.tabillchar()){
+					TabbedTextOutEx(font, rc->left+linfo.pos.x, y, leftp, linfo.length, tlength, font.GetSpcWidth() * setting.TabCol);
+				} else {
+					ExtTextOut( font, rc->left+left, y, 0, NULL, leftp, tlength, NULL );
+				}
+				if ( etw.CheckHit2() ){
+					if (linfo.line_end()){
+						// 強調表示処理
+						const int cy = linesinfo.cyMaxes[lines];
+						const int revh = GetRevH(cy, flags, setting);
+						etw.DrawEnph(font, linfo, right, rc->left, top, revh, cy);
+					}
 				}
 			}
 		}
@@ -871,7 +925,7 @@ void DrawText( TNFONT &org_tnfont, TDispLinesInfo &linesinfo, const tchar *str, 
 
 			lines++;
 		}
-		if ( !*leftp ){
+		if ( !altmode && !*leftp ){
 			break;	// 最終行の場合は終了
 		}
 		if ( top > rc->bottom ){
@@ -887,8 +941,13 @@ void DrawText( TNFONT &org_tnfont, TDispLinesInfo &linesinfo, const tchar *str, 
 		{
 			if (/* et && et->size()>0 && */	// 強調表示に限定
 				(linesinfo.cyMaxes.size()>0)){	// 2008.5.27 条件追加(linesinfo.cyMaxes[linesinfo.cyMaxes.size()-1]で例外が発生する場合があるため（あまり深く追求していない）
-				if (etw.CanSetPoint())
-					etw.SetPoint(last_right);
+				if (etw.CanSetPoint()){
+					int loc;
+					do {
+						etw.SetPoint(last_right);
+						loc = etw.GetNextLoc();
+					} while (loc!=-1);
+				}
 				__assert(linesinfo.Lines.size()>0);
 				const int cy = linesinfo.cyMaxes[linesinfo.cyMaxes.size()-1];
 				const int revh = GetRevH(cy, flags, setting);
@@ -900,7 +959,7 @@ void DrawText( TNFONT &org_tnfont, TDispLinesInfo &linesinfo, const tchar *str, 
 					// start,endがダブることがないと仮定して処理している
 					etw.DrawReverse(font, last_right, linfo.cr, rc, top, revh, cy-CY_UNDERLINE_OFFSET);
 				} else {
-					etw.DrawEnph(font, linfo, last_right, rc, top, revh, cy);
+					etw.DrawEnph(font, linfo, last_right, rc->left, top, revh, cy);
 				}
 			}
 		}

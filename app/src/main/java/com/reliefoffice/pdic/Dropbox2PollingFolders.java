@@ -7,6 +7,7 @@ import com.dropbox.client2.DropboxAPI;
 import com.dropbox.client2.exception.DropboxException;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.ListFolderGetLatestCursorResult;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
@@ -29,16 +30,27 @@ public class Dropbox2PollingFolders extends AsyncTask<Void, Void, Void> {
 
     @Override
     protected Void doInBackground(Void... voids) {
-        if (Utility.isEmpty(dbCursor)){
+        while (!isCancelled()){
+            if (Utility.isNotEmpty(dbCursor)) break;
             dbxFM.lockApi();
             try {
                 //dbCursor = dbxFM.getClient().files().listFolder(path).getCursor();    // これではないよね？
-                dbxFM.getClient().files().listFolderGetLatestCursor(path);
+                String listFolderPath = path == "/" ? "" : path;
+                ListFolderGetLatestCursorResult cursorResult = dbxFM.getClient().files().listFolderGetLatestCursor(listFolderPath);
+                dbCursor = cursorResult.getCursor();
             } catch (DbxException e){
                 e.printStackTrace();
             }
             dbxFM.unlockApi();
+            if (Utility.isNotEmpty(dbCursor)) break;
+            Log.d("PDD", "dbCursor is null, retry to retrieve");
+            try {
+                Thread.sleep(PollingInterval);
+            } catch (InterruptedException e){
+                e.printStackTrace(); break;
+            }
         }
+        Log.d("PDD", "dbCursor is "+dbCursor);
         while (!isCancelled()) {
             if (checkRevision()){
                 checkDownload();
@@ -145,7 +157,10 @@ public class Dropbox2PollingFolders extends AsyncTask<Void, Void, Void> {
                 dbxFile.remoteRevision = super.revision;
                 Log.d("PDD", "Polling Task downloaded - " + to + " rev: " + super.revision);
                 INetDriveFileInfo info2 = dbxFM.findByLocalName( dbxFile.getLocalName() );
-                Log.d("PDD", "info2.rev="+info2.remoteRevision);
+                if (info2!=null)
+                    Log.d("PDD", "info2.rev="+info2.remoteRevision);
+                else
+                    Log.w("PDD", "info2.rev is null");
                 dbxFile.updateLocalFileTime();
                 dbxFile.downloadNotify();
             }

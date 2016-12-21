@@ -242,6 +242,21 @@ void Hourglass( int bOn )
 #include <android/log.h>
 
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, "PDJ", __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, "PDJ", __VA_ARGS__)
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, "PDJ", __VA_ARGS__)
+#define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, "PDJ", __VA_ARGS__)
+
+void DBX( int prio, const char *format, ... )
+{
+	va_list ap;
+	va_start( ap, format );
+
+	char buf[ 2048 ];
+	vsnprintf( buf, sizeof(buf), format, ap);
+	__android_log_print(prio, "PDJ", "%s", buf);
+
+	va_end( ap );
+}
 
 void DBW( const char *format, ... )
 {
@@ -269,3 +284,36 @@ void DBW( const char *format, ... )
 	va_end( ap );
 }
 
+void DBe( const char *format, ... )
+{
+	va_list ap;
+	va_start( ap, format );
+
+	char buf[ 2048 ];
+	vsnprintf( buf, sizeof(buf), format, ap);
+	LOGE("%s", buf);
+
+	va_end( ap );
+}
+void DBw( const char *format, ... )
+{
+	va_list ap;
+	va_start( ap, format );
+
+	char buf[ 2048 ];
+	vsnprintf( buf, sizeof(buf), format, ap);
+	LOGW("%s", buf);
+
+	va_end( ap );
+}
+void DBi( const char *format, ... )
+{
+	va_list ap;
+	va_start( ap, format );
+
+	char buf[ 2048 ];
+	vsnprintf( buf, sizeof(buf), format, ap);
+	LOGI("%s", buf);
+
+	va_end( ap );
+}

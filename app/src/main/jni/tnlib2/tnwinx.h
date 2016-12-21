@@ -52,6 +52,16 @@ void dbwcls();
 
 #define	dbw	DBW
 
+#ifdef __ANDROID__
+void DBe( const char *format, ... );
+void DBw( const char *format, ... );
+void DBi( const char *format, ... );
+#else
+#define	DBe	DBW
+#define	DBw	DBW
+#define	DBi	DBW
+#endif
+
 void alog_filename(const char *filename, char *pathbuf);
 void alog_init(const char *filename);
 void alog_exit();

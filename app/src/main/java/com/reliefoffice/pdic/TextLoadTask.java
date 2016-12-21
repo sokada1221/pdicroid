@@ -77,7 +77,7 @@ public     class TextLoadTask extends AsyncTask<String, Integer, StringBuilder>{
         if ( uri.startsWith("content://") ){
             // content provider
             try {
-                return openFile( mCr.openInputStream(Uri.parse(uri)),charset );
+                return openFile( mCr.openInputStream(Uri.parse(uri)), charset );
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -87,7 +87,7 @@ public     class TextLoadTask extends AsyncTask<String, Integer, StringBuilder>{
             if ( f.exists() ){
                 mFilename = uri;
                 try{
-                    return openFile( new FileInputStream( f ),charset );
+                    return openFile( new FileInputStream( f ), charset );
                 } catch( Exception e){
                     e.printStackTrace();
                 }

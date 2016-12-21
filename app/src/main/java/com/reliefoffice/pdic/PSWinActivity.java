@@ -1108,6 +1108,11 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         startActivity(i);
     }
 
+    void checkPSBookmarkStatus(){
+        // conflictが発生していたらdialog boxで動作の選択肢を表示
+    }
+
+
     /**
      * A placeholder fragment containing a simple view.
      */

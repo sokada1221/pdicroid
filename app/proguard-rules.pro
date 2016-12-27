@@ -16,6 +16,9 @@
 -keepclassmembers class com.reliefoffice.pdic.JniCallback {
 	public *;
 }
+-keepclassmembers class com.reliefoffice.pdic.PdicJni {
+	public *;
+}
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:

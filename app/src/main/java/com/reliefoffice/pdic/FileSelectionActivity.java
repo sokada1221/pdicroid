@@ -77,13 +77,11 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
             @Override
             public void onClick(View v) {
                 if (lastSortType==SortType.Name) {
-                    fileListAdapter.sortByNameR();
                     lastSortType = SortType.NameR;
                 } else {
-                    fileListAdapter.sortByName();
                     lastSortType = SortType.Name;
                 }
-                sortCommon();
+                sortCommon(true);
             }
         });
         Button btnDate = (Button)findViewById(R.id.btn_date);
@@ -91,13 +89,11 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
             @Override
                 public void onClick(View v) {
                 if (lastSortType==SortType.DateR) {
-                    fileListAdapter.sortByDate();
                     lastSortType = SortType.Date;
                 } else {
-                    fileListAdapter.sortByDateR();
                     lastSortType = SortType.DateR;
                 }
-                sortCommon();
+                sortCommon(true);
             }
         });
         Button btnRead = (Button)findViewById(R.id.btn_read);
@@ -105,13 +101,11 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
             @Override
             public void onClick(View v) {
                 if (lastSortType==SortType.ReadR) {
-                    fileListAdapter.sortByRead();
                     lastSortType = SortType.Read;
                 } else {
-                    fileListAdapter.sortByReadR();
                     lastSortType = SortType.ReadR;
                 }
-                sortCommon();
+                sortCommon(true);
             }
         });
         Button btnSize = (Button)findViewById(R.id.btn_size);
@@ -119,13 +113,12 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
             @Override
             public void onClick(View v) {
                 if (lastSortType==SortType.SizeR) {
-                    fileListAdapter.sortBySize();
                     lastSortType = SortType.Size;
                 } else {
                     fileListAdapter.sortBySizeR();
                     lastSortType = SortType.SizeR;
                 }
-                sortCommon();
+                sortCommon(true);
             }
         });
 
@@ -135,12 +128,39 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
         prepareParams();
     }
 
-    void sortCommon(){
+    void sortCommon(boolean save){
+        if (lastSortType == SortType.Name){
+            fileListAdapter.sortByName();
+        } else
+        if (lastSortType == SortType.NameR){
+            fileListAdapter.sortByNameR();
+        } else
+        if (lastSortType == SortType.Date){
+            fileListAdapter.sortByDate();
+        } else
+        if (lastSortType == SortType.DateR){
+            fileListAdapter.sortByDateR();
+        } else
+        if (lastSortType == SortType.Read){
+            fileListAdapter.sortByRead();
+        } else
+        if (lastSortType == SortType.ReadR){
+            fileListAdapter.sortByReadR();
+        } else
+        if (lastSortType == SortType.Size){
+            fileListAdapter.sortBySize();
+        } else
+        if (lastSortType == SortType.SizeR){
+            fileListAdapter.sortBySizeR();
+        }
+
         fileListAdapter.notifyDataSetChanged();
 
-        SharedPreferences.Editor edit = pref.edit();
-        edit.putInt("sortType", lastSortType.ordinal());
-        edit.commit();
+        if (save) {
+            SharedPreferences.Editor edit = pref.edit();
+            edit.putInt("sortType", lastSortType.ordinal());
+            edit.commit();
+        }
     }
 
     @Override
@@ -251,6 +271,7 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
         //fileListAdapter = new FileInfoArrayAdapter(this, listFileInfo);
         fileListAdapter = new FileListAdapter(this, R.layout.list_item_filelist, listFileInfo);
         listview.setAdapter( fileListAdapter );
+        sortCommon(false);
     }
 
     protected void onFileItemClick(FileInfo fileinfo) {

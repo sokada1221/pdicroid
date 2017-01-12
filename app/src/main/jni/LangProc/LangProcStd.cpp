@@ -854,6 +854,7 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 	uint maxlen = 0;
 	int r = 0;
 	bool inc_pdelim = false;	// include phase delimitor
+	bool clicked_passed = false;	// clicked wordを跨いだ時だけtrue
 	while ( r != -1 ){
 //		if ( STR_DIFF(dp,str) > LWORD ) break;
 		// １語コピー //
@@ -898,11 +899,15 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 		for ( int ci=0;ci<srccomp->get_num();ci++ )
 		{
 			cs.srcflags = (*srccomp)[ci].flag;
+			if (preword_exist && clicked_passed){
+				// clicked wordの次の単語以降はpenalty解除
+				cs.srcflags &= ~SLW_PENALTY;
+			}
 
 			// 前置単語有りで、(*srccomp)[].wordが前置単語であり、
 			// cs.spに検索対象単語を含まない場合はpenalty
 			// しかし長い単語にはpenaltyが小さすぎて効かない
-			if (preword_exist && sp!=words){
+			if (preword_exist && sp!=words && !clicked_passed){
 				cs.srcflags |= SLW_PENALTY;
 			}
 
@@ -960,6 +965,12 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 		jloop:;
 			sp = cs.nextsp;
 			if ( cs.fComplete ) break;
+		}
+
+		clicked_passed = false;
+		if (__sp <= words && sp > words){
+			// clicked wordを跨いだ
+			clicked_passed = true;
 		}
 
 		// 語句区切り文字以降で完全一致がない場合→終了
@@ -1029,9 +1040,9 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 				to_continue = true;
 			}
 
-			// 前置有り検索で、二語目を追加したときにヒットがない場合はpenalty pointを追加
+			// 前置有り検索で、clicked wordを追加したときにヒットがない場合はpenalty pointを追加
 			if (preword_exist){
-				if (cs.numword==1){
+				if (clicked_passed){
 					// add penalty point
 					for (int i=0;i<srccomp->get_num();i++){
 						(*srccomp)[i].flag |= SLW_PENALTY;

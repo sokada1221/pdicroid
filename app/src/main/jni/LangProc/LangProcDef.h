@@ -17,12 +17,15 @@
 #define	SLW_REPLACEIRREG	0x00000040	// 不規則変化辞書
 #define	SLW_REPLACEDEL		0x00000080	// 一般的な単語を削除（a,anなど）
 #define	SLW_REPLACEANY3		0x00000100	// __に対応
+#define	SLW_REPLACEANYx		(SLW_REPLACEANY|SLW_REPLACEANY2|SLW_REPLACEANY3)
 
+#if 0
 #define	SLW_CASEIGNORE		0x00000E00
 //#define	SLW_CASEIGNORE1		0x00000100	// 全文字小文字(内部処理用)
 #define	SLW_CASEIGNORE2		0x00000200	// 先頭文字case反転(内部処理用)
 #define	SLW_CASEIGNORE3		0x00000400	// 先頭以外全小文字
 #define	SLW_CASEIGNORE4		0x00000800	// 全大文字
+#endif
 
 #define	SLW_ENGLISH			0x0000F000	// 英語の活用形処理
 #define	SLW_DESINENCE1		0x00001000	// 語尾変化
@@ -50,6 +53,7 @@
 #define	SLW_WORDDELIM		0x08000000	// 英単語に,-があってもOK
 
 #define	SLW_PENALTY			0x10000000	// penalty point (前置単語有りで二語目を含んだときにヒットしない)
+#define	SLW_PENALTY2		0x20000000	// clicked wordが含まれずにhit
 
 #define	SLW_SPELLCHECK		0x40000000	// スペルチェック専用
 
@@ -114,7 +118,8 @@ struct COMPARE_STRUCT {
 	MatchArray *dstcomp;
 	MatchArray *dstcomp2;	// 準完全一致(英単語の区切り文字以降一致)
 
-	int numword;				// 検索語の現在の単語数
+	int numword;			// 検索語の現在の単語数→2017.2.22 実際に検索に使用された語数に変更
+	int orgnumword;			// 最後に検索語に使用されたときのnumword
 
 	// 内部作業変数 //
 	bool FoundHyphen;

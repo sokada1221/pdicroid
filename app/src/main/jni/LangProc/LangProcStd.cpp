@@ -774,7 +774,8 @@ jsrch:
 			if ( _flags == 0 ){
 				cs.notrans_part->Add( cs.str, convf|cs.srcflags, cs.numword );
 			}
-			cs.dstpart->Add( cs.str, convf|cs.srcflags, cs.numword );
+			cs.dstpart->Add( cs.str, convf|cs.srcflags, convf & SLW_REPLACEANYx ? cs.orgnumword : cs.numword );
+			// 2017.2.22 SLW_REPLACEANYxでヒットした場合、numwordは増えないため、orgnumwordを使用する
 			break;
 		case 3: // 完全一致
 			{
@@ -899,6 +900,14 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 		for ( int ci=0;ci<srccomp->get_num();ci++ )
 		{
 			cs.srcflags = (*srccomp)[ci].flag;
+
+			if (cs.srcflags & SLW_PENALTY2){
+				// 2017.2.21 clicked wordが含まれず、かつ５語以上後続単語の追加がない単語は対象外
+				if (cs.numword - (*srccomp)[ci].numword > 4){
+					continue;
+				}
+			}
+
 			if (preword_exist && clicked_passed){
 				// clicked wordの次の単語以降はpenalty解除
 				cs.srcflags &= ~SLW_PENALTY;
@@ -951,6 +960,7 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 				cs.notrans_part = &notrans_part;
 				cs.dstcomp = dstcomp;
 				cs.dstpart = dstpart;
+				cs.orgnumword = (*srccomp)[ci].numword;
 
 				//DBW("s:%ws src=%ws", cs.str, cs.sp);
 				r = this->FindLoop(cs);
@@ -971,6 +981,14 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 		if (__sp <= words && sp > words){
 			// clicked wordを跨いだ
 			clicked_passed = true;
+
+			// 2017.2.21 "on ~"などのように、onが前置単語で、clicked wordが含まれずにhitした場合はpenalty2
+			for (i=0;i<dstpart->get_num();i++){
+				MATCHINFO &mi = (*dstpart)[i];
+				if (mi.flag & (SLW_REPLACEANY|SLW_REPLACEANY2|SLW_REPLACEANY3)){
+					mi.flag |= SLW_PENALTY2;
+				}
+			}
 		}
 
 		// 語句区切り文字以降で完全一致がない場合→終了

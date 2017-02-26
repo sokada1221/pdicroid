@@ -74,6 +74,10 @@ void SortHitWords( MatchArray &ma )
 			m.point -= (m.numword-numword)*1;
 			numsub = true;	// 2011.2.2 added
 		}
+		if (m.flag & SLW_PENALTY2){
+			// clicked word‚ª‚È‚¢ê‡‚Ípenalty‘å
+			m.point -= 32;
+		}
 		if (m.flag==0){
 			// none
 			//m.point += 64-1;	// premium point

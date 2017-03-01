@@ -1017,7 +1017,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
 
                         int start = bundle.getInt("start");
                         int length = bundle.getInt("length");
-                        editText.setSelection(start, start + length);
+                        //editText.setSelection(start, start + length); // これだとscrollしたときbookmarkした項目が表示されるようにscrollが戻ってしまう。(touchで何かを検索すると直る)
+                        editText.setSelection(start, start);
                     } else {
                         // File Load from History
                         fileEncoding = bundle.getString("fileEncoding");

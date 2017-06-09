@@ -2,13 +2,13 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
         applicationId "com.reliefoffice.pdic"
-        minSdkVersion 15
+        minSdkVersion 14
         targetSdkVersion 21
-        versionCode 614
+        versionCode 615
         versionName "0.6.15 alpha"
         ndk {
             moduleName "pdjni"
@@ -29,11 +29,11 @@ android {
 //            jniLibs.srcDir "src/main/libs"	//  ←　最初はコメントアウトしておく！！
         }
     }
-//	lintOptions {
-//		disable 'MissingTranslation'
+	lintOptions {
+		disable 'MissingTranslation'
 //		checkReleaseBuilds false
 //		abortOnError false
-//	}
+	}
 }
 
 dependencies {

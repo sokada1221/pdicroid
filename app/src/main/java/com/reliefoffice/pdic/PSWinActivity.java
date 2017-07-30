@@ -169,6 +169,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         This = this;
+        //Log.i("PDD", "PSWinActivity.onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pswin);
         if (savedInstanceState == null) {
@@ -374,6 +375,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             int x = (int)lastX;
             final int fontHeight = 32;  //TODO: １行分の高さ
             int y = ((int)lastY) - editText.getHeight() + fontHeight + 4;
+            //Log.d("PDD", "y="+y+" lastY="+lastY+" editText.Height="+editText.getHeight()+" fontHeight="+fontHeight);
             psbEditWindow.show(editText, x, y);
         }
     }
@@ -441,7 +443,10 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     @Override
     protected void onResume() {
         super.onResume();
+        //Log.i("PDD", "PSWinActivity.onResume");
 
+        //if (jniCallback==null)
+        //    jniCallback = JniCallback.getInstance();    // 2017.3.17 なぜかnullになるときがある？ための対症療法
         jniCallback.setWordList(wordListAdapter);
         if (PSBookmarkReady) {
             psbmFM.open();

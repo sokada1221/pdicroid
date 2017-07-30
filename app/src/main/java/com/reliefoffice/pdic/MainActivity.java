@@ -176,7 +176,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     @Override
     protected void onResume() {
         super.onResume();
-        //Log.i("PDD", "onResume");
+        //Log.i("PDD", "Main.onResume");
         jniCallback.setWordList(null);
         if (!dicMan.isDicOpened()) {
             if (prevRunning) {
@@ -286,7 +286,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     @Override
     protected void onStop() {
         super.onStop();
-        Log.i("PDD", "onStop");
+        //Log.i("PDD", "onStop");
 
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor edit = pref.edit();
@@ -297,7 +297,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d("PDD", "!!! onDestroy");
+        Log.d("PDD", "Main.onDestroy");
 
         closeDictionary();
 

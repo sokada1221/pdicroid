@@ -189,7 +189,7 @@ public:
 			text += exp;
 		}
 #if 0
-		DBW("%d: %s", _tcslen(word), __cstr(word).utf8());
+		DBW("Add: %08X %d: %s", env, _tcslen(word), __cstr(word).utf8());
 #endif
 		jstring str1 = env->NewStringUTF(__cstr(word).utf8());
 		jstring str2 = env->NewStringUTF(__cstr(text).utf8());
@@ -213,6 +213,9 @@ public:
 			text += _t(" / ");
 			text += exp;
 		}
+#if 0
+		DBW("Ins: %08X %d: %s", env, _tcslen(word), __cstr(word).utf8());
+#endif
 		jstring str1 = env->NewStringUTF(__cstr(word).utf8());
 		jstring str2 = env->NewStringUTF(__cstr(text).utf8());
 		env->CallIntMethod(jniCallback, midInsert, index, str1, str2);

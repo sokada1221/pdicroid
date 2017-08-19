@@ -9,7 +9,10 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
@@ -28,9 +31,11 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,7 +55,7 @@ import static java.lang.Math.abs;
 
 //NOTE: popupList用のAdapterクラスは下の方に作ってある。必要な場合はそれを復活
 
-public class PSWinActivity extends ActionBarActivity implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener {
+public class PSWinActivity extends ActionBarActivity implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener, SeekBar.OnSeekBarChangeListener {
     final static boolean useTextLoadTask = true;
     final static boolean usePSBMforFileLoad = false;
 
@@ -59,6 +64,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     String openedFilename;
     String remoteFilename;
     String psbmFilename;    // filename for PSBookmark
+
     //int remoteRevision;
 
     // swipe for editText
@@ -307,6 +313,9 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
 
         psbmFM = PSBookmarkFileManager.createInstance(this, ndvFM);
 
+        // Audio Player setup //
+        initAudioPlayer();
+
         // Initial Text //
         if (Utility.isEmpty(orgTitle)){
             orgTitle = getTitle().toString();
@@ -493,6 +502,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     protected void onDestroy() {
         closePSBookmarkEditWindow();
         super.onDestroy();
+        closeAudioPlayer();
         if (PSBookmarkReady) {
             PSBookmarkReady = false;
             psbmFM.close();
@@ -798,6 +808,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         } else {
             deleteProgressDialog();
             Toast.makeText(this, getString(R.string.msg_file_load_failed)+" : " + loadTask.filename, Toast.LENGTH_LONG).show();
+            loadFileFailed();
         }
     }
 
@@ -846,6 +857,20 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         //Toast.makeText(this, getString(R.string.msg_file_loaded)+" : " + filename, Toast.LENGTH_SHORT).show();
         FileHistoryManager mgr = new FileHistoryManager(this);
         mgr.add(psbmFilename, fileEncoding);
+
+        // setup Audio Player //
+        String audioFileName = Utility.changeExtension(openedFilename, "mp3");
+        boolean audioOk = openAudioPlayer(audioFileName);
+        if (!audioOk){
+            audioFileName = Utility.changePath(audioFileName, altAudioFolder);
+            audioOk = openAudioPlayer(audioFileName);
+        }
+        showAudioSlider(audioOk);
+    }
+
+    // file load エラー後処理
+    void loadFileFailed(){
+        closeAudioPlayer();
     }
 
     void saveFileUI(){
@@ -1157,6 +1182,184 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         // conflictが発生していたらdialog boxで動作の選択肢を表示
     }
 
+    // --------------------------------------- //
+    // Audio Player
+    // --------------------------------------- //
+    private SeekBar audioSlider;
+    private Button btnStepRewind;
+    private Button btnPlayPause;
+    private TextView tvPosition;
+    private MediaPlayer mediaPlayer;
+    // play status
+    private int lastPlayPosition = 0;
+    private int audioDuration = 0;
+    private int audioDurationSec = 0;
+    // settings
+    private int stepRewindTime = 8000; // [msec]
+    private String altAudioFolder = "/storage/sdcard0/Download";
+
+    private AudioSliderUpdateThread updateThread;
+    void initAudioPlayer(){
+        audioSlider = (SeekBar)findViewById(R.id.audioSeekBar);
+        audioSlider.setOnSeekBarChangeListener(this);
+        btnStepRewind = (Button)findViewById(R.id.btn_step_rewind);
+        btnPlayPause = (Button)findViewById(R.id.btn_play_stop);
+        btnStepRewind.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                audioStepRewind();
+            }
+        });
+        btnPlayPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                audioPlayPause();
+            }
+        });
+        tvPosition = (TextView)findViewById(R.id.text_position);
+        showAudioSlider(false);
+    }
+    boolean openAudioPlayer(String filename){
+        closeAudioPlayer(false);
+        mediaPlayer = new MediaPlayer();
+        try {
+            mediaPlayer.setDataSource(filename);
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeAudioPlayer();
+            return false;
+        }
+        try {
+            mediaPlayer.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+            closeAudioPlayer();
+            return false;
+        }
+        audioSlider.setProgress(lastPlayPosition);
+        audioDuration = mediaPlayer.getDuration();
+        audioDurationSec = audioDuration / 1000;
+        audioSlider.setMax(audioDuration);
+
+        mediaPlayer.setLooping(true);
+        mediaPlayer.start();
+
+        updateThread = new AudioSliderUpdateThread();
+        updateThread.start();
+        btnPlayPause.setText(R.string.label_pause);
+        tvPosition.setText("sss");
+
+        return true;
+    }
+    void closeAudioPlayer(){
+        closeAudioPlayer(true);
+    }
+    void closeAudioPlayer(boolean showControl){
+        if (updateThread != null){
+            updateThread.runnable = false;
+            updateThread.interrupt();
+            try {
+                updateThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            updateThread = null;
+        }
+        if (mediaPlayer != null){
+            if (mediaPlayer.isPlaying())
+                mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+            if (showControl) {
+                showAudioSlider(false);
+            }
+        }
+    }
+    void audioStepRewind(){
+        int pos = mediaPlayer.getCurrentPosition();
+        pos -= stepRewindTime;
+        if (pos < 0) pos = 0;
+        mediaPlayer.seekTo(pos);
+        audioSlider.setProgress(pos);
+    }
+    void audioPlayPause(){
+        if (mediaPlayer == null) return;
+        if (mediaPlayer.isPlaying()){
+            mediaPlayer.pause();
+            btnPlayPause.setText(R.string.label_play);
+        } else {
+            mediaPlayer.start();
+            btnPlayPause.setText(R.string.label_pause);
+        }
+    }
+
+    void showAudioSlider(boolean on){
+        if (audioSlider.getVisibility()==View.GONE){
+            // to visible
+            if (!on) return;
+            audioSlider.setVisibility(View.VISIBLE);
+            btnStepRewind.setVisibility(View.VISIBLE);
+            btnPlayPause.setVisibility(View.VISIBLE);
+            tvPosition.setVisibility(View.VISIBLE);
+        } else {
+            // to invisible
+            if (on) return;
+            audioSlider.setVisibility(View.GONE);
+            btnStepRewind.setVisibility(View.GONE);
+            btnPlayPause.setVisibility(View.GONE);
+            tvPosition.setVisibility(View.GONE);
+        }
+    }
+
+    // SeekBar.OnSeekBarChangeListener overridden members //
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (fromUser) {
+            // ユーザーがpositionを変更した
+            mediaPlayer.seekTo(progress);
+            seekBar.setProgress(progress);
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+
+    }
+
+    // SeekBar update thread //
+    class AudioSliderUpdateThread extends Thread {
+        public boolean runnable = true;
+        @Override
+        public void run(){
+            try {
+                while (runnable){
+                    if (mediaPlayer != null) {
+                        int currentPosition = mediaPlayer.getCurrentPosition();    //現在の再生位置を取得
+                        Message msg = new Message();
+                        msg.what = currentPosition;
+                        threadHandler.sendMessage(msg);                        //ハンドラへのメッセージ送信
+                    }
+                    Thread.sleep(200);
+                }
+            } catch (InterruptedException e) {
+                //return;
+            }
+        }
+    }
+    private Handler threadHandler = new Handler() {
+        public void handleMessage(Message msg) {
+            audioSlider.setProgress(msg.what);
+            int sec = msg.what / 1000;
+            String text = String.format("%d:%02d/%d:%02d", sec/60, sec % 60, audioDurationSec/60, audioDurationSec%60);
+            tvPosition.setText(text);
+            //tvPosition.setText( Integer.toString(sec/60) + ":" + Integer.toString(sec % 60) + "/" + Integer.toString(audioDurationSec/60) + ":" + Integer.toString(audioDurationSec%60));
+        }
+    };
 
     /**
      * A placeholder fragment containing a simple view.

@@ -645,6 +645,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             ViewGroup.LayoutParams params;
             params = editText.getLayoutParams();
             params.height = savedEditTextHeight;
+            editText.setLayoutParams(params);
             popupList.setVisibility(View.VISIBLE);
         } else {
             // to invisible
@@ -655,6 +656,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             if (savedEditTextHeight < 0)
                 savedEditTextHeight = params.height;
             params.height = MATCH_PARENT;
+            editText.setLayoutParams(params);
         }
     }
 

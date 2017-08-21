@@ -25,6 +25,12 @@ TSquareIF::~TSquareIF()
 	if (squ)
 		delete squ;
 }
+
+void TSquareIF::SetUIMain(class TSquUIMain *uimain)
+{
+	squ->SetUIMain(uimain);
+}
+
 void TSquareIF::Setup()
 {
 #ifdef _Windows

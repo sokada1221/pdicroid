@@ -26,6 +26,9 @@ public:
 		{ return View; }
 	TSquare *GetSquare()
 		{ return squ; }
+
+	// setter //
+	void SetUIMain(class TSquUIMain *uimain);
 	
 	// setup //
 	void Setup();

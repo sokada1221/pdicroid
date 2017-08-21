@@ -17,6 +17,7 @@ public:
 	~TSquareFrame();
 	class TSquUIMain *GetUIMain(){ return UIMain; }
 	class TSquUIWord *GetUIWord(){ return UIWord; }
+	void SetUIMain(TSquUIMain *uimain);
 
 	class MPdic *GetDic();
 

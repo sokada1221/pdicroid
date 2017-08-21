@@ -228,6 +228,12 @@ Squre::~Squre()
 		delete SrchMed;
 }
 
+void Squre::SetUIMain(TSquUIMain *uimain)
+{
+	UIWord = NULL;
+	UIMain = uimain;
+}
+
 #if INCSRCHPLUS
 void Squre::SetIncSrchPlus( bool enabled )
 {

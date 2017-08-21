@@ -245,6 +245,7 @@ TWordList *WordList = NULL;
 TUIMain *UIMain = NULL;
 TPdicMain *Main = NULL;
 TSquareFrame *Frame = NULL;
+int FrameInstance = 0;
 
 class TPdicMainImpl : public TPdicMain {
 typedef TPdicMain super;
@@ -277,12 +278,18 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_createPdicFrame(JNIEnv
 		DicGroup dg(_t("Sample"));
 		Frame->squi->OpenDictionary(dg, NULL);
 #endif
+	} else {
+		Frame->SetUIMain( UIMain );
 	}
+	FrameInstance++;
 	return param1;
 }
 JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_deletePdicFrame(JNIEnv* env, jobject thiz, jint param1)
 {
+	if (--FrameInstance != 0)
+		return 0;
 	if (UIMain){
+		Frame->SetUIMain( NULL );
 		delete UIMain;
 		UIMain = NULL;
 		env->DeleteGlobalRef(jniCallback);

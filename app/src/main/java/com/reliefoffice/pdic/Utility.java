@@ -67,6 +67,11 @@ public class Utility {
         return out.getAbsolutePath();
     }
 
+    public static boolean fileExists(String filename){
+        File file = new File(filename);
+        return file.exists();
+    }
+
     // general purpose for EditText
     // 現在行を返す
     //TODO: 動作未確認

@@ -7,6 +7,7 @@
 
 TSquareFrame::TSquareFrame(TSquUIMain *main)
 {
+	UIWord = NULL;
 	UIMain = main;
 
 	TSquareView *view = new TSquareView(NULL);	//TODO: owner‚Ínewtab‚Å‚Í‚È‚¢‚Ì‚©H
@@ -18,6 +19,12 @@ TSquareFrame::TSquareFrame(TSquUIMain *main)
 TSquareFrame::~TSquareFrame()
 {
 	if (squi) delete squi;
+}
+
+void TSquareFrame::SetUIMain(TSquUIMain *uimain)
+{
+	UIMain = uimain;
+	squi->SetUIMain( uimain );
 }
 
 MPdic *TSquareFrame::GetDic()
@@ -36,21 +43,21 @@ bool TSquareFrame::IsAutoSpecialSearchEnabled()
 
 void TSquareFrame::ListClear()
 {
-	UIMain->ListClear();
+	if (UIMain) UIMain->ListClear();
 }
 void TSquareFrame::ListAdd(tnstr *word, Japa *japa, int dicno, int level)
 {
-	UIMain->ListAdd(word, japa, dicno, level);
+	if (UIMain) UIMain->ListAdd(word, japa, dicno, level);
 }
 void TSquareFrame::ListInsert(int index, tnstr *word, Japa *japa, int dicno, int level)
 {
-	UIMain->ListInsert(index, word, japa, dicno, level);
+	if (UIMain) UIMain->ListInsert(index, word, japa, dicno, level);
 }
 void TSquareFrame::ListDel(int index)
 {
-	UIMain->ListDel(index);
+	if (UIMain) UIMain->ListDel(index);
 }
 void TSquareFrame::ListDel(int index1, int index2)
 {
-	UIMain->ListDel(index1, index2);
+	if (UIMain) UIMain->ListDel(index1, index2);
 }

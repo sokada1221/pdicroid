@@ -967,7 +967,7 @@ public:
 	void ScrolledWindow(){}
 #endif
 protected:
-	void ClearObject( );		
+	void ClearObject( );
 	static bool CALLBACK OnDrop( int UserData, void *pIDataSource, long grfKeyState, const POINTL pt, long &dwEffect);
 	bool OnDrop( void *pIDataSource, long grfKeyState, const POINTL pt, long &dwEffect);
 
@@ -979,6 +979,8 @@ protected:
 	class TSquUIMain *UIMain;
 	TSquUIMain *GetMainWindow()
 		{ return UIMain; }
+public:
+	void SetUIMain(TSquUIMain *uimain);
 //////////////////////////////////////////////////////////////////
 //	åüçıèàóù													//
 //////////////////////////////////////////////////////////////////

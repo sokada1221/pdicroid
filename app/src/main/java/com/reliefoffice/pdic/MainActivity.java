@@ -265,7 +265,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
             for (int i=0;i<maxLoop;i++){
                 if (pdicJni.idleProc(0)==1) {
                     // end of idle
-                    Log.d("PDD", "End idle ");
+                    //Log.d("PDD", "End idle ");
                     jniCallback.requestUpdate();
                     if (i>0) {
                         handler.postDelayed(idleProc, 1000);
@@ -363,9 +363,11 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
             //Log.d("PDD", "call incSearch1");
             //wordListAdapter.clear();
             //wordListAdapter.notifyDataSetChanged();
+            pdicJni.incSearch("");
+            wordListAdapter.clear();
             pdicJni.incSearch(newText);
         }
-        Log.d("PDD", "Start first idle");
+        //Log.d("PDD", "Start first idle");
         final int firstIdleCount = 30;  //TODO: need to adjust
         boolean done = false;
         for (int i = 0; i < firstIdleCount; i++) {
@@ -377,7 +379,7 @@ public class MainActivity extends ActionBarActivity implements SearchView.OnQuer
             }
         }
         if (!done){
-            Log.i("PDD", "Not done - ");
+            //Log.i("PDD", "Not done - ");
             requestIdleProc();
         }
         return true;

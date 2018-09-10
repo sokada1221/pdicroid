@@ -1202,6 +1202,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     private SeekBar audioSlider;
     private Button btnStepRewind;
     private Button btnPlayPause;
+    private Button btnMark;
     private TextView tvPosition;
     private MediaPlayer mediaPlayer;
     // play status
@@ -1209,6 +1210,14 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     private int audioDuration = 0;
     private int audioDurationSec = 0;
     private boolean lastPlaying = false;
+    // mark
+    enum MarkState {
+        None, MarkA, MarkAB
+    }
+    private MarkState markState = MarkState.None;
+    private int markPositionA;
+    private int markPositionB;
+    final int minMarkABDuration = 1000; // [msec]
     // settings
     private int stepRewindTime = 5000; // [msec]
 
@@ -1219,6 +1228,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         audioSlider.setOnSeekBarChangeListener(this);
         btnStepRewind = (Button)findViewById(R.id.btn_step_rewind);
         btnPlayPause = (Button)findViewById(R.id.btn_play_stop);
+        btnMark = (Button)findViewById(R.id.btn_mark);
         btnStepRewind.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -1229,6 +1239,12 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             @Override
             public void onClick(View view) {
                 audioPlayPause();
+            }
+        });
+        btnMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                toggleAudioMark();
             }
         });
         tvPosition = (TextView)findViewById(R.id.text_position);
@@ -1267,12 +1283,16 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
 
         audioPlayPause(!autoStartPlayMode && !autoStartPlay);
 
+        clearAudioMark();
+
         return true;
     }
     void closeAudioPlayer(){
         closeAudioPlayer(true);
     }
     void closeAudioPlayer(boolean showControl){
+        clearAudioMark();
+
         if (updateThread != null){
             updateThread.runnable = false;
             updateThread.interrupt();
@@ -1316,6 +1336,34 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
                 mediaPlayer.start();
             btnPlayPause.setText(R.string.label_pause);
             lastPlaying = true;
+        }
+    }
+    // mark operation //
+    void clearAudioMark(){
+        markState = MarkState.None;
+        btnMark.setText("A");
+    }
+    void toggleAudioMark(){
+        if (mediaPlayer == null) return;
+        switch (markState){
+            case None:
+            default:
+                markState = MarkState.MarkA;
+                markPositionA = mediaPlayer.getCurrentPosition();
+                btnMark.setText("B");
+                break;
+            case MarkA:
+                int current = mediaPlayer.getCurrentPosition();
+                if (current < markPositionA || current - markPositionA < minMarkABDuration){
+                    break;  // ignored
+                }
+                markPositionB = current;
+                markState = MarkState.MarkAB;
+                btnMark.setText("AB");
+                break;
+            case MarkAB:
+                clearAudioMark();
+                break;
         }
     }
 
@@ -1374,11 +1422,20 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     private Handler threadHandler = new Handler() {
         public void handleMessage(Message msg) {
             int position = msg.what;
-            if (autoLooping && lastPlaying){
-                if (position >= audioDuration){
-                    position = 0;
-                    mediaPlayer.seekTo(0);
-                    mediaPlayer.start();
+            if (lastPlaying){
+                if (autoLooping) {
+                    if (position >= audioDuration) {
+                        position = 0;
+                        mediaPlayer.seekTo(0);
+                        mediaPlayer.start();
+                    }
+                }
+                // Mark AB
+                if (markState == MarkState.MarkAB){
+                    if (position >= markPositionB){
+                        mediaPlayer.seekTo(markPositionA);
+                        position = markPositionA;
+                    }
                 }
             }
             audioSlider.setProgress(position);

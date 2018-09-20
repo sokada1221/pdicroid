@@ -1354,10 +1354,19 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
                 break;
             case MarkA:
                 int current = mediaPlayer.getCurrentPosition();
-                if (current < markPositionA || current - markPositionA < minMarkABDuration){
+                int markA, markB;
+                if (current > markPositionA){
+                    markA = markPositionA;
+                    markB = current;
+                } else {
+                    markA = current;
+                    markB = markPositionA;
+                }
+                if (markB - markA < minMarkABDuration){
                     break;  // ignored
                 }
-                markPositionB = current;
+                markPositionA = markA;
+                markPositionB = markB;
                 markState = MarkState.MarkAB;
                 btnMark.setText("AB");
                 break;

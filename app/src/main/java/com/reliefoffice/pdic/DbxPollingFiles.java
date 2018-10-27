@@ -116,7 +116,8 @@ public class DbxPollingFiles extends INetDrivePollingFiles {
                 if (info==cur) cur = null;
                 continue;
             }
-            if (info.downloadRequest && !info.downloading) return info;
+            if (!info.uploading && !info.uploadRequest   // uploadóDêÊ
+                    && info.downloadRequest && !info.downloading) return info;
         }
         return null;
     }
@@ -136,7 +137,6 @@ public class DbxPollingFiles extends INetDrivePollingFiles {
         for (DbxFileInfo info : files){
             if (!info.downloadRequest && !info.uploadRequest) {
                 if (info.isUpdated()) {
-                    info.isUpdated();
                     return info;
                 }
             }

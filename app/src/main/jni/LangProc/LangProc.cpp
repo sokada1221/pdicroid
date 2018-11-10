@@ -173,6 +173,7 @@ bool TLangProc::OpenTable(const tchar *table_filename)
 		Table = new TLPTable(table_filename);
 	}
 	if (!Table->Read()){
+		DBW("TLangProc::Read failed: %s", __cstr(table_filename).utf8());
 		delete Table;
 		Table = NULL;
 		return false;

@@ -59,7 +59,12 @@ public class Dropbox2FileManager extends DropboxBaseFileManager {
             if (!easyMode) {
                 INetDriveUtils.AppKeys appKeys = dbxUtils.getAppKeys();
                 if (Utility.isNotEmpty(appKeys.key)) {
-                    Auth.startOAuth2Authentication(context, appKeys.key);
+                    try {
+                        Auth.startOAuth2Authentication(context, appKeys.key);
+                    } catch(Exception e){
+                        Log.d("PDD", "Auth.startOAuth2Authentication exception: "+e.getMessage());
+                        return false;
+                    }
                 }
             }
             return false;

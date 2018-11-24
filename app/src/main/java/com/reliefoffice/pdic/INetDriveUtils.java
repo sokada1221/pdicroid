@@ -29,7 +29,6 @@ public abstract class INetDriveUtils {
             this.key = key;
             this.secret = secret;
         }
-        //public AppKeys(){}
     }
 
     public boolean appKeysConfirmed = false;

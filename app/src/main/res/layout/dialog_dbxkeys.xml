@@ -25,27 +25,4 @@
             android:layout_weight="4"/>
     </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="340dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Secret"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"/>
-
-        <EditText
-            android:layout_width="10dp"
-            android:layout_height="wrap_content"
-            android:id="@+id/edit_text_app_secret"
-            android:layout_gravity="center_vertical"
-            android:max="1000"
-            android:inputType="textEmailAddress"
-            android:layout_weight="4"/>
-    </LinearLayout>
-
 </LinearLayout>

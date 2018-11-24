@@ -24,8 +24,6 @@ public class DropboxAppKeysDialog extends DialogFragment {
         DropboxUtils.AppKeys appKeys = DropboxUtils.getInstance(null).getAppKeys();
         edAppKey = (EditText)content.findViewById(R.id.edit_text_app_key);
         edAppKey.setText(appKeys.key);
-        edAppSecret = (EditText)content.findViewById(R.id.edit_text_app_secret);
-        edAppSecret.setText(appKeys.secret);
         builder.setView(content);
         builder.setMessage("Dropbox App Keys")
                 .setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -34,7 +32,7 @@ public class DropboxAppKeysDialog extends DialogFragment {
                         //EditText edAppKey = (EditText) view.findViewById(R.id.edit_text_app_key);
                         //EditText edAppSecret = (EditText) view.findViewById(R.id.edit_text_app_secret);
                         String appKey = edAppKey.getText().toString();
-                        String appSecret = edAppSecret.getText().toString();
+                        String appSecret = "";
                         DropboxUtils.AppKeys appKeys = new DropboxUtils.AppKeys(appKey, appSecret);
                         onDropboxAppKeys(appKeys);
                         dismiss();

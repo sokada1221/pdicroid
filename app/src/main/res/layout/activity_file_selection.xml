@@ -68,45 +68,52 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/ll_charcode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
+
         <TextView
-            android:text="@string/label_charcode"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:text="@string/label_charcode" />
     </LinearLayout>
+
     <LinearLayout
+        android:id="@+id/ll_encoding"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
+
         <RadioGroup
             android:id="@+id/rg_encoding"
-            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <RadioButton
-                android:text="@string/label_auto"
                 android:id="@+id/btn_auto"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="@string/label_auto" />
+
             <RadioButton
-                android:text="ShiftJIS"
                 android:id="@+id/btn_shiftjis"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="ShiftJIS" />
+
             <RadioButton
-                android:text="UTF-8"
                 android:id="@+id/btn_utf8"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="UTF-8" />
+
             <RadioButton
-                android:text="UTF-16"
                 android:id="@+id/btn_utf16"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="UTF-16" />
         </RadioGroup>
 
     </LinearLayout>

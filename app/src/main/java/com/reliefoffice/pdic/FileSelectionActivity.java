@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -179,11 +180,27 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
 
     protected void prepareParams(){
         Intent i = getIntent();
+
+        // initial directory
         String initialDir = i.getStringExtra(pfs.INITIALDIR);
         if (Utility.isNotEmpty(initialDir))
             setFileDirectory(initialDir);
         else
             setFileDirectory("/");
+
+        // extensions
+        String[] exts = i.getStringArrayExtra("exts");
+        if (exts != null && exts.length>0){
+            m_exts = exts;
+        }
+
+        // encoding view
+        if (i.getBooleanExtra("no_encoding", false)) {
+            LinearLayout llEncoding = (LinearLayout) findViewById(R.id.ll_encoding);
+            llEncoding.setVisibility(View.GONE);
+            LinearLayout llCharcode = (LinearLayout) findViewById(R.id.ll_charcode);
+            llCharcode.setVisibility(View.GONE);
+        }
 
         lastSortType = SortType.values()[pref.getInt("sortType", SortType.Name.ordinal())];
     }

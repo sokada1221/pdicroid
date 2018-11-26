@@ -12,35 +12,35 @@
             android:layout_height="match_parent"
             android:textSize="30sp"
             android:gravity="center"
-            android:fontFamily="cursive"
+            android:fontFamily="serif"
             android:text="T"/>
         <TextView android:id="@+id/tv_bold_text"
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:textSize="30sp"
             android:gravity="center"
-            android:fontFamily="cursive"
+            android:fontFamily="serif"
             android:text="@string/font_bold_text"/>
         <TextView android:id="@+id/tv_underline_text"
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:textSize="30sp"
             android:gravity="center"
-            android:fontFamily="cursive"
+            android:fontFamily="serif"
             android:text="@string/font_underline_text"/>
         <TextView android:id="@+id/tv_italic_text"
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:textSize="30sp"
             android:gravity="center"
-            android:fontFamily="cursive"
+            android:fontFamily="serif"
             android:text="@string/font_italic_text"/>
         <TextView android:id="@+id/tv_strikeout_text"
             android:layout_width="64dp"
             android:layout_height="match_parent"
             android:textSize="30sp"
             android:gravity="center"
-            android:fontFamily="cursive"
+            android:fontFamily="serif"
             android:text="@string/font_strikeout_text"/>
     </LinearLayout>
     <LinearLayout
@@ -56,14 +56,14 @@
                 android:layout_height="match_parent"
                 android:textSize="30sp"
                 android:gravity="center"
-                android:fontFamily="cursive"
+                android:fontFamily="serif"
                 android:text=" T " />
             <TextView android:id="@+id/tv_hilite1_text"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:textSize="30sp"
                 android:gravity="center"
-                android:fontFamily="cursive"
+                android:fontFamily="serif"
                 android:background="#ff8080"
                 android:text=" T " />
             <TextView android:id="@+id/tv_hilite2_text"
@@ -71,7 +71,7 @@
                 android:layout_height="match_parent"
                 android:textSize="30sp"
                 android:gravity="center"
-                android:fontFamily="cursive"
+                android:fontFamily="serif"
                 android:background="#00ff00"
                 android:text=" T " />
             <TextView android:id="@+id/tv_hilite3_text"
@@ -79,7 +79,7 @@
                 android:layout_height="match_parent"
                 android:textSize="30sp"
                 android:gravity="center"
-                android:fontFamily="cursive"
+                android:fontFamily="serif"
                 android:background="#00ffff"
                 android:text=" T " />
             <TextView android:id="@+id/tv_hilite4_text"
@@ -87,7 +87,7 @@
                 android:layout_height="match_parent"
                 android:textSize="30sp"
                 android:gravity="center"
-                android:fontFamily="cursive"
+                android:fontFamily="serif"
                 android:background="#ffff00"
                 android:text=" T " />
         </LinearLayout>

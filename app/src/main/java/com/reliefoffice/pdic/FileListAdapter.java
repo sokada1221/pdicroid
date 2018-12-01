@@ -74,8 +74,8 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
+                if (lhs.getName().equals("..") || lhs.getModDate() == null) return -1;
+                if (rhs.getName().equals("..") || rhs.getModDate() == null) return 1;
                 return lhs.getModDate().compareTo(rhs.getModDate());
             }
         });

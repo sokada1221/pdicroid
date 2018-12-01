@@ -761,6 +761,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         } else {
             Intent i = new Intent().setClassName(this.getPackageName(), FileDirSelectionActivity.class.getName());
             i.putExtra(pfs.INITIALDIR, pref.getString(pfs.PSINITIALDIR, Utility.initialFileDirectory()));
+            String[] exts = {".txt"};
+            i.putExtra("exts",exts);
             startActivityForResult(i, REQUEST_CODE_SELECT_FILE);
         }
     }
@@ -1024,6 +1026,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         } else {
             Intent i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
             i.putExtra("onlySelection", true);
+            String[] exts = {".txt"};
+            i.putExtra("exts",exts);
             startActivityForResult(i, REQUEST_CODE_SELECT_FILE_DBX);
         }
         fromDropbox = true;

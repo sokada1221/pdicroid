@@ -407,7 +407,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             if (popupList.getVisibility() == View.GONE){
                 // popup is visible
                 //TODO: こちらはまだおかしい
-                y = - ((int)lastY) + fontHeight + 4;
+                y = ((int)lastY) - editText.getHeight() + fontHeight + 4;
             } else {
                 // popup is invisible
                 y = ((int)lastY) - editText.getHeight() + fontHeight + 4;

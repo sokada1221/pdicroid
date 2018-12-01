@@ -39,7 +39,9 @@ public class FileItemLayout extends LinearLayout {
             if (item.m_mp3Exists) {
                 imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_textmp3_file));
             } else
-            if (!item.getName().toLowerCase().endsWith(".dic")){
+            if (item.getName().toLowerCase().endsWith(".dic")){
+                imageView.setImageDrawable(getContext().getResources().getDrawable(R.mipmap.ic_launcher));
+            } else {
                 imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.ic_text_file));
             }
             fileSize.setText(Utility.itocs(item.getFileSize()));

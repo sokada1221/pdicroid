@@ -213,7 +213,7 @@ public class Utility {
     }
     */
 
-    public static final void requestPermision(Activity activity){
+    public static final void requestStoragePermision(Activity activity){
         if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},

@@ -227,3 +227,40 @@ void InsertHitWords3( MatchArray &dest, MatchArray &src )
 		dest.add( src.discard(i) );
 	}
 }
+
+// mergeを行う
+// dst += src
+// dstの中にsrcと同じ単語があるかどうか探し、見つかった場合はflagが少ないほう、またはwordcountが多い方を優先する
+// (たぶん同じだと思うが）
+// そして、見つかった単語をsrcから削除する
+// 見つからなかった場合は何もしない
+void MergeHitWords(MatchArray &dst, MatchArray &src)
+{
+	for (int i=0;i<src.size();i++){
+		for (int j=0;j<dst.size();j++){
+			if (!_tcscmp(src[i].word, dst[j].word)){
+				// found
+				const int srccount = BitCount(src[i].flag);
+				const int dstcount = BitCount(dst[j].flag);
+				if (srccount <= dstcount){
+					// srcのほうがflag bitが少ない
+					if (srccount == dstcount){
+						if (src[i].numword > dst[j].numword){
+							// replace
+							dst[j] = src[i];
+						}
+					} else {
+						// replace
+						dst[j] = src[i];
+					}
+				}
+				// srcから重複分を削除
+				src.del(i);
+				i--;
+				goto jnext;
+			}
+		}
+jnext:;
+	}
+}
+

@@ -1416,14 +1416,56 @@ int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const t
 			}
 			*dp = '\0';
 
-			MatchArray hits;
-			r = Search( cs, words, str, &hits );
-			if ( r == -1 )
-				break;
-			if ( maxlen < r )
-				maxlen = r;
-			// with abandon でabandonをclick
-			InsertHitWords2( *HitWords, hits );
+			MatchArray prev_hits;
+			const int wordcount = WordCount(str);
+			if (wordcount == 1){
+				// findForPrevWord: 前置単語の活用形対応
+				COMPARE_STRUCT cs;
+				cs.flags = SLW_REPLACEIRREG | SLW_DESINENCE1 | SLW_DESINENCE2 | SLW_DESINENCE3;
+				cs.str = str;
+				cs.fComplete = 0;
+				cs.fWordDelim = 0;
+				cs.dic = &dic;
+				tnstr str_backup(str);
+				str[0] = '\0';
+				Search( cs, str_backup, str, &prev_hits );
+
+				// 検索語が辞書になく、変化形でヒットした場合、検索語が対象にならない問題の対策
+				bool found = false;
+				for (int i=0;i<prev_hits.size();i++){
+					if (!_tcscmp(str_backup, find_cword_pos(prev_hits[i].word))){
+						found = true;
+						break;
+					}
+				}
+				if (!found){
+					prev_hits.add( new MATCHINFO(str_backup, 0, wordcount, 0) );
+				}
+			} else {
+				// ２語以上の場合
+				prev_hits.add( new MATCHINFO(str, 0, wordcount, 0) );
+			}
+
+			for (int i=0;i<prev_hits.size();i++){
+				_tcscpy(str, find_cword_pos(prev_hits[i].word));
+
+				MatchArray hits;
+				r = Search( cs, words, str, &hits );
+				if ( r == -1 )
+					break;
+				if ( maxlen < r )
+					maxlen = r;
+
+				// flagを追加
+				if (prev_hits[i].flag){
+					for (int j=0;j<hits.size();j++){
+						hits[j].flag |= prev_hits[i].flag;
+					}
+				}
+
+				MergeHitWords(*HitWords, hits);	// 重複語をなくす
+				InsertHitWords2( *HitWords, hits );
+			}
 			if (nextword)
 				prevwords = nextword;
 		}

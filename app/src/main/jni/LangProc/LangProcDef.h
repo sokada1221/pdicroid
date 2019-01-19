@@ -75,7 +75,7 @@ struct MATCHINFO {
 		numword = _numword;
 		start = _start;
 	}
-	MATCHINFO( MATCHINFO &mi )
+	MATCHINFO( const MATCHINFO &mi )
 		:word( mi.word )
 		,ext(mi.ext)
 	{
@@ -149,5 +149,6 @@ void SortHitWords( MatchArray &ma );
 //void InsertHitWords( MatchArray &dest, MatchArray &src );
 void InsertHitWords2( MatchArray &dest, MatchArray &src );
 void InsertHitWords3( MatchArray &dest, MatchArray &src );
+void MergeHitWords(MatchArray &dst, MatchArray &src);
 
 #endif

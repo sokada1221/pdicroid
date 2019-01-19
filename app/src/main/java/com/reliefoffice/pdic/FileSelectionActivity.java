@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.CallSuper;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -165,7 +166,9 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
     @Override
     protected void onResume(){
         super.onResume();
-        Utility.requestStoragePermision(this);
+        if (!Utility.requestStoragePermision(this)){
+            return;
+        }
         if (checkStartSelectFile()){
             startSelectFile();
         }
@@ -175,6 +178,17 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
     protected void onStop(){
         super.onStop();
         saveParameters();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == Utility.REQUEST_CODE_PERMISSION){
+            if (!Utility.permissionGranted(grantResults)){
+                finish();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     protected void prepareParams(){

@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -34,7 +35,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -113,9 +113,22 @@ public class DicDownloadList extends ActionBarActivity implements IAsyncFileDown
     protected void onResume() {
         super.onResume();
 
-        Utility.requestInternetPermision(this);
+        if (!Utility.requestInternetPermision(this)){
+            return;
+        }
 
         startFileDownload("list.xml", getString(R.string.dic_list_url));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == Utility.REQUEST_CODE_PERMISSION){
+            if (!Utility.permissionGranted(grantResults)){
+                finish();
+            }
+            return;
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
     void updateList(){

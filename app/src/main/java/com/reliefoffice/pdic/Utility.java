@@ -221,4 +221,12 @@ public class Utility {
         }
     }
 
+    public static final void requestBluetoothPermision(Activity activity){
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.BLUETOOTH},
+                    0);
+        }
+    }
+
 }

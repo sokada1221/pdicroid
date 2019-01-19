@@ -2,9 +2,13 @@ package com.reliefoffice.pdic;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothA2dp;
+import android.bluetooth.BluetoothHeadset;
+import android.content.BroadcastReceiver;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
@@ -172,6 +176,9 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     float startX;
     float startY;
     final int marginForMove = 16;
+
+    // Bluetooth Manager //
+    BluetoothManager bluetoothManager;
 
     //TODO: call setWordList() when deactivated.
 
@@ -353,6 +360,9 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
                 loadFile(histName.filename, histName.remoteName);
             }
         }
+
+        // Bluetooth Manager //
+        bluetoothManager = new BluetoothManager(this);
     }
 
     class HistoryFilename {
@@ -499,6 +509,9 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             Toast ts = Toast.makeText(this, getString(R.string.msg_dic_not_opened) + "\n" + name, Toast.LENGTH_LONG);
             ts.show();
         }
+
+        // Bluetooth Manager //
+        Utility.requestBluetoothPermision(this);
     }
 
     int lastPosition;
@@ -1490,6 +1503,26 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             //tvPosition.setText( Integer.toString(sec/60) + ":" + Integer.toString(sec % 60) + "/" + Integer.toString(audioDurationSec/60) + ":" + Integer.toString(audioDurationSec%60));
         }
     };
+
+    class BluetoothManager {
+        private final BroadcastReceiver btReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.equals(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED)){
+                    int state = intent.getIntExtra(BluetoothA2dp.EXTRA_STATE, BluetoothA2dp.STATE_DISCONNECTED);
+                    if (state == BluetoothA2dp.STATE_DISCONNECTED){
+                        audioPlayPause();
+                    }
+                }
+            }
+        };
+        public BluetoothManager(Context context){
+            IntentFilter intentFilter = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
+            intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+            context.registerReceiver(btReceiver, intentFilter);
+        }
+    }
 
     /**
      * A placeholder fragment containing a simple view.

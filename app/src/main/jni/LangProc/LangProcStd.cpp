@@ -125,6 +125,17 @@ bool TLangProcStd::CompareStd( COMPARE_STRUCT &cs, const int _flags )
 		convf |= SLW_REPLACEANY2;
 	}
 
+	if ( _flags & SLW_REPLACEANY4 ){
+//		continue;
+		// __の追加
+		if ( *(dp-2) == '_' )
+			return true;
+		*dp++ = '_';
+		*dp++ = '_';
+		*dp++ = ' ';
+		convf |= SLW_REPLACEANY4;
+	}
+
 #if OLDCASE
 	// 先頭case反転
 	if ( _flags & SLW_CASEIGNORE1 ){
@@ -1011,7 +1022,7 @@ jnext:;
 			// 2017.2.21 "on ~"などのように、onが前置単語で、clicked wordが含まれずにhitした場合はpenalty2
 			for (i=0;i<dstpart->get_num();i++){
 				MATCHINFO &mi = (*dstpart)[i];
-				if (mi.flag & (SLW_REPLACEANY|SLW_REPLACEANY2|SLW_REPLACEANY3)){
+				if (mi.flag & (SLW_REPLACEANY|SLW_REPLACEANY2|SLW_REPLACEANY3|SLW_REPLACEANY4)){
 					mi.flag |= SLW_PENALTY2;
 				}
 			}
@@ -1200,15 +1211,17 @@ int TLangProcStd::FindLoop(COMPARE_STRUCT &cs)
 							continue;
 #endif
 						// SLW_REPLACE loop //
-						static int tbl1[6]
+						static int tbl1[8]
 							= {
 								SLW_REPLACEIRREG|SLW_REPLACEDEL,
+								SLW_REPLACEIRREG|SLW_REPLACEANY4,
 								SLW_REPLACEIRREG|SLW_REPLACEANY2,
 								SLW_REPLACEIRREG,
+								SLW_REPLACEANY4,
 								SLW_REPLACEANY2,
 								SLW_REPLACEDEL,
 								0};
-						for ( int fi=0;fi<6;fi++ ){
+						for ( int fi=0;fi<8;fi++ ){
 							if ( (cs.flags & tbl1[fi]) != tbl1[fi] )
 								continue;
 							// SLW_SYMBOLS loop //

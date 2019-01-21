@@ -132,23 +132,12 @@ public class DicSettingActivity extends Activity implements FileSelectionDialog.
     static final int REQUEST_CODE_ADD_FILE_DBX = 2;
     static final int REQUEST_CODE_ADD_FILE_GDV = 3;
     void actionAddFile(){
-        if (config.useOldFileSelection) {
-            FileSelectionDialog dlg = new FileSelectionDialog(this, this, false);
-            String[] exts = {".txt", ".dic"};
-            dlg.show(new File(m_strInitialDir), exts);
-        } else {
-            Intent i = new Intent().setClassName(this.getPackageName(), FileDirSelectionActivity.class.getName());
-            i.putExtra(pfs.INITIALDIR, m_strInitialDir);
-            startActivityForResult(i, REQUEST_CODE_ADD_FILE);
-        }
+        Intent i = new Intent().setClassName(this.getPackageName(), FileDirSelectionActivity.class.getName());
+        i.putExtra(pfs.INITIALDIR, m_strInitialDir);
+        startActivityForResult(i, REQUEST_CODE_ADD_FILE);
     }
     void actionAddFileFromDropbox(){
-        Intent i;
-        if (config.useOldFileSelection) {
-            i = new Intent().setClassName(this.getPackageName(), DropboxDownloadActivity.class.getName());
-        } else {
-            i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
-        }
+        Intent i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
         startActivityForResult(i, REQUEST_CODE_ADD_FILE_DBX);
     }
     void actionAddFileFromGoogleDrive(){

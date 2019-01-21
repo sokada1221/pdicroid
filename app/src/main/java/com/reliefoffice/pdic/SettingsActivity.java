@@ -112,24 +112,12 @@ public class SettingsActivity extends PreferenceActivity implements DropboxFileS
     // Dropbox serverからdownloadするファイルを選択する
     //DropboxFileSelectionDialog fileSelectionDialog;
     private void selectDropboxFile(){
-        if (config.useOldFileSelection) {
-            DropboxFileSelectionDialog dlg = DropboxFileSelectionDialog.createInstance(this, this, ndvFM, false);
-            dlg.setOnCancelListener(new FileSelectionDialog.OnCancelListener() {
-                @Override
-                public void onCancel() {
-                    psbmSharing.setChecked(false);
-                }
-            });
-            String[] exts = {".txt"};
-            dlg.show(new File(ndvUtils.getInitialDir()), exts);
-        } else {
-            Intent i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
-            i.putExtra("onlySelection", true);
-            String[] exts = {".txt"};
-            i.putExtra("exts", exts);
-            i.putExtra("no_encoding", true);
-            startActivityForResult(i, REQUEST_CODE_SELECT_FILE_DBX);
-        }
+        Intent i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
+        i.putExtra("onlySelection", true);
+        String[] exts = {".txt"};
+        i.putExtra("exts", exts);
+        i.putExtra("no_encoding", true);
+        startActivityForResult(i, REQUEST_CODE_SELECT_FILE_DBX);
     }
     @Override
     public void onFileSelect(FileInfo file) {

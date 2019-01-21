@@ -766,19 +766,11 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     private String m_strInitialDir;
 
     void selectFile() {
-        if (config.useOldFileSelection) {
-            FileSelectionDialog dlg = new FileSelectionDialog(this, this, false);
-            String[] exts = {".txt"};
-            m_strInitialDir = pref.getString(pfs.PSINITIALDIR, Utility.initialFileDirectory());
-            dlg.show(new File(m_strInitialDir), exts);
-            fromDropbox = false;
-        } else {
-            Intent i = new Intent().setClassName(this.getPackageName(), FileDirSelectionActivity.class.getName());
-            i.putExtra(pfs.INITIALDIR, pref.getString(pfs.PSINITIALDIR, Utility.initialFileDirectory()));
-            String[] exts = {".txt"};
-            i.putExtra("exts",exts);
-            startActivityForResult(i, REQUEST_CODE_SELECT_FILE);
-        }
+        Intent i = new Intent().setClassName(this.getPackageName(), FileDirSelectionActivity.class.getName());
+        i.putExtra(pfs.INITIALDIR, pref.getString(pfs.PSINITIALDIR, Utility.initialFileDirectory()));
+        String[] exts = {".txt"};
+        i.putExtra("exts",exts);
+        startActivityForResult(i, REQUEST_CODE_SELECT_FILE);
     }
 
     String downloadedRemoteName;
@@ -1033,17 +1025,11 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     }
 
     private void selectFileDropbox() {
-        if (config.useOldFileSelection) {
-            DropboxFileSelectionDialog dlg = DropboxFileSelectionDialog.createInstance(this, this, ndvFM, false);
-            String[] exts = {".txt"};
-            dlg.show(new File(ndvUtils.getInitialDir()), exts);
-        } else {
-            Intent i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
-            i.putExtra("onlySelection", true);
-            String[] exts = {".txt"};
-            i.putExtra("exts",exts);
-            startActivityForResult(i, REQUEST_CODE_SELECT_FILE_DBX);
-        }
+        Intent i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
+        i.putExtra("onlySelection", true);
+        String[] exts = {".txt"};
+        i.putExtra("exts",exts);
+        startActivityForResult(i, REQUEST_CODE_SELECT_FILE_DBX);
         fromDropbox = true;
     }
 
@@ -1113,19 +1099,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     }
 
     private void selectFileFromHistory() {
-        if (config.useOldFileSelection) {
-            if (usePSBMforFileLoad) {
-                Intent i = new Intent().setClassName(this.getPackageName(), PSBookmarkActivity.class.getName());
-                startActivityForResult(i, REQUEST_CODE_PSB);
-                psbmGeneration = pdicJni.psbmGeneration;
-            } else {
-                Intent i = new Intent().setClassName(this.getPackageName(), FileHistoryActivity.class.getName());
-                startActivityForResult(i, REQUEST_CODE_PSB);
-            }
-        } else {
-            Intent i = new Intent().setClassName(this.getPackageName(), FileHistorySelectionActivity.class.getName());
-            startActivityForResult(i, REQUEST_CODE_PSB);
-        }
+        Intent i = new Intent().setClassName(this.getPackageName(), FileHistorySelectionActivity.class.getName());
+        startActivityForResult(i, REQUEST_CODE_PSB);
     }
 
     @Override

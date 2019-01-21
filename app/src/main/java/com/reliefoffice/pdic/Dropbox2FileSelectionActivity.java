@@ -57,6 +57,10 @@ public class Dropbox2FileSelectionActivity extends NetDriveFileSelectionActivity
         ndvUtils.setAppKeys(appKeys);
         if (checkStartSelectFile()){
             startSelectFile();
+        } else {
+            if (!ndvFM.isAuthCompleted()){
+                finish();
+            }
         }
     }
 

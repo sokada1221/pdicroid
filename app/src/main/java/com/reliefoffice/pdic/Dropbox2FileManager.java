@@ -102,6 +102,10 @@ public class Dropbox2FileManager extends DropboxBaseFileManager {
         return true;
     }
 
+    public boolean isAuthCompleted(){
+        return authCompleted;
+    }
+
     @Override
     public void disconnect(){}  // 該当methodなし？
 

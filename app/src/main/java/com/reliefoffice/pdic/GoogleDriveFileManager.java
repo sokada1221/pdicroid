@@ -55,6 +55,8 @@ public class GoogleDriveFileManager extends INetDriveFileManager {
     public boolean authComplete(Context context) {
         return false;
     }
+    @Override
+    public boolean isAuthCompleted(){ return false; }
 
     @Override
     public void disconnect() {

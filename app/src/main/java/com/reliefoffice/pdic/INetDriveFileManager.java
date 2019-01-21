@@ -11,6 +11,7 @@ public abstract class INetDriveFileManager {
     //Note: should call authComplete() in onResume()
     public abstract boolean startAuth(boolean easyMode);
     public abstract boolean authComplete(Context context);
+    public abstract boolean isAuthCompleted();
     public abstract void disconnect();
 
     // add a dictionary file for download monitor

@@ -93,6 +93,11 @@ public class DropboxFileManager extends DropboxBaseFileManager {
     }
 
     @Override
+    public boolean isAuthCompleted(){
+        return authCompleted;
+    }
+
+    @Override
     public void disconnect(){}  // 該当methodなし？
 
     // add a dictionary file for download monitor

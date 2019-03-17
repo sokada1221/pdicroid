@@ -12,20 +12,28 @@
 #define	HBLKNUM(x)		((t_blknum)((x)&~FIELDTYPE))
 #define	HPDICDATA(x)	((HPdicData*)x)
 class HPdicData : public PdicData {
+typedef PdicData super;
 #ifdef ND3ONLY
 friend PdicData;
 #endif
 protected:
 	// Field1,2åìópä÷êî
 	int _write_databuf(t_pbn2 pbn);
+	class TDicDec *DicDec;
+	char *TempBuffer;
+	int TempBufferSize;
 public:
 	HPdicData( int &error, FileBuf &_file);
 	virtual ~HPdicData();
+
+	virtual int Open( const HEADER *header, class IndexData *inxdat );
 
 	// Field1,2åìópä÷êî
 	int GetTopLoc( )			{ return sizeof(t_blknum); }
 
 	int read(t_pbn2 pbn, TDataBuf *databuf=NULL, bool fit_size=true);
+protected:
+	bool ReallocTempBuffer(unsigned nsize);
 
 public:
 	int recSearch( const _kchar * sword, _kchar *wbuf, FINDWORD &fw, TDataBuf &buf );

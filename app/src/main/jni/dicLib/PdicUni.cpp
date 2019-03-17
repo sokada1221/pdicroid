@@ -124,7 +124,9 @@ int PdicUni::readPare(tnstr &word, Japa &japa)
 			japa.exp = pdcdata.exp;
 			japa.pron = pdcdata.pron;
 			japa.SetAttr(pdcdata.attr);
+#ifdef USE_JLINK
 			japa.jlinks.clear();
+#endif
 			if (UseObjectData){
 				WJapa wjapa;
 				if (ReadObject(wjapa)!=0)
@@ -307,6 +309,7 @@ bool PdicUni::SetObject(Japa &japa, const WJapa &j)
 	return true;
 }
 
+#ifdef USE_JLINK
 //Note: 2007.12.22
 //	OLEデータを一度OLE objectに展開してからJLinkObject(Raw Data)に変換している。
 //	そのため効率が悪い。
@@ -349,4 +352,6 @@ JLOle *PdicUni::GetObjectOle(TUniObjData &obj, int id)
 	}
 	return NULL;	// error
 }
+#endif	// USE_JLINK
+
 

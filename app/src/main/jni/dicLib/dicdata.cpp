@@ -808,7 +808,7 @@ PdicData::~PdicData()
 	if ( emptylist ) delete emptylist;
 }
 
-int PdicData::Open( const HEADER FAR *header )
+int PdicData::Open( const HEADER FAR *header, IndexData *inxdat )
 {
 	version = header->version;
 	offset = header->header_size + header->extheader + header->index_block * header->block_size;
@@ -833,6 +833,7 @@ void PdicData::Close( )
 		Flush();
 	}
 	databuf.Close();
+	zeroBuffer.reset();
 }
 
 // Should delete the returned object.
@@ -874,14 +875,14 @@ int PdicData::file_write(t_pbn2 pbn, const void *data, int len, int off)
 		return -1;
 	return file.write(data, len);
 }
-//TODO: ‚‘¬‰»‚Å‚«‚éH
 int PdicData::file_fill(int len)
 {
-	byte *buf = new byte[len];
-	memset(buf, 0, len);
-	int ret = file.write(buf, len);
-	delete[] buf;
-	return ret;
+	if (!zeroBuffer.reserve( len )){
+		error = DICERR_MEMORY;
+		return -1;
+	}
+
+	return file.write(zeroBuffer.data(), len);
 }
 #endif	// !MEMMAPDIC
 //TODO: ŒÄ‚Ño‚µ‘¤‚àŠÜ‚ß‚Ä“ñdmemory allocation‚É‚È‚Á‚Ä‚¢‚é‚Ì‚Å

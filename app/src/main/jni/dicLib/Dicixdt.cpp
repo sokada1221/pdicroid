@@ -88,7 +88,7 @@ void AllSearchParam::Close()
 		srch_thread = NULL;
 	}
 
-	__delete(fs);
+	_delete(fs);
 	FreeBuffers();
 	if (databuf && databuf_created){
 		delete databuf;
@@ -106,7 +106,7 @@ void AllSearchParam::Close()
 	}
 #endif
 #if USE_NKF
-	__delete(nkf);
+	_delete(nkf);
 #endif
 }
 void AllSearchParam::FreeBuffers()
@@ -541,8 +541,8 @@ AllSearchThread::~AllSearchThread()
 {
 	Stop(false);
 
-	__delete(fword);
-	__delete(fjapa);
+	_delete(fword);
+	_delete(fjapa);
 }
 bool AllSearchThread::Start(bool forward)
 {
@@ -569,8 +569,8 @@ bool AllSearchThread::Start(bool forward)
 	} while(0);
 
 	// error
-	__delete(ThreadSem);
-	__delete(ThreadEvent);
+	_delete(ThreadSem);
+	_delete(ThreadEvent);
 	return false;
 }
 void AllSearchThread::Stop(bool wait)
@@ -735,7 +735,7 @@ int IndexData::Open( PDICINDEX *_index, PDICDATA *_data, HEADER &header )
 #if defined(USE_DICORDER)
 	index->SetOrder( header.dicorder );
 #endif
-	if ( data->Open( &header ) == -1 ){
+	if ( data->Open( &header, this ) == -1 ){
 		index->Close();
 		goto error;
 	}

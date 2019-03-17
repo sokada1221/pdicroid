@@ -7,7 +7,7 @@
 #define	DICERR_DATAFULL			4
 #define	DICERR_READWRITE		5
 #define	DICERR_DICVERSION		6
-#define	DICERR_NOT_READY		7
+#define	DICERR_NOT_READY		7	// ネット共有辞書の準備中
 #define	DICERR_ALREADY_OPEN		8
 #define	DICERR_READONLY			9
 #define	DICERR_TOOMANYOPEN		10
@@ -16,6 +16,7 @@
 #define	DICERR_DIFFVERSION		13
 #define	DICERR_CREATE			14
 //#define DICERR_DUALMULTI		15	// 分割辞書とマルチ辞書は併用できない
+#define	DICERR_EXPIRED			15	// 使用期限が切れている
 #define	DICERR_OPEN_NOCREATE	16
 #define	DICERR_OPEN_SHARE		17
 //#define DICERR_DISK			18	// disk error

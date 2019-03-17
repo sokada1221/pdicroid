@@ -183,6 +183,52 @@ public:
 	int length();
 };	// TDataBuf
 
+class TZeroBuffer {
+protected:
+	unsigned size;
+	char *buffer;
+public:
+	TZeroBuffer(unsigned _size=0)
+	{
+		size = _size;
+		if (size>0){
+			buffer = (char*)malloc(size);
+			memset(buffer, 0, size);
+		} else {
+			buffer = NULL;
+		}
+	}
+	~TZeroBuffer()
+	{
+		if (buffer) free(buffer);
+	}
+	void reset()
+	{
+		if (buffer){
+			free(buffer);
+			buffer = NULL;
+		}
+		size = 0;
+	}
+	bool reserve(unsigned _size)
+	{
+		if (_size <= size) return true;
+		if (buffer){
+			char *temp = (char*)realloc( buffer, _size );
+			if (!temp) return false;
+			buffer = temp;
+			memset(buffer+size, 0, _size - size);
+		} else {
+			buffer = (char*)malloc( _size );
+			if (!buffer) return false;
+			memset(buffer, 0, _size);
+		}
+		size = _size;
+		return true;
+	}
+	const char *data(){ return buffer; }
+};
+
 ///////////////////////
 ///	PdicDataクラス	///
 ///////////////////////
@@ -214,16 +260,18 @@ protected:
 	byte dictype;
 	short version;
 
+	TZeroBuffer zeroBuffer;
+
 protected:
 	virtual int _write_databuf(t_pbn2 pbn) = 0;
 public:
 	PdicData( int &error, FileBuf &_file);
 	virtual ~PdicData();
 
-	int Open( const HEADER *header );
+	virtual int Open( const HEADER *header, class IndexData *inxdat );
 	void Close( );
 
-	TDataBuf *CreateDataBuf();
+	TDataBuf *CreateDataBuf();	// これを呼び出す場合はdatabuf->SetData()の呼び出しの検討も
 	
 	int write(t_pbn2 pbn)
 		{ return databuf.write(pbn); }

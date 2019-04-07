@@ -50,12 +50,25 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         return view;
     }
 
+    static int compareDir(FileInfo lhs, FileInfo rhs){
+        if (lhs.getName().equals("..")) return -1;
+        if (rhs.getName().equals("..")) return 1;
+        if (lhs.isDirectory()){
+            if (rhs.isDirectory()){
+                return lhs.getName().compareTo(rhs.getName());
+            } else return -1;
+        } else {
+            if (rhs.isDirectory()) return 1;
+        }
+        return 0;
+    }
+
     public void sortByName(){
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
                 return lhs.getName().compareTo(rhs.getName());
             }
         });
@@ -64,8 +77,8 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
                 return rhs.getName().compareTo(lhs.getName());
             }
         });
@@ -74,8 +87,10 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..") || lhs.getModDate() == null) return -1;
-                if (rhs.getName().equals("..") || rhs.getModDate() == null) return 1;
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
+                if (lhs.getModDate() == null) return -1;
+                if (rhs.getModDate() == null) return 1;
                 return lhs.getModDate().compareTo(rhs.getModDate());
             }
         });
@@ -84,8 +99,8 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
                 if (lhs.getModDate()==null) return 1;
                 if (rhs.getModDate()==null) return -1;
                 return rhs.getModDate().compareTo(lhs.getModDate());
@@ -96,8 +111,8 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
                 if (lhs.getReadDate()==null) return 1;
                 if (rhs.getReadDate()==null) return -1;
                 return lhs.getReadDate().compareTo(rhs.getReadDate());
@@ -108,8 +123,8 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
                 if (lhs.getReadDate()==null) return 1;
                 if (rhs.getReadDate()==null) return -1;
                 return rhs.getReadDate().compareTo(lhs.getReadDate());
@@ -120,13 +135,13 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
-                long r = lhs.getFileSize() - rhs.getFileSize();
-                if (r==0){
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
+                long rsz = lhs.getFileSize() - rhs.getFileSize();
+                if (rsz==0){
                     return 0;
                 }
-                return r>0 ? 1 : -1;
+                return rsz>0 ? 1 : -1;
             }
         });
     }
@@ -134,13 +149,13 @@ public class FileListAdapter extends ArrayAdapter<FileInfo> {
         Collections.sort(m_listFileInfo, new Comparator<FileInfo>() {
             @Override
             public int compare(FileInfo lhs, FileInfo rhs) {
-                if (lhs.getName().equals("..")) return -1;
-                if (rhs.getName().equals("..")) return 1;
-                long r = rhs.getFileSize() - lhs.getFileSize();
-                if (r==0){
+                int r = compareDir(lhs, rhs);
+                if (r != 0) return r;
+                long rsz = rhs.getFileSize() - lhs.getFileSize();
+                if (rsz==0){
                     return 0;
                 }
-                return r>0 ? 1 : -1;
+                return rsz>0 ? 1 : -1;
             }
         });
     }

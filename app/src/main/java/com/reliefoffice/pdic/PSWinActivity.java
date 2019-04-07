@@ -548,6 +548,13 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
 
     @Override
     protected void onStop(){
+        if (mediaPlayer != null && Utility.isNotEmpty(openedFilename)){
+            SharedPreferences.Editor edit = pref.edit();
+            edit.putString(pfs.LAST_AUDIOFILE, openedFilename);
+            edit.putInt(pfs.LAST_AUDIO_MARK_A, markPositionA);
+            edit.putInt(pfs.LAST_AUDIO_MARK_B, markPositionB);
+            edit.commit();
+        }
         super.onStop();
     }
 
@@ -920,6 +927,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             audioOk = openAudioPlayer(audioFileName);
         }
         showAudio(audioOk);
+
+        reloadMarkPosition();
     }
 
     // file load エラー後処理
@@ -1379,31 +1388,74 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         switch (markState){
             case None:
             default:
-                markState = MarkState.MarkA;
-                markPositionA = mediaPlayer.getCurrentPosition();
-                btnMark.setText("B");
+                setAudioMark(MarkState.MarkA, mediaPlayer.getCurrentPosition(), -1);
                 break;
             case MarkA:
-                int current = mediaPlayer.getCurrentPosition();
-                int markA, markB;
-                if (current > markPositionA){
-                    markA = markPositionA;
-                    markB = current;
-                } else {
-                    markA = current;
-                    markB = markPositionA;
-                }
-                if (markB - markA < minMarkABDuration){
-                    break;  // ignored
-                }
-                markPositionA = markA;
-                markPositionB = markB;
-                markState = MarkState.MarkAB;
-                btnMark.setText("AB");
+                setAudioMark(MarkState.MarkAB, markPositionA, mediaPlayer.getCurrentPosition());
                 break;
             case MarkAB:
                 clearAudioMark();
                 break;
+        }
+    }
+    boolean setAudioMark(MarkState newMarkState, int newMarkA, int newMarkB){
+        if (mediaPlayer == null) return false;
+        if (markState == newMarkState) return false;
+        switch (newMarkState){
+            case MarkA:
+                markPositionA = newMarkA;
+                btnMark.setText("B");
+                break;
+            case MarkAB:
+                markPositionA = newMarkA;
+                int markA, markB;
+                if (newMarkB  > markPositionA){
+                    markA = markPositionA;
+                    markB = newMarkB;
+                } else {
+                    markA = newMarkB;
+                    markB = markPositionA;
+                }
+                if (markB - markA < minMarkABDuration){
+                    btnMark.setText("B");
+                    return false;  // ignored
+                }
+                markPositionA = markA;
+                markPositionB = markB;
+                btnMark.setText("AB");
+                break;
+            default:
+                clearAudioMark();
+                return true;
+        }
+        markState = newMarkState;
+        return true;
+    }
+    void reloadMarkPosition(){
+        String lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE, SettingsActivity.getDefaultAudioFolder());
+        if (Utility.isNotEmpty(lastAudioFile)){
+            if (Utility.isNotEmpty(openedFilename)){
+                if (lastAudioFile.equals(openedFilename)) {
+                    int markA = pref.getInt(pfs.LAST_AUDIO_MARK_A, -1);
+                    int markB = pref.getInt(pfs.LAST_AUDIO_MARK_B, -1);
+                    MarkState markState;
+                    if (markA >= 0) {
+                        if (markB >= 0) {
+                            markState = MarkState.MarkAB;
+                        } else {
+                            markState = MarkState.MarkA;
+                        }
+                        if (setAudioMark(markState, markA, markB)){
+                            mediaPlayer.seekTo(markPositionA);
+                        }
+                    }
+                }
+
+                // Mark positionを無効化
+                SharedPreferences.Editor edit = pref.edit();
+                edit.remove(pfs.LAST_AUDIOFILE);
+                edit.commit();
+            }
         }
     }
 

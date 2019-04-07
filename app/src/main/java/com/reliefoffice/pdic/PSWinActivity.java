@@ -70,6 +70,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     String remoteFilename;
     String psbmFilename;    // filename for PSBookmark
 
+    boolean drillIntoMode = false;
+
     //int remoteRevision;
 
     // swipe for editText
@@ -264,6 +266,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             @Override
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 //Log.d("PDD", "onCreateActionMode");
+                if (drillIntoMode)
+                    return true;
                 if (Utility.isEmpty(openedFilename)){
                     AlertDialog.Builder builder = new AlertDialog.Builder(This);
                     builder.setMessage(getString(R.string.msg_need_save_for_psbm))
@@ -348,6 +352,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             String text = i.getStringExtra("text");
             editText.setText(text);
             setTitle(orgTitle + " - " + word);
+            drillIntoMode = true;
         } else
         if (loadClipboardData()) {
             Toast.makeText(this, getString(R.string.msg_clipboard_loaded), Toast.LENGTH_SHORT).show();

@@ -524,7 +524,6 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
 
     @Override
     protected void onPause() {
-        super.onPause();
         //Note: IdleConnectionHandlerが一分おきにonPauseさせる
         if (Utility.isNotEmpty(openedFilename)) {
             INetDriveFileInfo info = ndvFM.findByLocalName(openedFilename);
@@ -543,6 +542,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
         }
 
         dicMan.closeDictionary();
+
+        super.onPause();
     }
 
     @Override
@@ -553,7 +554,6 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     @Override
     protected void onDestroy() {
         closePSBookmarkEditWindow();
-        super.onDestroy();
         closeAudioPlayer();
         if (PSBookmarkReady) {
             PSBookmarkReady = false;
@@ -574,6 +574,7 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             pdicJni.deleteInstance();
             pdicJni = null;
         }
+        super.onDestroy();
     }
 
     private String getWordText(int start, int end) {

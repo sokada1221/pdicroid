@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">PDIC for Android</string>
     <string name="local_string">en_US</string>
-    <string name="action_incsrch">Incremental Search</string>
+    <string name="action_incsrch">Dictionary Search</string>
     <string name="action_pswin">Touch Search</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_pswin">Touch Search</string>

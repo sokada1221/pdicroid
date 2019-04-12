@@ -529,7 +529,6 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
             INetDriveFileInfo info = ndvFM.findByLocalName(openedFilename);
             if (info != null) {
                 //remoteRevision = info.remoteRevision;
-                Log.d("PDD", "onPause");
                 if (lastPosition!=editText.getSelectionStart()) {
                     lastPosition = editText.getSelectionStart();
                     pdicJni.savePSFileInfo(psbmFilename, lastPosition, remoteFilename, info.remoteRevision);

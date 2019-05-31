@@ -1292,7 +1292,7 @@ int TLangProcStd::SearchLongestWord( class MultiPdic *dic, const tchar *words, c
 #endif
 }
 
-int TLangProcStd::SearchLongestWordExt(class MultiPdic *dic, const tchar *words, const tchar *prevwords, class MatchArray *hitwords, int &thread_key, FNLPSLWExtCallback callback, int user)
+int TLangProcStd::SearchLongestWordExt(class MultiPdic *dic, const tchar *words, const tchar *prevwords, class MatchArray *hitwords, int &thread_key, FNLPSLWExtCallback callback, uint_ptr user)
 {
 #if USE_WEBSRCH
 	return searchLongestWordExt.SearchLongestWordExt(dic, words, prevwords, hitwords, thread_key, callback, user);

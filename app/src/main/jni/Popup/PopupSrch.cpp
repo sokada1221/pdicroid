@@ -635,7 +635,7 @@ void TPopupSearch::Open( TPopupSearch *parent, const tchar *word, bool tmp_fixed
 				if (SLWRunning)
 					SLWStop();
 				//__assert(!SLWRunning);
-				if (dic->SearchLongestWordExt(word, NULL, HitWords, ThreadKey, SLWExtCallback, (int)this)){
+				if (dic->SearchLongestWordExt(word, NULL, HitWords, ThreadKey, SLWExtCallback, (uint_ptr)this)){
 					// search started.
 					SLWRunning = true;
 				}
@@ -775,7 +775,7 @@ void TPopupSearch::OpenAsMenu( const tchar *word )
 		if (SLWRunning)
 			SLWStop();
 		//__assert(!SLWRunning);
-		if (dic->SearchLongestWordExt(word, NULL, HitWords, ThreadKey, SLWExtCallback, (int)this)){
+		if (dic->SearchLongestWordExt(word, NULL, HitWords, ThreadKey, SLWExtCallback, (uint_ptr)this)){
 			// search started.
 			SLWRunning = true;
 		}
@@ -1338,7 +1338,7 @@ void TPopupSearch::SLWStop()
 	}
 }
 
-int TPopupSearch::SLWExtCallback(class TWebSearchThread *, int type, int param, int user)
+int TPopupSearch::SLWExtCallback(class TWebSearchThread *, int type, int param, uint_ptr user)
 {
 	return ((TPopupSearch*)user)->SLWExtCallback(type, param);
 }

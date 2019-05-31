@@ -382,19 +382,19 @@ int AllSearchParam::all_mmbsnicmp( const _mtchar *str )
 }
 int AllSearchParam::all_stristr( const _mtchar *str )
 {
-	return (int)fstristr( str, _mtcslen(str), *fs );
+	return (int)(uint_ptr)fstristr( str, _mtcslen(str), *fs );
 }
 int AllSearchParam::all_strstr( const _mtchar *str )
 {
-	return (int)fstrstr( str, _mtcslen(str), *fs );
+	return (int)(uint_ptr)fstrstr( str, _mtcslen(str), *fs );
 }
 int AllSearchParam::all_strnistr( const _mtchar *str, int len )
 {
-	return (int)fstristr( str, len, *fs );
+	return (int)(uint_ptr)fstristr( str, len, *fs );
 }
 int AllSearchParam::all_strnstr( const _mtchar *str, int len )
 {
-	return (int)fstrstr( str, len, *fs );
+	return (int)(uint_ptr)fstrstr( str, len, *fs );
 }
 
 #if defined(MIXMJ)
@@ -1075,7 +1075,7 @@ jmp0_2:
 		{
 			all_cp = NextField( all_cp );
 			if ( all_cp->fieldlen == 0 ){
-				all.loc = FP_DIFF( (int)all_cp, (int)databuf.getDataBuf() );
+				all.loc = FP_DIFF( (uint_ptr)all_cp, (uint_ptr)databuf.getDataBuf() );
 				return AS_CONTINUE;
 			}
 jmp0:

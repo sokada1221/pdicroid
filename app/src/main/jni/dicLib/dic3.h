@@ -257,7 +257,7 @@ public:
 
 	// LangProc depend search //
 	int SearchLongestWord( const tchar *words, const tchar *prevwords, int curpos, int option, class MatchArray *HitWords );
-	int SearchLongestWordExt(const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, int user);
+	int SearchLongestWordExt(const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, uint_ptr user);
 	int SearchLongestWordCmd(int cmd, int thread_key);
 
 	//î•ñæ“¾

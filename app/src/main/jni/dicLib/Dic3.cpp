@@ -1377,7 +1377,7 @@ int MultiPdic::SearchLongestWord( const tchar *words, const tchar *prevwords, in
 	return LangProc->SearchLongestWord(this, words, prevwords, curpos, option, HitWords);
 }
 
-int MultiPdic::SearchLongestWordExt(const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, int user)
+int MultiPdic::SearchLongestWordExt(const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, uint_ptr user)
 {
 	return LangProc->SearchLongestWordExt(this, words, prevwords, HitWords, thread_key, callback, user);
 }

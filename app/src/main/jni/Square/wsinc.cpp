@@ -734,7 +734,7 @@ int Squre::SearchOnWindow( )
 //
 // External Search
 //
-int Squre::cbExtSearch(TWebSearchThread *th, int type, int param, int user)
+int Squre::cbExtSearch(TWebSearchThread *th, int type, int param, uint_ptr user)
 {
 	return ((Squre*)user)->ExtSrchCallback(type, param);
 }
@@ -759,7 +759,7 @@ void Squre::StartExtSearch()
 		CancelExtSearch();
 	}
 	if (IsDicOpenedStable()){
-		Dic.SearchLongestWordExt(SearchString, NULL, NULL, ExtSrchThreadKey, cbExtSearch, (int)this);
+		Dic.SearchLongestWordExt(SearchString, NULL, NULL, ExtSrchThreadKey, cbExtSearch, (uint_ptr)this);
 	}
 #if USE_GS
 	// Google Suggest

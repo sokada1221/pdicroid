@@ -81,10 +81,10 @@ public:
 	{
 		return Finished;
 	}
-	int WaitFor()
+	void *WaitFor()
 	{
 		pthread_join(thread, &ReturnValue);
-		return (int)ReturnValue;
+		return ReturnValue;
 	}
 #if 0
 	static int SyncMethod(WPARAM _param, LPARAM _this)

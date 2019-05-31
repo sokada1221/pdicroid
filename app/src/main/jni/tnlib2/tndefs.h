@@ -1,6 +1,10 @@
 #ifndef	__TNDEFS_H
 #define	__TNDEFS_H
 
+#if defined(_WIN64) || defined(__arm64__) || defined(__x86_64__) || defined(__aarch64__)
+#define	__64
+#endif
+
 #ifdef __ANDROID__
 #define	UNIX
 #ifdef __BORLANDC__
@@ -21,7 +25,11 @@ typedef unsigned int uint;
 typedef unsigned long ulong;
 typedef unsigned char boolean;
 
+#ifdef __64
+typedef uint64_t uint_ptr;
+#else
 typedef unsigned uint_ptr;
+#endif
 
 typedef unsigned short uint16_t;
 typedef unsigned int uint32_t;

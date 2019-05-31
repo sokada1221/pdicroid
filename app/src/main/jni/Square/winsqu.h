@@ -1055,7 +1055,7 @@ public:
 	// External Search //
 protected:
 	int ExtSrchThreadKey;
-	static int cbExtSearch(class TWebSearchThread *th, int type, int param, int user);
+	static int cbExtSearch(class TWebSearchThread *th, int type, int param, uint_ptr user);
 	int ExtSrchCallback(int type, int param);
 public:
 	void StartExtSearch();

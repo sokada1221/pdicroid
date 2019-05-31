@@ -128,7 +128,7 @@ struct COMPARE_STRUCT {
 };
 
 // Search Longest Word external //
-typedef int (*FNLPSLWExtCallback)(class TWebSearchThread *, int type, int param, int user);
+typedef int (*FNLPSLWExtCallback)(class TWebSearchThread *, int type, int param, uint_ptr user);
 
 enum {
 	LPSLW_NONE = 0,

@@ -204,7 +204,7 @@ protected:
 	bool SLWRunning;
 	int ThreadKey;
 	void SLWStop();
-	static int SLWExtCallback(class TWebSearchThread *th, int type, int param, int user);
+	static int SLWExtCallback(class TWebSearchThread *th, int type, int param, uint_ptr user);
 	int SLWExtCallback(int type, int param);
 	void _UpdateHitWords(int hitword_index /*, bool sync*/);
 	void UpdateNotify(/*bool sync*/);

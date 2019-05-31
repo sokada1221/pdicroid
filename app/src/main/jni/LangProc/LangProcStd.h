@@ -36,7 +36,7 @@ protected:
 public:
 	// Poup Search related
 	__override int SearchLongestWord( class MultiPdic *dic, const tchar *words, const tchar *prevwords, int curpos, int option, class MatchArray *HitWords );
-	__override int SearchLongestWordExt(class MultiPdic *dic, const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, int user);
+	__override int SearchLongestWordExt(class MultiPdic *dic, const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, uint_ptr user);
 	__override int SearchLongestWordExtCmd(int cmd, int thread_key);
 
 	// Morphologic Analysis //

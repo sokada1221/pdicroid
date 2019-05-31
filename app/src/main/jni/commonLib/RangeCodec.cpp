@@ -1,6 +1,4 @@
-#ifdef _Windows
-#include <windows.h>
-#endif
+#include "tndefs.h"
 #pragma hdrstop
 #include <string.h>
 
@@ -356,7 +354,7 @@ int rcDecode( const byte *sp, byte *dp )
 			low <<= 8;
 		}
 	}
-	return (int)rdp-(int)dp;
+	return (uint_ptr)rdp-(uint_ptr)dp;
 }
 inline
 unsigned getbit(TGammaParamD &gp)

@@ -115,7 +115,7 @@ public:
 	//virtual int FindLoop(COMPARE_STRUCT &cs) = 0;
 	virtual const tchar *GetConjugateWords() = 0;
 	virtual int SearchLongestWord( class MultiPdic *dic, const tchar *words, const tchar *prevwords, int curpos, int option, class MatchArray *HitWords ) = 0;
-	virtual int SearchLongestWordExt(class MultiPdic *dic, const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, int user)
+	virtual int SearchLongestWordExt(class MultiPdic *dic, const tchar *words, const tchar *prevwords, class MatchArray *HitWords, int &thread_key, FNLPSLWExtCallback callback, uint_ptr user)
 		{ return 0; }
 	virtual int SearchLongestWordExtCmd(int cmd, int thread_key){ return 0; }
 	

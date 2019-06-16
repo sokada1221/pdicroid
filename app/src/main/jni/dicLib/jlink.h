@@ -51,7 +51,7 @@ struct JLinkFormat {
 	byte data[1];	// データ本体
 };
 
-typedef unsigned long t_id;
+typedef unsigned int t_id;
 
 #ifdef _Windows
 // ファイルリンクオブジェクトの辞書上のイメージ
@@ -83,7 +83,7 @@ struct FileImageField {
 struct ImageField {
 	short	size;		// = sizeof(ImageField)
 	short	imgtype;	// 
-	long	headersize;	// header for image data
+	int		headersize;	// header for image data
 	short	nMag;
 	short	nAspect;
 //	byte header[ 1 ];	// ヘッダー(可変長)
@@ -269,7 +269,7 @@ protected:
 public:
 	virtual void SetID( t_id _id ) { id = _id; }
 	void SetDic( Pdic *_dic ) { dic = _dic; }
-	virtual long GetLength( ) = 0;
+	virtual int GetLength( ) = 0;
 	virtual int GetHeaderLength( )			// 非圧縮長(タイトルの次から)
 		{ return 0; }
 	virtual BOOL Get( byte *buf ) = 0;
@@ -329,7 +329,7 @@ public:
 };
 
 // 未確認オブジェクト Undefined Format Object!
-typedef unsigned long t_extra;
+typedef unsigned int t_extra;
 class JLUFO : public JLink {
 protected:
 	JLinkObject *jlobj;	// データバッファ
@@ -340,7 +340,7 @@ public:
 private:
 	~JLUFO( );
 public:
-	virtual long GetLength( );
+	virtual int GetLength( );
 	virtual JLink *Clone( Pdic * );
 	virtual BOOL Get( byte *buf );
 	byte *GetData()
@@ -391,11 +391,11 @@ public:
 	JLVoice( Pdic *dic, t_id _id, PCMWAVEFORMAT *_pcm, byte *_wavedata, DWORD _length );	// メモリから
 	JLVoice( Pdic *dic, t_id _id, PCMLINK *_link, tchar *filename );
 
-	JLVoice( Pdic *dic, t_id _id, class WaveIO *wio, long length = -1 );	// WAVﾌｧｲﾙから(wioはオープン済みであること)
+	JLVoice( Pdic *dic, t_id _id, class WaveIO *wio, int length = -1 );	// WAVﾌｧｲﾙから(wioはオープン済みであること)
 		// このcontructorはPCMWAVEのみ
 
 	~JLVoice( );
-	virtual long GetLength( );
+	virtual int GetLength( );
 #ifdef GUI
 	virtual int Draw( TNFONT &tnfont, RECT &rc, BOOL dispf, EnphTextVec * =NULL );
 	virtual bool Edit( TWinControl *, int=0 );
@@ -435,7 +435,7 @@ public:
 	JLRTF( Pdic *dic, JLRTFCont *rtf );
 	~JLRTF( );
 	virtual void SetID( t_id _id );
-	virtual long GetLength( );
+	virtual int GetLength( );
 	virtual BOOL Get( byte *buf );
 	virtual BOOL Set( const byte *buf, int len );
 	virtual BOOL PreSet( const byte *buf );
@@ -477,7 +477,7 @@ public:
 struct EPWingField {
 //	short	size;		// EPWingFieldのサイズ
 	short	bookno;
-	long pos;
+	int pos;
 //	tchar data[ 1 ];	// データ(可変長) データ部の位置は
 					// EPWingField of;
 					// tchar *data = of.GetDataPtr( ); で求めること！
@@ -490,11 +490,11 @@ struct EPWingField {
 class JLEPWing : public JLink {
 protected:
 	short bookno;
-	long pos;
+	int pos;
 public:
-	JLEPWing( Pdic *dic, t_id _id, short bookno, long pos );
+	JLEPWing( Pdic *dic, t_id _id, short bookno, int pos );
 	~JLEPWing( );
-	virtual long GetLength( );
+	virtual int GetLength( );
 	virtual int Draw( TNFONT &tnfont, RECT &rc, BOOL, EnphTextVec * =NULL );
 #ifdef GUI
 	virtual bool Edit( TWinControl *, int=0 ){return false;}
@@ -509,7 +509,7 @@ public:
 	virtual BOOL Set( const byte *buf, int len );
 	virtual const tchar *GetClassName( tnstr &str );
 	virtual BOOL IsLinked( ){return true;}
-	long GetPos()
+	int GetPos()
 		{ return pos; }
 	short GetBookNo()
 		{ return bookno; }
@@ -521,9 +521,9 @@ public:
 #if 0
 class JLUser : public JLink {
 public:
-	JLUser( Pdic *dic, t_id _id, long data );
+	JLUser( Pdic *dic, t_id _id, int data );
 	~JLUser( );
-	virtual long GetLength( );
+	virtual int GetLength( );
 	virtual int Draw( TNFONT &tnfont, RECT &rc, BOOL, EnphTextVec *=NULL );
 	virtual bool Edit( TWinControl *, int=0 );
 	virtual BOOL AddVerbMenu( HMENU hMenu, UINT uPos, UINT idFirst, UINT idConvert );

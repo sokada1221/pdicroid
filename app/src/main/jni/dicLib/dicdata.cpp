@@ -389,7 +389,7 @@ int TDataBuf::length()
 //
 // EmptyList class
 //
-EmptyList::EmptyList( EmptyList *_next, long _offset, long _num )
+EmptyList::EmptyList( EmptyList *_next, long _offset, int _num )
 {
 	next = _next;
 	offset = _offset;
@@ -413,7 +413,7 @@ void EmptyList::Clear()
 	}
 }
 
-void EmptyList::Register( t_pbn2 pbn, long blknum )
+void EmptyList::Register( t_pbn2 pbn, int blknum )
 {
 	if ( blknum == 0 ) return;
 	DBDIC("Register : pbn=0x%X blknum=%d", pbn, blknum);
@@ -500,7 +500,7 @@ int EmptyList::Free( t_pbn2 pbn, int blknum )
 			eldel->num -= blknum;
 		} else {
 			// 途中から途中まで
-			long rblknum = eldel->num - offs - blknum;
+			int rblknum = eldel->num - offs - blknum;
 			eldel->num = offs;
 			Register( pbn + blknum, rblknum );
 		}
@@ -639,7 +639,7 @@ void EmptyList::Concat( )
 // seqnumとblknumを比較してチェックする必要がある
 //
 // startpbnがNULLでない場合、startpbn以降からNewBlockをする for optimize
-t_pbn2 EmptyList::NewBlock( int blknum, long *seqnum, t_pbn2 *startpbn )
+t_pbn2 EmptyList::NewBlock( int blknum, int *seqnum, t_pbn2 *startpbn )
 {
 	if ( !HasBlock() ) return BLK_ERROR;
 	t_pbn2 newpbn;
@@ -682,7 +682,7 @@ t_pbn2 EmptyList::NewBlock( int blknum, long *seqnum, t_pbn2 *startpbn )
 			if ( startpbn && newpbn < *startpbn )
 				return BLK_ERROR;
 			// free処理
-			long _seqnum = min( nextcel->num, (long)blknum );
+			int _seqnum = min( nextcel->num, (int)blknum );
 			if ( seqnum ){
 				*seqnum = _seqnum;
 			}
@@ -706,7 +706,7 @@ t_pbn2 EmptyList::NewBlock( int blknum, long *seqnum, t_pbn2 *startpbn )
 }
 
 // pbnから物理的に連続しているブロック数を得る
-long EmptyList::GetSeq( t_pbn2 pbn )
+int EmptyList::GetSeq( t_pbn2 pbn )
 {
 	Sort();
 
@@ -717,7 +717,7 @@ long EmptyList::GetSeq( t_pbn2 pbn )
 }
 
 // 現在のリストの個数と全空きブロック数を計算
-void EmptyList::GetInfo( int &numlist, long &numblock )
+void EmptyList::GetInfo( int &numlist, int &numblock )
 {
 	Sort();
 

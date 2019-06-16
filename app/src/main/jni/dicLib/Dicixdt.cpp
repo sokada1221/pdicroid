@@ -2101,7 +2101,7 @@ void IndexData::ShrinkIndex( )
 		fw.pbn += 8;
 	}
 	// 最終ブロックが空きブロックである場合はファイルサイズを縮小する
-	long seqblknum;
+	int seqblknum;
 	t_pbn2 pbn = data->emptylist->NewBlock( 0x7fff, &seqblknum );
 	if ( pbn != BLK_ERROR ){
 		if ( pbn + seqblknum == data->GetNBlock() ){

@@ -251,9 +251,9 @@ public:
 protected:
 	unsigned offset;			//データブロックの先頭
 	unsigned blocksize;			//データブロックサイズ（固定長）
-	long nword;					//登録単語数
-	long emptyblock;			//空きブロックの先頭(最新の先頭空きブロック番号はemptylist変数に入っている)
-	long nblock;				//空きブロックを含めた使用ブロック数
+	int nword;					//登録単語数
+	int emptyblock;			//空きブロックの先頭(最新の先頭空きブロック番号はemptylist変数に入っている)
+	int nblock;				//空きブロックを含めた使用ブロック数
 	FileBuf &file;
 
 	bool canGrow;				// ブロックサイズを大きくすることができる？
@@ -283,8 +283,8 @@ public:
 #endif
 	int ClearBlock( t_pbn2 pbn, t_blknum blknum );
 
-	long get_data_loc(t_pbn2 pbn)				//派生クラスはこのメソッドを使ってファイルアクセスはしないように
-		{ return (long)pbn * blocksize + offset; }
+	int get_data_loc(t_pbn2 pbn)				//派生クラスはこのメソッドを使ってファイルアクセスはしないように
+		{ return (int)pbn * blocksize + offset; }
 	int seek(t_pbn2 n, int off=0)		//TODO: to be deleted
 		{ return file_seek(n, off); }
 	int file_seek(t_pbn2 pbn, int off=0)
@@ -378,10 +378,10 @@ public:
 		{ return databuf.getFastMode(); }
 #endif
 #endif
-	long GetNumWord( )		{return nword;}
-	void SetNumWord( long n )
+	int GetNumWord( )		{return nword;}
+	void SetNumWord( int n )
 		{ nword = n; }
-	long GetNBlock( )		{return nblock;}
+	int GetNBlock( )		{return nblock;}
 	void SetNBlock( t_pbn2 n ) { nblock = n; }
 	long GetDataSize()
 		{ return nblock * blocksize; }

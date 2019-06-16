@@ -37,9 +37,9 @@ protected:
 	bool canmerge;				//マージできる辞書は1
 	MergeMode mergemode;
 public:
-	long app;			//新規登録数
-	long mod;			//修正
-	long def;			//欠落単語数
+	int app;			//新規登録数
+	int mod;			//修正
+	int def;			//欠落単語数
 
 	int Frequency;		//出現頻度
 
@@ -125,9 +125,9 @@ public:
 	//書き込み
 	virtual int record(const tchar *word, Japa &japa )	{return 0;}	//（準）必須
 
-	long getApp(void)	{return app;}
-	long getMod(void)	{return mod;}
-	long getDef(void)	{return def;}		//欠落単語数
+	int getApp(void)	{return app;}
+	int getMod(void)	{return mod;}
+	int getDef(void)	{return def;}		//欠落単語数
 
 	// Char code conversion table.
 protected:
@@ -172,8 +172,8 @@ public:
 ///	Ｏｐｔｉｍｉｚｅ：最適化に関するメソッド	///
 ///////////////////////////////////////////////////
 private:
-	long wordnum;			//単語数
-	long usebyte;			//使用バイト数
+	int wordnum;			//単語数
+	int usebyte;			//使用バイト数
 protected:
 	void initCountWord( )	{wordnum=0L;usebyte=0L;}
 		//countWordの初期化専用

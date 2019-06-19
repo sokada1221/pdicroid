@@ -11,6 +11,11 @@ build:
 	copy app\build\intermediates\ndk\debug\lib\x86\*.so app\src\main\jniLibs\x86\\
 	copy app\build\intermediates\ndk\debug\lib\x86_64\*.so app\src\main\jniLibs\x86_64\\
 
+# for xperia
+buildx:
+	ndk-build.cmd NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=.\app\build\intermediates\ndk\debug\Android.mk APP_PLATFORM=android-21 NDK_OUT=.\app\build\intermediates\ndk\debug\obj NDK_LIBS_OUT=.\app\build\intermediates\ndk\debug\lib APP_STL=gnustl_shared APP_ABI=arm64-v8a
+	copy app\build\intermediates\ndk\debug\lib\arm64-v8a\*.so app\src\main\jniLibs\arm64-v8a\\
+
 build8664:
 	ndk-build.cmd NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=.\app\build\intermediates\ndk\debug\Android.mk APP_PLATFORM=android-21 NDK_OUT=.\app\build\intermediates\ndk\debug\obj NDK_LIBS_OUT=.\app\build\intermediates\ndk\debug\lib APP_STL=gnustl_shared APP_ABI=x86_64
 	copy app\build\intermediates\ndk\debug\lib\x86_64\*.so app\src\main\jniLibs\x86_64\\

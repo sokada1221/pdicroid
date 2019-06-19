@@ -196,7 +196,7 @@ BOOL JLinkObject::Get( byte *buf )
 {
 	if ( data == buf ) return TRUE;
 	if ( data ){
-		memcpy( buf, data, (long)len );
+		memcpy( buf, data, len );
 		return TRUE;
 	}
 	return FALSE;
@@ -726,7 +726,7 @@ JLink *JLUFO::Clone( Pdic *_dic )
 	return o;
 }
 
-long JLUFO::GetLength( )
+int JLUFO::GetLength( )
 {
 	if ( jlobj ){
 		return sizeof( t_id ) + sizeof(t_extra) + jlobj->GetLength( );

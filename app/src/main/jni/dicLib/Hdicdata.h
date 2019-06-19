@@ -50,7 +50,7 @@ public:
 
 	// Field1êÍópä÷êî
 	int addWord( const _kchar * word, uint wordlen, const byte *japa, uint japalen, FINDWORD &fw, DivInfo *divinfo );
-	int addWord2( const _kchar * word, uint wordlen, const byte *japa, ulong japalen, t_pbn2 pbn );
+	int addWord2( const _kchar * word, uint wordlen, const byte *japa, uint japalen, t_pbn2 pbn );
 	int updateWord( const byte *japa, uint japalen, FINDWORD &fw, DivInfo *divinfo );
 	int updateWord( const _kchar *, const byte *, uint , FINDWORD &, DivList *, int &, int  ){ return -1; }
 	int eraseWord( t_pbn2 pbn, int loc );

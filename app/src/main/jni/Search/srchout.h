@@ -35,7 +35,7 @@ public:
 class SrchOut : public SrchOutBase {
 public:
 //	BOOL over;					// 上書き出力？(クリップボードでは新規、追加の指定)
-	long maxnum;				// 最大出力単語数
+	int maxnum;				// 最大出力単語数
 
 	SrchOut( class Squre *_squ );	//TODO: to be deleted
 //	SrchOut( class TSquareFrame *_squ );

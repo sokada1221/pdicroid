@@ -178,11 +178,11 @@ bool Japa::IsEmptyEx( ) const
 }
 
 #ifdef USE_JLINK
-ulong Japa::GetJLinksLength( int fixedlen ) const
+uint Japa::GetJLinksLength( int fixedlen ) const
 {
-	ulong l = 0;
+	uint l = 0;
 	for ( int i=0;i<jlinks.get_num();i++ ){
-		ulong r = jlinks[i].GetLength( );
+		uint r = jlinks[i].GetLength( );
         if ( r ) l += r + fixedlen;
         else {
         	if ( jlinks[i].GetType() == JL_EPWING ){
@@ -245,13 +245,13 @@ int Japa::GetAllLen( ) const
 //		デコードデータとdecodelenは一致する
 // 必ず、デコードバッファは呼出側でdeleteすること！！
 // エラー発生は、メモリ不足か、解凍失敗
-byte *Japa::Decode( const byte *src, ulong jtblen, ulong &decodelen )
+byte *Japa::Decode( const byte *src, uint jtblen, uint &decodelen )
 {
 	uint nocomplen = *((t_noc*)src);	// 非圧縮部の長さ
 	const byte *header = src + sizeof(t_noc) + nocomplen;	// 圧縮部の先頭（ヘッダー部を含む）
-	ulong complen = jtblen - sizeof(t_noc) - nocomplen;	// 圧縮部の長さ（ヘッダーを含む）
+	uint complen = jtblen - sizeof(t_noc) - nocomplen;	// 圧縮部の長さ（ヘッダーを含む）
 
-	ulong orglen = cmpGetOrgSize( header );
+	uint orglen = cmpGetOrgSize( header );
 	if (orglen>complen*100){
 		DBW("orglen=%d complen=%d", orglen, complen);
 		return NULL;	// corrupted?
@@ -261,7 +261,7 @@ byte *Japa::Decode( const byte *src, ulong jtblen, ulong &decodelen )
 		return NULL;
 
 	memcpy( decode, src + sizeof(t_noc), nocomplen );	// 非圧縮部のコピー
-	long destlen;
+	int destlen;
 	if ( !cmpDecode( header, complen, decode + nocomplen, destlen ) ){
 		delete[] decode;
 		return NULL;
@@ -333,7 +333,7 @@ byte *Japa::Decode( const byte *src, ulong jtblen, ulong &decodelen )
 		const byte *__src = _src; \
 		tchar *out = GetBocuOutBuffer(maxlength); \
 		if (out){ \
-			bocu1DecodeT( &__src, (const byte*)0xFFFFFFFFu, maxlength, out ); \
+			bocu1DecodeT( &__src, (const byte*)UINT_PTR_MAX, maxlength, out ); \
 			src = (const byte*)__ALIGN_MCHAR(__src); \
 			strcls.set( out ); \
 		} \
@@ -352,7 +352,7 @@ byte *Japa::Decode( const byte *src, ulong jtblen, ulong &decodelen )
 		const byte *__src = _src; \
 		tchar *out = GetBocuOutBuffer(maxlength); \
 		if (out){ \
-			bocu1DecodeT( &__src, (const byte*)0xFFFFFFFFu, maxlength, out ); \
+			bocu1DecodeT( &__src, (const byte*)UINT_PTR_MAX, maxlength, out ); \
 			strcls.set( out ); \
 		} \
 		ReleaseBocuOutBuffer(); \
@@ -392,8 +392,8 @@ void Japa::SetAll( const byte *src, int l, IndexData *dic, bool field2, wa_t _at
 #if defined(USE_COMP)
 			byte *decode = NULL;
 #endif
-			ulong jtb;
-			ulong _srclen;
+			uint jtb;
+			uint _srclen;
 #if !defined(NOFIELD2)
 			if ( jtbsize == sizeof(t_jtb2) ){
 //				jtb = *(*(t_jtb2**)&src)++;
@@ -667,7 +667,7 @@ jmp1:
 				return NULL;	// メモリ不足
 			goto notcomp;
 		}
-		long destlen;
+		int destlen;
 #ifdef GUI
 		cmpSetWindow( NULL );
 #endif
@@ -781,7 +781,7 @@ notcomp:
 #endif	// USE_BOCU1
 
 // 返り値をチェックすること！
-// (ulong)-1 のときはメモリ不足またはlimitlenをオーバ
+// (uint)-1 のときはメモリ不足またはlimitlenをオーバ
 // totallenに0を与えるとこの関数内で計算(GetAllLen()の値を渡す)
 // NEWDIC3では、japatotallen+LWORD+L_FieldHeaer+sizeof(tfield)+1が
 // 圧縮してもMAX_FIELD1SIZEを超えると自動的にField2で処理
@@ -790,11 +790,11 @@ notcomp:
 // Note:
 // buf[return]にattrがセットされる(NEWDIC4)
 // NEWDIC4の場合、Get()の後ろに、attr = buf[return];を追加すること
-ulong Japa::_Get2( byte *buf, int
+uint Japa::_Get2( byte *buf, int
 #if defined(USE_COMP) || !defined(NOFIELD2)
 	compflag
 #endif
-	, ulong limitlen, ulong totallen, IndexData *dic ) const
+	, uint limitlen, uint totallen, IndexData *dic ) const
 {
 	byte *p = (byte*)buf;
 	byte *orgp;
@@ -815,7 +815,7 @@ ulong Japa::_Get2( byte *buf, int
 		*p++ = attr & ~WA_EX;
 #endif
 		if ( FP_DIFF( p, buf ) + ljapa > limitlen )
-			return (ulong)-1;
+			return (uint)-1;
 		__GetText( dic, recjapa, ljapa, p );
 #if !defined(NOFIELD2)
 		compflag &= ~CP_USEFIELD2;
@@ -864,13 +864,13 @@ ulong Japa::_Get2( byte *buf, int
 #endif
 #if defined(USE_COMP) && !defined(USE_BOCU1)
 			if ( (p=(byte*)TextComp( (char*)p, (char*)buf, exp, compflag, limitlen )) == NULL ){
-				return (ulong)-1;
+				return (uint)-1;
 			}
 #else
 			orgp = p;
 			__GetText1( dic, exp, p );
 			if ((int)(p-orgp)>LEXP){
-				return (ulong)-1;
+				return (uint)-1;
 			}
 #if 0
 			_mcscpy( (_mchar*)p, (_mchar*)exp );
@@ -897,18 +897,18 @@ ulong Japa::_Get2( byte *buf, int
 #endif
 #if defined(USE_COMP) && !defined(USE_BOCU1)
 			if ( (p=(byte*)TextComp( (char*)p, (char*)buf, pron, compflag, limitlen )) == NULL ){
-				return (ulong)-1;
+				return (uint)-1;
 			}
 #else
 			orgp = p;
 			__GetText1( dic, pron, p );
 			if ((int)(p-orgp)>LPRON){
-				return (ulong)-1;
+				return (uint)-1;
 			}
 #endif
 		}
 		if ( FP_DIFF( p, buf ) + 1 > limitlen ){
-			return (ulong)-1;
+			return (uint)-1;
 		}
 #ifdef USE_JLINK
 		for ( int i=0;i<jlinks.get_num();i++ ){
@@ -932,14 +932,14 @@ ulong Japa::_Get2( byte *buf, int
 			// + JT_LINK + t_jtb* + ID + type + l + JT_END
 			if ( FP_DIFF( p, buf ) + L_ExtAttr + jtbsize + 1 + l + L_ExtAttr > limitlen ){
 #ifndef USE_COMP
-				return (ulong)-1;
+				return (uint)-1;
 #else
 				fOver = true;
 				if ( compflag & CP_COMP ){
 					goto comp;
 				} else {
 					// limitlenオーバー
-					return (ulong)-1;
+					return (uint)-1;
 				}
 #endif
 			}
@@ -950,7 +950,7 @@ comp:
 				byte *srcbuf = new byte[ l ];	// l には nocomplenが含まれている
 				if ( !srcbuf ){
 					if ( fOver ){
-						return (ulong)-1;	// メモリ不足
+						return (uint)-1;	// メモリ不足
 					}
 					goto notcomp;
 				}
@@ -958,7 +958,7 @@ comp:
 				if ( !codbuf ){
 					delete[] srcbuf;
 					if ( fOver ){
-						return (ulong)-1;	// メモリ不足
+						return (uint)-1;	// メモリ不足
 					}
 					goto notcomp;
 				}
@@ -966,7 +966,7 @@ comp:
 					/// エラー処理
 					delete[] srcbuf;
 					delete[] codbuf;
-					return (ulong)-1;		// OLEエラー
+					return (uint)-1;		// OLEエラー
 				}
 #ifdef GUI
 				cmpSetWindow( HWindow );
@@ -986,7 +986,7 @@ comp:
 #else
 				nocomplen = 1 + sizeof(t_id) + _tcsbyte1( jl.GetTitle( ) ) + jl.GetHeaderLength();	// JL_... + ID + title + '\0' + α
 #endif
-				long destlen;
+				int destlen;
 				int r = cmpEncode( srcbuf + ( nocomplen - 1 ), l - ( nocomplen - 1 ), codbuf, destlen );	// -1はリンクタイプ分(srcbufにはJL_が入っていない）
 #ifdef GUI
 				if ( HWindow ){
@@ -1001,7 +1001,7 @@ comp:
 							// 圧縮しても足りない
 							delete[] srcbuf;
 							delete[] codbuf;
-							return (ulong)-1;	// limitlenオーバー
+							return (uint)-1;	// limitlenオーバー
 						}
 					}
 //					int titlelen = nocomplen - sizeof(t_id) - 1;	// -1はリンクタイプ分
@@ -1044,7 +1044,7 @@ comp:
 					delete[] srcbuf;
 					delete[] codbuf;
 					if ( fOver ){
-						return (ulong)-1;	// limitlenオーバー
+						return (uint)-1;	// limitlenオーバー
 					}
 					goto notcomp;
 				}
@@ -1069,7 +1069,7 @@ notcomp:
 			}
 			*p++ = (byte)jlinks[i].GetType( );
 			if ( !jlinks[i].Get( p ) ){
-				return (ulong)-1;		// OLEエラー
+				return (uint)-1;		// OLEエラー
 				// エラー処理
 //				error = jlinks[i].GetErrorCode( );
 //				r = false;
@@ -1083,7 +1083,7 @@ next:;
 		*p++ = 0;	// reserved
 #endif
 	}
-	ulong ret = FP_DIFF( p, buf );
+	uint ret = FP_DIFF( p, buf );
 #ifdef NEWDIC4
 	buf[ret] = _attr;
 #endif
@@ -1670,7 +1670,7 @@ byte *Japa::Get2( uint &length, int compflag, uint limitlen, IndexData *dic ) co
 		}
 		GetBufferSize = bufsize;
 	}
-	if ( (length = _Get2( GetBuffer, compflag, limitlen, len, dic )) == (ulong)-1 ){
+	if ( (length = _Get2( GetBuffer, compflag, limitlen, len, dic )) == (uint)-1 ){
 		return NULL;
 	}
 	return GetBuffer;

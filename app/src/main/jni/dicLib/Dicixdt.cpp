@@ -442,7 +442,7 @@ int AllSearchParam::CompareBocu( const char *sp, int maxlength, const char **nex
 		CompareBuffer = new _jchar[maxlength];
 	}
 	int dstlen;
-	bocu1DecodeT( (const byte**)&sp, (const byte*)0xFFFFFFFFu, maxlength, CompareBuffer, &dstlen, fn );
+	bocu1DecodeT( (const byte**)&sp, (const byte*)UINT_PTR_MAX, maxlength, CompareBuffer, &dstlen, fn );
 	if (fuzzy){
 		tchar *dst = LangProc->NormalizeSearchPattern(CompareBuffer);
 		dstlen = (int)(dst-CompareBuffer);
@@ -482,9 +482,9 @@ bool AllSearchParam::CompareWordReg(const _kchar *word)
 
 // 圧縮textのcompare
 #ifdef USE_COMP
-bool AllSearchParam::CompareCompress(const byte *src, ulong jtblen )
+bool AllSearchParam::CompareCompress(const byte *src, uint jtblen )
 {
-	ulong decodelen;
+	uint decodelen;
 	byte *decode = Japa::Decode( src, jtblen, decodelen );
 	if ( decode ){
 		if ( Compare( (_mtchar*)decode ) ){
@@ -1330,7 +1330,7 @@ jmp2:
 				p++;	// reserved
 #endif
 				const byte *_p;
-				ulong jtblen;
+				uint jtblen;
 				if ( all.GetDataBuf()->isField2() ){
 					jtblen = *((t_jtb2*)p);
 					_p = p + sizeof(t_jtb2);
@@ -1451,7 +1451,7 @@ jmp2:
 
 #if defined(USE_FILELINK)
 #include "JLFileSearch.h"
-bool IndexData::SearchFileLink(AllSearchParam &all, const byte *src, uchar jt, ulong jtblen)
+bool IndexData::SearchFileLink(AllSearchParam &all, const byte *src, uchar jt, uint jtblen)
 {
 	return ::SearchFileLink((class Pdic*)this, all, src, jt, jtblen);
 }
@@ -1752,14 +1752,14 @@ int IndexData::_record( const _mchar * word, uint wordlen, const Japa &japa )
 		// Field2 //
 		japalen &= ~0x80000000;
 
-		if ( index->getRemain() < sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(long)*2 ){
+		if ( index->getRemain() < sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(int)*2 ){
 			// あらかじめ確保しておく
 			if ( CreateNewIndex( NEWINDEX_ALLOC_SIZE )  ){
 				return -1;
 			}
 		}
 
-		ulong newsize = sizeof(t_blknum) + L_FieldHeader2 + _MLENTOBYTE(wordlen+1) + japalen + sizeof(tfield2);
+		uint newsize = sizeof(t_blknum) + L_FieldHeader2 + _MLENTOBYTE(wordlen+1) + japalen + sizeof(tfield2);
 		t_blknum newblknum = data->CalcBlockNum( newsize );
 		int lbn = fw.lbn;
 		if ( lbn!=-1 && fw.lp > sizeof(t_blknum) ){
@@ -1842,7 +1842,7 @@ int IndexData::_record( const _mchar * word, uint wordlen, const Japa &japa )
 
 	} else
 	if ( r == -2 ){
-		if ( index->getRemain() < (sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(long)*2)*2 ){
+		if ( index->getRemain() < (sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(int)*2)*2 ){
 			// あらかじめ確保しておく
 			// DivBlockでaddIndexとrenIndexが両方行われるとoverする可能性があるため、
 			// やや余計にindex領域は２単語分の追加として見積もる
@@ -1896,7 +1896,7 @@ int IndexData::_update( const _mchar * word, uint wordlen, const Japa &japa )
 		HPdicData *hdata = HPDICDATA(data);
 		japalen &= ~0x80000000;
 
-		if ( index->getRemain() < sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(long)*2 ){
+		if ( index->getRemain() < sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(int)*2 ){
 			// あらかじめ確保しておく
 			if ( CreateNewIndex( 2 )  ){
 				return -1;
@@ -1904,7 +1904,7 @@ int IndexData::_update( const _mchar * word, uint wordlen, const Japa &japa )
 		}
 
 		generation++;
-		ulong newsize = sizeof(t_blknum) + L_FieldHeader2 + wordlen + 1 + japalen + sizeof(tfield2);
+		uint newsize = sizeof(t_blknum) + L_FieldHeader2 + wordlen + 1 + japalen + sizeof(tfield2);
 		t_blknum newblknum = (t_blknum)(data->CalcBlockNum( newsize ) | FIELDTYPE);
 		int lbn = fw.lbn;
 		t_pbn2 delpbn;	// 削除する単語のあるpbn
@@ -1990,7 +1990,7 @@ int IndexData::_update( const _mchar * word, uint wordlen, const Japa &japa )
 		return -1;
 	}
 	if  ( r == -2 ){
-		if ( index->getRemain() < sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(long)*2 ){
+		if ( index->getRemain() < sizeof(INDEX) + _MLENTOBYTE(LWORD) + sizeof(int)*2 ){
 			// あらかじめ確保しておく
 			if ( CreateNewIndex( 2 )  ){
 				return -1;
@@ -2271,7 +2271,7 @@ int IndexData::UpdateObjectHeader( const _mchar *word, t_id id, int offset, int 
 		t_exattr jt = *p++;
 		if ( jt == JT_END ) return 0;
 		byte *next = p;
-		ulong jtb;
+		uint jtb;
 		if ( jtbsize == sizeof(t_jtb2) ){
 			jtb = *(*(t_jtb2**)&p)++;
 		} else
@@ -2404,7 +2404,7 @@ int IndexData::GetPercent(AllSearchParam *_all)
 		}
 	}
 	
-	return (int)((long)all.lbn*100/index->GetIndexNum());
+	return (int)((int)all.lbn*100/index->GetIndexNum());
 }
 
 bool IndexData::SetPercentExact(bool strict)
@@ -2469,7 +2469,7 @@ int IndexData::_Rename( const _kchar *oldword, const _kchar *newword, int newwor
 // _pbn  : 最適化後の物理ブロック番号
 int IndexData::EasyOptimize( t_pbn2 *_ipbn, t_pbn2 *_pbn )
 {
-	long nindex = index->GetIndexNum();
+	int nindex = index->GetIndexNum();
 
 	if ( nindex == 0 ){
 		return 0;
@@ -2592,7 +2592,7 @@ int IndexData::EasyOptimize( t_pbn2 *_ipbn, t_pbn2 *_pbn )
 
 int IndexData::VeryEasyOptimize(int max_mod)
 {
-	long nindex = index->GetIndexNum();
+	int nindex = index->GetIndexNum();
 
 	if ( nindex == 0 ){
 		return 0;

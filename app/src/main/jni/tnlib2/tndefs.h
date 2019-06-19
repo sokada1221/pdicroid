@@ -626,6 +626,8 @@ inline char *NEXT_CHAR( const char *str ){ if ( _ismbblead( *str ) ) return (cha
 #endif
 #endif	// !__ANDROID__
 
+#define	UINT_PTR_MAX	((uint_ptr)-1)
+
 #define	_delete( obj )	delete obj; obj = 0
 #define	_delete_( obj )	delete[] obj; obj = 0
 #define	__delete( obj )	if ( obj ){ delete obj; obj=0; }

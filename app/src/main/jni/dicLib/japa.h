@@ -142,7 +142,7 @@ public:
 #endif
 #ifdef USE_JLINK
 	JLinks jlinks;
-	ulong GetJLinksLength( int fixedlen ) const;
+	uint GetJLinksLength( int fixedlen ) const;
 	void AddObject( JLink *jlink )
 		{ jlinks.add( jlink ); }
 	void DeleteObject( int no )
@@ -203,7 +203,7 @@ public:
 	int jcut( int len )
 		{ return ::jcut( japa, len ); }
 
-	ulong _Get2( byte *buf, int compflag, ulong limitlen, ulong totallen, IndexData *dic ) const;
+	uint _Get2( byte *buf, int compflag, uint limitlen, uint totallen, IndexData *dic ) const;
 	byte *Get2( uint &length, int compflag, uint limitlen, IndexData *dic ) const;
 
 	int GetAllLen( ) const;
@@ -290,7 +290,7 @@ public:
 	int CutOld( );	// NEWDIC形式の長さに合わせ、登録できない発音記号などをカットする。英単語、日本語訳、用例がカットされた場合のみ１を返す
 	bool IsOld( ) const;	// 古い辞書形式(NEWDIC)に登録可能？
 public:
-	static byte *Decode( const byte *src, ulong jtblen, ulong &decodelen );
+	static byte *Decode( const byte *src, uint jtblen, uint &decodelen );
 
 	bool IsQWord() const;		// ? だけの日本語訳か？
 public:

@@ -15,7 +15,7 @@ struct TPopupForWordsParam {
 	const tchar *word;
 	const tchar *prevword;
 	int click_pos;	// relative position from word.
-	FlexArray<ulong> wordlengths;
+	FlexArray<uint> wordlengths;
 	const tchar *curp;
 	int curi;
 

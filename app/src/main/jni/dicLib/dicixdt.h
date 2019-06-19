@@ -148,7 +148,7 @@ inline int CompareWord( const char *sp )
 #endif	// !USE_BOCU1
 
 	// bool CompareWordReg(const _kchar *word);
-	bool CompareCompress(const byte *src, ulong jtblen );
+	bool CompareCompress(const byte *src, uint jtblen );
 
 #if USE_NKF
 protected:
@@ -315,7 +315,7 @@ protected:
 	// 検索が正常に行えるようにしておく事！
 	// 正規表現検索を行わない場合は NULL をセットする
 	int AllSearchCommon( const byte *ptr, const byte *nextp, wa_t attr, AllSearchParam *all=NULL );
-	bool SearchFileLink(AllSearchParam &all, const byte *src, uchar jt, ulong jtblen);
+	bool SearchFileLink(AllSearchParam &all, const byte *src, uchar jt, uint jtblen);
 
 	// record/update/erase //
 protected:

@@ -8,21 +8,21 @@ struct RC_HEADER {
 	unsigned char size;
 	unsigned char reserved[3];
 	char method[4];	// 'rc1'
-	unsigned long compsize;
-	unsigned long orgsize;
-	unsigned long blocksize;	// 0のときは、blocksize=orgsize
+	unsigned int compsize;
+	unsigned int orgsize;
+	unsigned int blocksize;	// 0のときは、blocksize=orgsize
 };
 
-int RCDecode( const byte *src, long srclen, byte *dest, long &destlen );
-int RCEncode( const byte *src, long srclen, byte *dest, long &destlen );
-unsigned long RCGetOrgSize( const byte *header );
+int RCDecode( const byte *src, int srclen, byte *dest, int &destlen );
+int RCEncode( const byte *src, int srclen, byte *dest, int &destlen );
+unsigned int RCGetOrgSize( const byte *header );
 int RCGetErrorCode( );
 #ifdef _WINDOWS
 void RCSetWindow( HWND hwnd );
 #endif
 
 // オリジナルサイズの取得（拡張ヘッダーサイズは含まない）
-inline unsigned long RCGetOrgSize( const byte *header )
+inline unsigned int RCGetOrgSize( const byte *header )
 {
 	return ((const RC_HEADER *)header)->orgsize;
 }

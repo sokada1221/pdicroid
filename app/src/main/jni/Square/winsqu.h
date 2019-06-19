@@ -415,7 +415,7 @@ protected:
 #else
 	Pool pool;
 #endif
-	long BaseNum;			// 配列の一番最初のデータの通し番号（番号表示用）
+	int BaseNum;			// 配列の一番最初のデータの通し番号（番号表示用）
 	int pagelines;			// 表示されているものの全行数
 
 	// Auto Link //

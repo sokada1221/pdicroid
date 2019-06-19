@@ -19,7 +19,7 @@ typedef unsigned char byte;
 #include "RangeCodec.h"
 
 typedef unsigned short freq_t;	// type definition for fequency
-typedef unsigned long code_t;	// type definition of range coder value
+typedef unsigned int code_t;	// type definition of range coder value
 
 struct TRangeCoder {
 	unsigned low;	// low value of range
@@ -43,7 +43,7 @@ struct TGammaParamD {
 	const byte *sp;		// data source
 };
 
-int rcEncode( const byte *sp, long sp_len, byte *dp );
+int rcEncode( const byte *sp, int sp_len, byte *dp );
 int rcDecode( const byte *sp, byte *dp );
 
 static void PutGamma( TGammaParamC &gp, unsigned short code );
@@ -60,7 +60,7 @@ static HWND hwndRC;
 // return value:
 //	1 : OK
 //	0 : NG(逆に大きくなる)
-int RCEncode( const byte *sp, long sp_len, byte *dp, long &destlen )
+int RCEncode( const byte *sp, int sp_len, byte *dp, int &destlen )
 {
 	RC_HEADER *header = (RC_HEADER*)dp;
 	header->size = sizeof(RC_HEADER);
@@ -94,7 +94,7 @@ int RCEncode( const byte *sp, long sp_len, byte *dp, long &destlen )
 //	DBW("org=%d cmp=%d",header->orgsize,header->compsize);
 	return 1;
 }
-int RCDecode( const byte *src, long srclen, byte *dest, long &destlen )
+int RCDecode( const byte *src, int srclen, byte *dest, int &destlen )
 {
 	RC_HEADER *header = (RC_HEADER*)src;
 	if (header->size<sizeof(RC_HEADER)
@@ -133,7 +133,7 @@ inline void rc_encode( TRangeCoder &rc, unsigned cumfreq, unsigned freq )
 // sp_len must be less than max value of freq_t
 // dp はあらかじめ用意したバッファ（2048バイト以上あれば大丈夫かな・・・かなり怪しい）
 //int rcCompress( const unsigned char *sp, int sp_len, char *dp )
-int rcEncode( const byte *sp, long sp_len, byte *dp )
+int rcEncode( const byte *sp, int sp_len, byte *dp )
 {
 	unsigned freq[257];	// 出現度数table
 	freq_t cumfreq[258];// 累積度数table

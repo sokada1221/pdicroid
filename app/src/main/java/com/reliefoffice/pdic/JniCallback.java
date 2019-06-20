@@ -64,7 +64,7 @@ public class JniCallback {
     public void requestUpdate()
     {
         if (updated){
-            //TODO: wordListAdapter‚ªnull‚Å—Ž‚¿‚éŽž‚ª‚ ‚Á‚½ 2017.8.26 PSWinActivity.getWordText()‚æ‚è
+            //TODO: wordListAdapterãŒnullã§è½ã¡ã‚‹æ™‚ãŒã‚ã£ãŸ 2017.8.26 PSWinActivity.getWordText()ã‚ˆã‚Š
             wordListAdapter.notifyDataSetChanged();
             if (savedFirstItem>=0) {
                 Log.i("PDD", "Restore: "+savedFirstItem+" "+savedOffset);
@@ -115,12 +115,12 @@ public class JniCallback {
             saveOffset();
         }
         if (index < wordListAdapter.getCount()) {
-            // 2017.3.2 ‚Í‚Á‚«‚è‚Æ‚µ‚½Œ´ˆö‚Í’Í‚ñ‚Å‚¢‚È‚¢‚ªAƒqƒbƒg‚µ‚È‚¢’PŒê‚ð˜A‘Å‚µ‚Ä‚¢‚é‚ÆA
-            // addWord‚ÅiwordListAdapter != null‚Ìcase‚ªŒÄ‚Î‚êAJNI‘¤‚Ìó‘Ô‚ÆJava‘¤‚Ìó‘Ô‚ªH‚¢ˆá‚¢A
-            // JNI‘¤‚ªpool–ž”tó‘ÔAJava‘¤‚Í‚È‚µ‚Æ‚È‚Á‚Ä‚µ‚Ü‚¢AwordListAdapter.getItem(index)‚Å—Ž‚¿‚é
-            // ‘ÎÇ—Ã–@‚Æ‚µ‚ÄðŒ‚ð’Ç‰Á‚µ‚½B
-            // ÄŒ»Žè‡F
-            // ‚±‚ÌðŒ‚ðŠO‚µA"ubernerd"‚È‚Ç‚ÌŽ«‘‚É‚È‚¢’PŒê‚ð˜A‘Å‚·‚é
+            // 2017.3.2 ã¯ã£ãã‚Šã¨ã—ãŸåŽŸå› ã¯æŽ´ã‚“ã§ã„ãªã„ãŒã€ãƒ’ãƒƒãƒˆã—ãªã„å˜èªžã‚’é€£æ‰“ã—ã¦ã„ã‚‹ã¨ã€
+            // addWordã§iwordListAdapter != nullã®caseãŒå‘¼ã°ã‚Œã€JNIå´ã®çŠ¶æ…‹ã¨Javaå´ã®çŠ¶æ…‹ãŒé£Ÿã„é•ã„ã€
+            // JNIå´ãŒpoolæº€æ¯çŠ¶æ…‹ã€Javaå´ã¯ãªã—ã¨ãªã£ã¦ã—ã¾ã„ã€wordListAdapter.getItem(index)ã§è½ã¡ã‚‹
+            // å¯¾ç—‡ç™‚æ³•ã¨ã—ã¦æ¡ä»¶ã‚’è¿½åŠ ã—ãŸã€‚
+            // å†ç¾æ‰‹é †ï¼š
+            // ã“ã®æ¡ä»¶ã‚’å¤–ã—ã€"ubernerd"ãªã©ã®è¾žæ›¸ã«ãªã„å˜èªžã‚’é€£æ‰“ã™ã‚‹
             WordItem item = wordListAdapter.getItem(index);
             wordListAdapter.remove(item);
             if (savedFirstItem >= 0 && index <= savedFirstItem) {

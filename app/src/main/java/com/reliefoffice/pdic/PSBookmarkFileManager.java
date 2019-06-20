@@ -29,7 +29,7 @@ public class PSBookmarkFileManager implements INetDriveFileInfo.UpdateNotifier {
         this.ndvFM = ndvFM;
         pref = PreferenceManager.getDefaultSharedPreferences(context);
 
-        pdicjni = PdicJni.createInstance(null, null);   // ‚Ù‚©‚Åinstance‰»‚³‚ê‚Ä‚¢‚é‘O’ñ
+        pdicjni = PdicJni.createInstance(null, null);   // ã»ã‹ã§instanceåŒ–ã•ã‚Œã¦ã„ã‚‹å‰æ
 
         String localName = getFilename();
         String remote = getRemoteFilename();

@@ -10,7 +10,7 @@ import android.widget.EditText;
 /**
  * Created by tnishi on 2015/08/02.
  */
-//TODO: TextInputDialog‚©‚ç‚Ì”h¶‚É‚µ‚½‚¢‚ªAconstructor‚ÅgetString(R.strings.xxx)‚ğ‚â‚é‚ÆActivity‚Å‚Í‚È‚¢‚ÆŒ¾‚í‚ê‚Ä—‚¿‚éionCreateDialog()‚Å‚Í“®ì‚µ‚Ä‚¢‚é‚Ì‚Éj
+//TODO: TextInputDialogã‹ã‚‰ã®æ´¾ç”Ÿã«ã—ãŸã„ãŒã€constructorã§getString(R.strings.xxx)ã‚’ã‚„ã‚‹ã¨Activityã§ã¯ãªã„ã¨è¨€ã‚ã‚Œã¦è½ã¡ã‚‹ï¼ˆonCreateDialog()ã§ã¯å‹•ä½œã—ã¦ã„ã‚‹ã®ã«ï¼‰
 public class CommentInputDialog extends DialogFragment {
     CommentInputCallback callback;
     EditText editText;

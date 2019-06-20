@@ -35,7 +35,7 @@ public class PdicJni {
             System.loadLibrary("pdjni");
 
             This = new PdicJni();
-            //TODO: initPdic()‚ğassertManager!=null‚Å‚ ‚ê‚Îí‚ÉŒÄ‚Ño‚·‚©H
+            //TODO: initPdic()ã‚’assertManager!=nullã§ã‚ã‚Œã°å¸¸ã«å‘¼ã³å‡ºã™ã‹ï¼Ÿ
             File appCachePath = context.getCacheDir();
             File appInternalPath = context.getFilesDir();
             int ret = This.initPdic(0, assetManager, appCachePath.getAbsolutePath(), appInternalPath.getAbsolutePath());

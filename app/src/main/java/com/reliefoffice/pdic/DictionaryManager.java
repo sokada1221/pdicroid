@@ -22,7 +22,7 @@ public class DictionaryManager {
     public static final DictionaryManager createInstance(Context context){
         if (This == null) {
             This = new DictionaryManager();
-            This.pdicJni = PdicJni.createInstance(null, null);  // ‚·‚Å‚É‚Ù‚©‚Ì‚Æ‚±‚ë‚Åinstance‰»‚³‚ê‚Ä‚¢‚é‘O’ñ
+            This.pdicJni = PdicJni.createInstance(null, null);  // ã™ã§ã«ã»ã‹ã®ã¨ã“ã‚ã§instanceåŒ–ã•ã‚Œã¦ã„ã‚‹å‰æ
         }
         This.context = context;
         This.ndvFM = DropboxFileManager.createInstance(context);
@@ -64,7 +64,7 @@ public class DictionaryManager {
 
     // return:
     //  0 = normal
-    //  -1ˆÈ‰º = ƒGƒ‰[‚Ì‚ ‚Á‚½Ž«‘‚Ì -index-1 (index=0‚Ìê‡‚Í-1)
+    //  -1ä»¥ä¸‹ = ã‚¨ãƒ©ãƒ¼ã®ã‚ã£ãŸè¾žæ›¸ã® -index-1 (index=0ã®å ´åˆã¯-1)
     public int openDictionary(){
         if (openCount>0){
             openCount++;

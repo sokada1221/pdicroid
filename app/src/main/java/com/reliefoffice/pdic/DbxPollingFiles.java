@@ -116,7 +116,7 @@ public class DbxPollingFiles extends INetDrivePollingFiles {
                 if (info==cur) cur = null;
                 continue;
             }
-            if (!info.uploading && !info.uploadRequest   // upload—Dæ
+            if (!info.uploading && !info.uploadRequest   // uploadå„ªå…ˆ
                     && info.downloadRequest && !info.downloading) return info;
         }
         return null;

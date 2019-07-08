@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 26
 
     defaultConfig {
         applicationId "com.reliefoffice.pdic"
         minSdkVersion 19
-        targetSdkVersion 26
-        versionCode 704
-        versionName "0.7.4 alpha"
+        targetSdkVersion 28
+        versionCode 709
+        versionName "0.7.9 alpha"
         ndk {
             moduleName "pdjni"
             stl "gnustl_shared"
@@ -37,16 +36,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile files('libs/dropbox-android-sdk-1.6.3.jar')
-    compile files('libs/json_simple-1.1.jar')
-//    compile files('libs/dropbox-sync-sdk-android.jar')
-    compile files('libs/juniversalchardet-1.0.3.jar')
-    compile 'com.google.android.gms:play-services-drive:8.4.0'
-    compile files('libs/dropbox-core-sdk-2.1.2.jar')
-//    compile files('libs/dropbox-core-sdk-2.0.6.jar')
-//    compile 'com.dropbox.core:dropbox-core-sdk:2.0.6'
-    compile files('libs/okhttp-3.4.1.jar')
-    compile files('libs/jackson-core-2.8.1.jar')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:23.0.0'
+    implementation files('libs/dropbox-android-sdk-1.6.3.jar')
+    implementation files('libs/json_simple-1.1.jar')
+//    implementation files('libs/dropbox-sync-sdk-android.jar')
+    implementation files('libs/juniversalchardet-1.0.3.jar')
+    implementation 'com.google.android.gms:play-services-drive:8.4.0'
+    implementation files('libs/dropbox-core-sdk-2.1.2.jar')
+//    implementation files('libs/dropbox-core-sdk-2.0.6.jar')
+//    implementation 'com.dropbox.core:dropbox-core-sdk:2.0.6'
+    implementation files('libs/okhttp-3.4.1.jar')
+    implementation files('libs/jackson-core-2.8.1.jar')
 }

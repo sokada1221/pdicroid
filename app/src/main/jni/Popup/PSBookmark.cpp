@@ -314,7 +314,11 @@ bool TPSBookmark::Save(const tchar *filename, int position, const tchar *revisio
 		// no file -> create a new file
 		TOFile tof;
 		if (tof.create(FileName)){
+			DBW("Failed to create: %s : %d", __cstr(FileName).utf8(), errno);
 			return false;
+		}
+		if (chmod(__cstr(FileName).utf8(), 0666)<0){
+			DBW("Failed to chmod: %s : %d", __cstr(FileName).utf8(), errno);
 		}
 
 		tof.settextmode(prof.GetTextFileCode());
@@ -331,7 +335,13 @@ bool TPSBookmark::Save(const tchar *filename, int position, const tchar *revisio
 		return true;
 	}
 	TOFile tmpf;
-	if (tmpf.create(tmpfile)){ return false; }
+	if (tmpf.create(tmpfile)){
+		DBW("Failed to create: %s : %d", __cstr(tmpfile).utf8(), errno);
+		return false;
+	}
+	if (chmod(__cstr(tmpfile).utf8(), 0666)<0){
+		DBW("Failed to chmod: %s : %d", __cstr(FileName).utf8(), errno);
+	}
 
 	tmpf.settextmode(prof.GetTextFileCode());
 	if (prof.IsTextFileBOM())

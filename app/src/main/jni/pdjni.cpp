@@ -652,7 +652,6 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_xopenPSBookmark
 		unlink( filename8 );
 		LOGI("Deleted - %s", filename8.c_str());
 	}
-	DBW("OpenPSBookmark: %s", __cstr(wfilename).utf8());
 	OpenPSBookmark(wfilename);
 	return 0;
 }
@@ -735,9 +734,6 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_loadPSBookmarkFiles
 	}
 	return 0;
 }
-#if 0
-const tchar *GetPSBookmarkFileName();
-#endif
 
 JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_savePSFileInfo
 	(JNIEnv *env, jobject thiz, jstring filename, jint position, jstring revision)

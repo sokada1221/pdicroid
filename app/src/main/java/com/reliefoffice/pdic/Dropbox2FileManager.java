@@ -54,7 +54,7 @@ public class Dropbox2FileManager extends DropboxBaseFileManager {
     //Note: should call authComplete() in onResume()
     @Override
     public boolean startAuth(boolean easyMode){
-        //dbxUtils.clearToken();    // for debug
+        //dbxUtils.clearToken();    //DBG: for debug
         if (!dbxUtils.hasLoadAndroidAuthSession()) {
             if (!easyMode) {
                 INetDriveUtils.AppKeys appKeys = dbxUtils.getAppKeys();
@@ -92,7 +92,7 @@ public class Dropbox2FileManager extends DropboxBaseFileManager {
         // Required to complete auth, sets the access token on the session
         String token = Auth.getOAuth2Token();
         if (Utility.isEmpty(token)) {
-            Log.i("PDP", "Access Toekn is null!?");
+            Log.i("PDP", "Access Token is null!?");
             return false;
         }
         dbxUtils.storeOauth2AccessToken(token);

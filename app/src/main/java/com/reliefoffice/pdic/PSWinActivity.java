@@ -182,6 +182,8 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
     // Bluetooth Manager //
     BluetoothManager bluetoothManager;
 
+    int prevStart, prevEnd;
+
     //TODO: call setWordList() when deactivated.
 
     @Override
@@ -269,12 +271,21 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
                 if (drillIntoMode)
                     return true;
                 if (Utility.isEmpty(openedFilename)){
+                    // dialogを閉じても再び呼ばれてしまうため
+                    int start = editText.getSelectionStart();
+                    int end = editText.getSelectionEnd();
+                    if (prevStart == start && prevEnd == end)
+                        return true;
+                    prevStart = start;
+                    prevEnd = end;
+
                     AlertDialog.Builder builder = new AlertDialog.Builder(This);
                     builder.setMessage(getString(R.string.msg_need_save_for_psbm))
                             .setPositiveButton("OK", null);
                     builder.show();
                     return true;
                 }
+                prevStart = prevEnd = 0;
                 createPSBookmarkEditWindow();
                 return true;
             }

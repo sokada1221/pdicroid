@@ -1143,8 +1143,12 @@ public class PSWinActivity extends ActionBarActivity implements FileSelectionDia
                 }
             } else
             if (resultCode==RESULT_CANCELED){
-                if (psbmGeneration!=pdicJni.psbmGeneration)
+                if (psbmGeneration!=pdicJni.psbmGeneration) {
+                    int start  = editText.getSelectionStart();  // 選択状態の保存
+                    int end = editText.getSelectionEnd();
                     reloadPSBookmarks(psbmFilename);
+                    editText.setSelection(start, end);          // 選択状態の復帰
+                }
             }
         } else
         if (requestCode == REQUEST_CODE_SAVE){

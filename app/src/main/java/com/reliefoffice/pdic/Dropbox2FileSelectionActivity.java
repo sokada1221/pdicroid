@@ -75,12 +75,13 @@ public class Dropbox2FileSelectionActivity extends NetDriveFileSelectionActivity
         return null;    // pending
     }
 
+    // ファイル読み込みスレッド終了後の処理
     void onMetadataTaskEnd(){
         deleteProgressDialog();
         if( null == metadataTask.children || metadataTask.exception) {
             // illegal directory?
+            showErrorMessage();
             if (!retryFromRoot()) {
-                showErrorMessage();
                 cancel();
             }
             return;
@@ -155,8 +156,8 @@ public class Dropbox2FileSelectionActivity extends NetDriveFileSelectionActivity
                     //throw e;
                     exception = true;
                     e.printStackTrace();
-                    exceptionMessage = e.getMessage();
-                    Log.e("PDD", "DropboxException: " + e.getMessage());
+                    Log.e("PDD", "DropboxException1: " + e.getMessage());
+                    exceptionMessage = getString(R.string.msg_file_not_found) + " : " + m_fileDirectory.getAbsolutePath();
                     return null;
                 }
 
@@ -182,7 +183,7 @@ public class Dropbox2FileSelectionActivity extends NetDriveFileSelectionActivity
                         exception = true;
                         e.printStackTrace();
                         exceptionMessage = e.getMessage();
-                        Log.e("PDD", "DropboxException: " + e.getMessage());
+                        Log.e("PDD", "DropboxException2: " + e.getMessage());
                         return null;
                     }
                 }
@@ -192,7 +193,7 @@ public class Dropbox2FileSelectionActivity extends NetDriveFileSelectionActivity
                 exception = true;
                 e.printStackTrace();
                 exceptionMessage = e.getMessage();
-                Log.e("PDD", "DropboxException: " + e.getMessage());
+                Log.e("PDD", "DropboxException3: " + e.getMessage());
                 return null;
             }
 

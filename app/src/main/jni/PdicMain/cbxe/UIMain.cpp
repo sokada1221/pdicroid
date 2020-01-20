@@ -48,7 +48,10 @@ void TUIMain::ListAdd(tnstr *word, Japa *japa, int dicno, int level)
 }
 void TUIMain::ListInsert(int index, tnstr *word, Japa *japa, int dicno, int level)
 {
-	WordList->Items->Insert(index, word->c_str());
+	tnstr s = find_cword_pos(word->c_str());
+	s += _t("=");
+	s += japa->japa;
+	WordList->Items->Insert(index, s.c_str());
 }
 void TUIMain::ListDel(int index)
 {

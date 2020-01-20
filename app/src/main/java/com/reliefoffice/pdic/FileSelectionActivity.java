@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.reliefoffice.pdic.text.pfs;
 
@@ -23,7 +24,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.widget.AdapterView.*;
+
 public class FileSelectionActivity extends ActionBarActivity implements FileSelectionInterface.FileListListener {
+    static FileSelectionActivity This;
     SharedPreferences pref;
 
     protected  String[] m_exts = {".dic", ".txt"};
@@ -50,8 +54,11 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
     }
     SortType lastSortType = SortType.Name;
 
+    TextInputDialog pathDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        This = this;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_selection);
 
@@ -59,10 +66,16 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
 
         // TextView path //
         textPath = (TextView)findViewById(R.id.text_path);
+        textPath.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                inputPathDialog(getString(R.string.title_input_path), false);
+            }
+        });
 
         // ListView //
         final ListView fileList = (ListView) findViewById(R.id.fileList);
-        fileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        fileList.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 clickedPosition = position;
@@ -241,7 +254,6 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
         return true;
     }
 
-    TextInputDialog pathDialog;
     protected void startSelectFile(){
         Log.d("PDD", "fileDirectory = "+m_fileDirectory.getPath());
 
@@ -253,33 +265,44 @@ public class FileSelectionActivity extends ActionBarActivity implements FileSele
             //Note: rootStr == m_fileDirectory.getAbsolutePath()では正常に動かない
             // initialではない場合、initialにして再度
             if (Utility.initialFileDirectory().compareTo(m_fileDirectory.getAbsolutePath())!=0){
+                String msg = getString(R.string.msg_file_not_found) + " : " + m_fileDirectory.getAbsolutePath();
+                Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
                 m_fileDirectory = new FileInfo(Utility.initialFileDirectory());
                 startSelectFile();
                 return;
             }
-            pathDialog = new TextInputDialog();
-            pathDialog.titleText = getString(R.string.title_enter_path);
-            pathDialog.setText(m_fileDirectory.getPath());
-            pathDialog.setCallback(new TextInputCallback() {
-                @Override
-                public void onTextInputClickOk() {
-                    m_fileDirectory = new FileInfo(pathDialog.getText());
-                    pathDialog.dismiss();
-                    pathDialog = null;
-                    startSelectFile();
-                }
-                @Override
-                public void onTextInputClickCancel() {
-                    pathDialog.dismiss();
-                    pathDialog = null;
-                    finish();
-                }
-            });
-            pathDialog.show(getFragmentManager(), "test");    //TODO: what is the second argument?
+            inputPathDialog(getString(R.string.title_enter_path), true);
             return;
         }
 
         showPost(m_fileDirectory, listFileInfo);
+    }
+
+    boolean finishIfCancel;
+    void inputPathDialog(String title, boolean finishIfCancel)
+    {
+        this.finishIfCancel = finishIfCancel;
+
+        pathDialog = new TextInputDialog();
+        pathDialog.titleText = title;
+        pathDialog.setText(getCurrentDir());
+        pathDialog.setCallback(new TextInputCallback() {
+            @Override
+            public void onTextInputClickOk() {
+                m_fileDirectory = new FileInfo(pathDialog.getText());
+                pathDialog.dismiss();
+                pathDialog = null;
+                startSelectFile();
+            }
+            @Override
+            public void onTextInputClickCancel() {
+                pathDialog.dismiss();
+                pathDialog = null;
+                if (This.finishIfCancel)
+                    finish();
+            }
+        });
+        pathDialog.show(getFragmentManager(), "test");    //TODO: what is the second argument?
     }
 
     // Cancel Listener //

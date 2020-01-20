@@ -108,4 +108,6 @@
     <string name="title_enter_path">Enter path due to no file found</string>
     <string name="audio_file_folder">Audio File Folder</string>
     <string name="msg_dic_not_opened">Dictionary cannot be opened.</string>
+    <string name="title_input_path">Direct Input Path</string>
+    <string name="msg_file_not_found">Not found files</string>
 </resources>

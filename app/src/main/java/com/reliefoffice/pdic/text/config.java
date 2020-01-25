@@ -7,6 +7,5 @@ public class config {
     public static final String defaultCharsetEncoding = "ShiftJIS";
     public static final boolean defaultShowPronExp = false; // change R.xml.preference also.
     public static final int swipeMoveMargin = 120;
-    public static final boolean useDropboxV2 = true;
     public static final int MaxFileHistoryNum = 100;
 }

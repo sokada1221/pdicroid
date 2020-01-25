@@ -27,10 +27,7 @@ public class DropboxFileSelectionDialog extends NetDriveFileSelectionDialog {
 
     public static DropboxFileSelectionDialog createInstance(Context context,
                                                      OnFileSelectListener listener, INetDriveFileManager dbxFM, boolean modeForSave){
-        if (DropboxUtils.useV2)
-            return new Dropbox2FileSelectionDialog(context, listener, dbxFM, modeForSave);
-        else
-            return new Dropbox1FileSelectionDialog(context, listener, dbxFM, modeForSave);
+        return new Dropbox2FileSelectionDialog(context, listener, dbxFM, modeForSave);
     }
 
 }

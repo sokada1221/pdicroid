@@ -35,14 +35,7 @@ public class DropboxFileManager extends DropboxBaseFileManager {
     }
 
     public static INetDriveFileManager createInstance(Context context){
-        if (DropboxUtils.useV2){
-            return Dropbox2FileManager.createInstance(context);
-        }
-        if (This==null)
-            new DropboxFileManager(context);
-        else
-            This.context = context;
-        return This;
+        return Dropbox2FileManager.createInstance(context);
     }
 
     //Note: when call getApi(), should call lockApi/unlockApi.

@@ -2,12 +2,11 @@ package com.reliefoffice.pdic;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -15,7 +14,7 @@ import android.widget.Toast;
 import java.io.File;
 
 // refer to http://qiita.com/mizofumi0411/items/fed5c43fc36c5a945a7b
-public abstract class NetDriveDownloadActivity extends ActionBarActivity implements FileSelectionDialog.OnFileSelectListener {
+public abstract class NetDriveDownloadActivity extends AppCompatActivity implements FileSelectionDialog.OnFileSelectListener {
 
     //static final boolean debugMode = true;
 

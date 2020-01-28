@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,7 +26,7 @@ import java.util.List;
 
 import static android.widget.AdapterView.*;
 
-public class FileSelectionActivity extends ActionBarActivity implements FileSelectionInterface.FileListListener {
+public class FileSelectionActivity extends AppCompatActivity implements FileSelectionInterface.FileListListener {
     static FileSelectionActivity This;
     SharedPreferences pref;
 

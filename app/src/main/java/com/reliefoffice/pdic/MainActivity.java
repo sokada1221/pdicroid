@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,10 +24,7 @@ import android.widget.Toast;
 import com.reliefoffice.pdic.text.config;
 import com.reliefoffice.pdic.text.pfs;
 
-import java.io.File;
-
-
-public class MainActivity extends ActionBarActivity implements SearchView.OnQueryTextListener {
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     static final String PFS_RUNNING = "Running";
 
     private WordListAdapter wordListAdapter;

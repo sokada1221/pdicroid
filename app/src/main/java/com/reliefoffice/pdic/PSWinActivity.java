@@ -18,10 +18,10 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.content.ClipboardManager;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.util.Log;
 import android.view.ActionMode;
@@ -60,7 +60,7 @@ import static java.lang.Math.abs;
 
 //NOTE: popupList用のAdapterクラスは下の方に作ってある。必要な場合はそれを復活
 
-public class PSWinActivity extends ActionBarActivity implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener, SeekBar.OnSeekBarChangeListener {
+public class PSWinActivity extends AppCompatActivity implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener, SeekBar.OnSeekBarChangeListener {
     final static boolean useTextLoadTask = true;
     final static boolean usePSBMforFileLoad = false;
 

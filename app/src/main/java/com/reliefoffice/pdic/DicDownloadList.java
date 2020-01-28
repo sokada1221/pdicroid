@@ -9,8 +9,8 @@ import android.content.res.AssetManager;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Xml;
 import android.view.LayoutInflater;
@@ -39,7 +39,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 
-public class DicDownloadList extends ActionBarActivity implements IAsyncFileDownloadNotify {
+public class DicDownloadList extends AppCompatActivity implements IAsyncFileDownloadNotify {
 
     ListView lvDicList;
     ArrayAdapter<DicInfo> adpDicList;

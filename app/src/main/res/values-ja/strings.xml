@@ -13,7 +13,7 @@
     <string name="title_activity_dic_download_list">辞書ダウンロード一覧</string>
     <string name="failed_to_make_dir">Failed to make directory:</string>
 
-    <string name="dic_list_url">http://pdic.sakura.ne.jp/cgi-bin/dicsrvtest/list.cgi</string>
+    <string name="dic_list_url">https://pdic.sakura.ne.jp/cgi-bin/dicsrvtest/list.cgi</string>
     <string name="title_activity_dropbox_download">Dropboxダウンロード</string>
 
     <string name="font_bold_text"><b>T</b></string>

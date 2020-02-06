@@ -110,4 +110,5 @@
     <string name="msg_dic_not_opened">Dictionary cannot be opened.</string>
     <string name="title_input_path">Direct Input Path</string>
     <string name="msg_file_not_found">Not found files</string>
+    <string name="toast_download_failed">Couldn\'t download file.</string>
 </resources>

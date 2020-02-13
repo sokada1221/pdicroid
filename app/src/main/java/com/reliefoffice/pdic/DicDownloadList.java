@@ -390,7 +390,8 @@ public class DicDownloadList extends AppCompatActivity implements IAsyncFileDown
         }
         if (Utility.isNotEmpty(errMsg)){
             Toast.makeText(this, errMsg, Toast.LENGTH_LONG).show();
-            Utility.initializeSSLContext(this);
+            if (errMsg.contains("SSLException"))
+                Utility.initializeSSLContext(this);
         }
     }
 }

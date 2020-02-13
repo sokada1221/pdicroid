@@ -7,8 +7,8 @@ android {
         applicationId "com.reliefoffice.pdic"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 736
-        versionName "0.7.36 alpha"
+        versionCode 737
+        versionName "0.7.37 alpha"
         ndk {
             moduleName "pdjni"
             stl "gnustl_shared"
@@ -38,5 +38,7 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:23.0.0'
+    implementation 'com.android.support:design:27.0.2'
+    implementation 'com.android.support:support-v4:27.0.2'
     implementation 'com.google.android.gms:play-services-drive:8.4.0'
 }

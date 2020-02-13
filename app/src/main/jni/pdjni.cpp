@@ -150,7 +150,7 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_cleanupPdic(JNIEnv* en
 #include "LangProc.h"
 //#include "dicname.h"
 
-jobject jniCallback;
+jobject jniCallback = NULL;
 
 class TWordEdit : public IWordEdit {
 public:
@@ -185,6 +185,7 @@ public:
 		ViewFlags = flags;
 	}
 	virtual void Clear(){
+		if (!jniCallback) return;
 		if (!midClear){
 			jclass jniCallbackClass = env->GetObjectClass(jniCallback);
 			midClear = env->GetMethodID(jniCallbackClass, "clearWords", "()V");
@@ -287,7 +288,8 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_createPdicFrame(JNIEnv
 	}
 	WordList->SetEnv(env);
 	if (!UIMain){
-		jniCallback = env->NewGlobalRef(callback);
+		if (callback)
+			jniCallback = env->NewGlobalRef(callback);
 		TPdicMainImpl *main = new TPdicMainImpl();
 		UIMain = TUIMain::CreateInstance(new TPdicMainImpl, WordEdit, WordList);
 		Frame = new TSquareFrame(UIMain);
@@ -312,6 +314,7 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_deletePdicFrame(JNIEnv
 		delete UIMain;
 		UIMain = NULL;
 		env->DeleteGlobalRef(jniCallback);
+		jniCallback = NULL;
 	}
 	if (Main){
 		delete Main;
@@ -327,6 +330,20 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_deletePdicFrame(JNIEnv
 	}
 	return 0;
 }
+// callbackだけ変更する
+JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_setPdicCallback(JNIEnv* env, jobject thiz, jobject callback, int param1)
+{
+	if (jniCallback){
+		env->DeleteGlobalRef(jniCallback);
+		jniCallback = NULL;
+	}
+	if (callback){
+		jniCallback = env->NewGlobalRef(callback);
+	}
+
+	return param1;
+}
+
 JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_config(JNIEnv* env, jobject thiz, int view)
 {
 	if (WordList){

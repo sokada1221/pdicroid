@@ -49,6 +49,12 @@ public class PdicJni {
         refCounter++;
         return This;
     }
+    static public PdicJni getInstance(){
+        if (This != null){
+            refCounter++;
+        }
+        return This;
+    }
     static void showErrorBox(Context context, String message)
     {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
@@ -74,10 +80,15 @@ public class PdicJni {
     public int deleteFrame(){
         return deletePdicFrame(0);
     }
+    public int setCallback(JniCallback callback, int param1)
+    {
+        return setPdicCallback(callback, param1);
+    }
     private native int initPdic(int param1, AssetManager assetManager, String appInternalPath, String appCachePath);
     //public native int inittest(int param1);
     private native int createPdicFrame(JniCallback callback, int param1);
     private native int deletePdicFrame(int param1);
+    private native int setPdicCallback(JniCallback callback, int param1);
 
     public native int config(int viewFlags);
 

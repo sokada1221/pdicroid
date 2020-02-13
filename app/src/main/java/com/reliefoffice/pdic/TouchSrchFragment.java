@@ -1,11 +1,13 @@
 package com.reliefoffice.pdic;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothHeadset;
 import android.content.BroadcastReceiver;
 import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -14,20 +16,22 @@ import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.content.ClipboardManager;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Spannable;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -58,12 +62,30 @@ import java.io.InputStream;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static java.lang.Math.abs;
 
-//NOTE: popupList用のAdapterクラスは下の方に作ってある。必要な場合はそれを復活
 
-public class PSWinActivity extends AppCompatActivity implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener, SeekBar.OnSeekBarChangeListener {
+/**
+ * A simple {@link Fragment} subclass.
+ * Activities that contain this fragment must implement the
+ * {@link TouchSrchFragment.OnFragmentInteractionListener} interface
+ * to handle interaction events.
+ * Use the {@link TouchSrchFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class TouchSrchFragment extends Fragment implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener, SeekBar.OnSeekBarChangeListener {
+    // TODO: Rename parameter arguments, choose names that match
+    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    private static final String ARG_PARAM1 = "param1";
+    private static final String ARG_PARAM2 = "param2";
+
+    // TODO: Rename and change types of parameters
+    private String mParam1;
+    private String mParam2;
+
+    private OnFragmentInteractionListener mListener;
+
     final static boolean useTextLoadTask = true;
 
-    static PSWinActivity This;
+    static TouchSrchFragment This;
     String orgTitle;
     String openedFilename;
     String remoteFilename;
@@ -75,7 +97,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     class SwipeMove {
         int MOVE_MARGIN_X = 80;
         int MOVE_MARGIN_Y = 10;
-        private  Point size = new Point();
+        private Point size = new Point();
         public LinearLayout layout;
         private int marginLeft = 0;
         private int startX = 0;
@@ -86,7 +108,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         SwipeMove(LinearLayout layout, int moveMarginX){
             this.layout = layout;
             MOVE_MARGIN_X = moveMarginX;
-            WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
+            WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             Display disp = wm.getDefaultDisplay();
             disp.getSize(size);
         }
@@ -134,7 +156,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             }
         }
         void setLayout(){
-            final int scale = 1;    //TODO:
+            final int scale = 1;
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     (int) (size.x * scale),
                     LinearLayout.LayoutParams.WRAP_CONTENT  // important!!
@@ -144,7 +166,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             layout.setLayoutParams(params);
         }
     }
-    private SwipeMove swipeMove;
+    private TouchSrchFragment.SwipeMove swipeMove;
 
     private LinearLayout llEdit;
 
@@ -157,8 +179,6 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     private JniCallback jniCallback;
 
     String fileEncoding;
-
-    private DictionaryManager dicMan;
 
     PSBookmarkFileManager psbmFM;
     private boolean PSBookmarkReady = false;
@@ -176,29 +196,78 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     final int marginForMove = 16;
 
     // Bluetooth Manager //
-    BluetoothManager bluetoothManager;
+    TouchSrchFragment.BluetoothManager bluetoothManager;
 
     int prevStart, prevEnd;
 
+    public TouchSrchFragment() {
+        // Required empty public constructor
+    }
+
+    /**
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param param1 Parameter 1.
+     * @param param2 Parameter 2.
+     * @return A new instance of fragment TouchSrchFragment.
+     */
+    // TODO: Rename and change types and number of parameters
+    public static TouchSrchFragment newInstance(String param1, String param2) {
+        TouchSrchFragment fragment = new TouchSrchFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_PARAM1, param1);
+        args.putString(ARG_PARAM2, param2);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        This = this;
-        //Log.i("PDD", "PSWinActivity.onCreate");
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_pswin);
+
+        This = this;
+
+        if (getArguments() != null) {
+            mParam1 = getArguments().getString(ARG_PARAM1);
+            mParam2 = getArguments().getString(ARG_PARAM2);
+        }
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        setHasOptionsMenu(true);    //TODO: OptionsMenuがここでやらなくなったら削除
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_touch_srch, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        /*
+        //TODO: これは何のため？？？
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new TouchSrchFragment.PlaceholderFragment())
                     .commit();
         }
-        pref = PreferenceManager.getDefaultSharedPreferences(this);
+         */
+
+        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // swipeによるEditText移動 //
-        LinearLayout layoutEdit = (LinearLayout)findViewById(R.id.container_edit);
+        LinearLayout layoutEdit = view.findViewById(R.id.container_edit);
         swipeMove = new SwipeMove(layoutEdit, config.swipeMoveMargin);
 
         // EditText //
-        editText = (EditText) findViewById(R.id.editText);
+        editText = view.findViewById(R.id.editText);
         editText.setKeyListener(null);  // Android 8.0でkeyboardを表示させないようにするため
         /*editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -273,7 +342,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
                     prevStart = start;
                     prevEnd = end;
 
-                    AlertDialog.Builder builder = new AlertDialog.Builder(This);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setMessage(getString(R.string.msg_need_save_for_psbm))
                             .setPositiveButton("OK", null);
                     builder.show();
@@ -300,12 +369,12 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             }
         });
 
-        llEdit = (LinearLayout)findViewById(R.id.container_edit);
+        llEdit = view.findViewById(R.id.container_edit);
         ViewTreeObserver.OnGlobalLayoutListener globalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener(){
             @Override
             public void onGlobalLayout() {
                 if (popupList.getVisibility() == View.GONE) {
-	                int height = llEdit.getHeight();
+                    int height = llEdit.getHeight();
                     savedEditTextHeight = height * 2 / 3;
                 }
             }
@@ -314,8 +383,8 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
 
         // PopupText //
         //popupText = (TextView)findViewById(R.id.popupText);
-        popupList = (ListView) findViewById(R.id.popupList);
-        popupListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+        popupList = view.findViewById(R.id.popupList);
+        popupListAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1);
         popupList.setAdapter(popupListAdapter);
         popupList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -327,43 +396,41 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         showPopupList(false);
 
         // Initialize JNI.
-        pdicJni = PdicJni.createInstance(this, getAssets());        // Create JNI callback
+        pdicJni = PdicJni.getInstance();
 
-		jniCallback = JniCallback.createInstance();
+        jniCallback = JniCallback.createInstance();
         wordListAdapter = new TWordListAdapter(popupList, popupListAdapter);
 
         if (pdicJni != null) {
-            pdicJni.createFrame(jniCallback, 0);
+            pdicJni.setCallback(jniCallback, 0);
         }
 
-        dicMan = DictionaryManager.createInstance(this);
-
         // Dropbox //
-        ndvUtils = DropboxUtils.getInstance(this);
-        ndvFM = DropboxFileManager.createInstance(this);
+        ndvUtils = DropboxUtils.getInstance(getContext());
+        ndvFM = DropboxFileManager.createInstance(getContext());
 
-        psbmFM = PSBookmarkFileManager.createInstance(this, ndvFM);
+        psbmFM = PSBookmarkFileManager.createInstance(getContext(), ndvFM);
 
         // Audio Player setup //
-        initAudioPlayer();
+        initAudioPlayer(view);
 
         // Initial Text //
         if (Utility.isEmpty(orgTitle)){
-            orgTitle = getTitle().toString();
+            orgTitle = getActivity().getTitle().toString();
         }
-        Intent i = getIntent();
+        Intent i = getActivity().getIntent();
         String word = i.getStringExtra("word");
         if (Utility.isNotEmpty(word)){
             String text = i.getStringExtra("text");
             editText.setText(text);
-            setTitle(orgTitle + " - " + word);
+            getActivity().setTitle(orgTitle + " - " + word);
             drillIntoMode = true;
         } else
         if (loadClipboardData()) {
-            Toast.makeText(this, getString(R.string.msg_clipboard_loaded), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.msg_clipboard_loaded), Toast.LENGTH_SHORT).show();
         } else {
             // load the latest opened file
-            HistoryFilename histName = getLatestHistoryName();
+            TouchSrchFragment.HistoryFilename histName = getLatestHistoryName();
             if (histName!=null){
                 fileEncoding = histName.encoding;
                 autoStartPlayMode = false;
@@ -372,7 +439,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         }
 
         // Bluetooth Manager //
-        bluetoothManager = new BluetoothManager(this);
+        bluetoothManager = new TouchSrchFragment.BluetoothManager();
     }
 
     class HistoryFilename {
@@ -381,11 +448,11 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         String encoding;
     }
 
-    HistoryFilename getLatestHistoryName(){
-        FileHistoryManager fileHistory = new FileHistoryManager(this);
+    TouchSrchFragment.HistoryFilename getLatestHistoryName(){
+        FileHistoryManager fileHistory = new FileHistoryManager(getContext());
         if (fileHistory.size()==0) return null;
         String filename = fileHistory.get(0);
-        HistoryFilename histName = new HistoryFilename();
+        TouchSrchFragment.HistoryFilename histName = new TouchSrchFragment.HistoryFilename();
         if (ndvUtils.hasPrefix(filename)){
             histName.filename = ndvUtils.convertToLocalName(filename);
             histName.remoteName = filename.substring(4);
@@ -397,7 +464,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     }
 
     boolean loadClipboardData(){
-        ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+        ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData cd = cm.getPrimaryClip();
         if(cd != null){
             ClipData.Item item = cd.getItemAt(0);
@@ -411,7 +478,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
 
     void createPSBookmarkEditWindow() {
         if (psbEditWindow == null) {
-            psbEditWindow = new PSBookmarkEditWindow(this, editText, psbmFilename) {
+            psbEditWindow = new PSBookmarkEditWindow(getActivity(), editText, psbmFilename) {
                 @Override
                 void notifyChanged(PSBookmarkItem item) {
                 }
@@ -499,36 +566,26 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
 
-        //if (jniCallback==null)
-        //    jniCallback = JniCallback.getInstance();    // 2017.3.17 なぜかnullになるときがある？ための対症療法
         jniCallback.setWordList(wordListAdapter);
         if (PSBookmarkReady) {
             psbmFM.open();
         }
 
-        if (ndvFM.authComplete(this)) {
+        if (ndvFM.authComplete(getContext())) {
             selectFileDropbox();
         }
 
-        int nindex = dicMan.openDictionary();
-        if (nindex < 0){
-            String name = dicMan.getDictionaryPath(-nindex-1);
-            Toast ts = Toast.makeText(this, getString(R.string.msg_dic_not_opened) + "\n" + name, Toast.LENGTH_LONG);
-            ts.show();
-        }
-
         // Bluetooth Manager //
-        Utility.requestBluetoothPermision(this);
+        Utility.requestBluetoothPermision(getActivity());
     }
 
     int lastPosition;
 
     @Override
-    protected void onPause() {
-        //Note: IdleConnectionHandlerが一分おきにonPauseさせる
+    public void onPause() {
         if (Utility.isNotEmpty(openedFilename)) {
             INetDriveFileInfo info = ndvFM.findByLocalName(openedFilename);
             if (info != null) {
@@ -544,21 +601,19 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             psbmFM.close();
         }
 
-        dicMan.closeDictionary();
-
         super.onPause();
     }
 
     @Override
-    protected void onStop(){
+    public void onStop() {
         saveMarkPosition();
         super.onStop();
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroyView() {
         if (bluetoothManager != null) {
-            bluetoothManager.unregister(this);
+            bluetoothManager.unregister(getContext());
             bluetoothManager = null;
         }
         closePSBookmarkEditWindow();
@@ -569,11 +624,6 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         }
         if (psbmFM != null)
             psbmFM.deleteInstance();
-        if (dicMan!=null){
-            dicMan.deleteInstance();
-            dicMan = null;
-        }
-        pdicJni.deleteFrame();
         if (jniCallback != null) {
             jniCallback.deleteInstance();
             jniCallback = null;
@@ -582,7 +632,47 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             pdicJni.deleteInstance();
             pdicJni = null;
         }
-        super.onDestroy();
+
+        super.onDestroyView();
+    }
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+        if (mListener != null) {
+            mListener.onFragmentInteraction(uri);
+        }
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
     }
 
     private String getWordText(int start, int end) {
@@ -694,7 +784,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             } else {
                 word = "";
             }
-            Toast.makeText(this, getString(R.string.msg_no_hit_word) + word, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.msg_no_hit_word) + word, Toast.LENGTH_SHORT).show();
         }
         return "";
     }
@@ -726,10 +816,10 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_pswin, menu);
-        return true;
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        menu.clear();
+        inflater.inflate(R.menu.menu_pswin, menu);
     }
 
     @Override
@@ -741,7 +831,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            startActivity(new Intent().setClassName(this.getPackageName(), SettingsActivity2.class.getName()));
+            startActivity(new Intent().setClassName(getContext().getPackageName(), SettingsActivity2.class.getName()));
             return true;
         } else if (id == R.id.action_loadfile) {
             selectFile();
@@ -780,7 +870,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     private String m_strInitialDir;
 
     void selectFile() {
-        Intent i = new Intent().setClassName(this.getPackageName(), FileDirSelectionActivity.class.getName());
+        Intent i = new Intent().setClassName(getContext().getPackageName(), FileDirSelectionActivity.class.getName());
         i.putExtra(pfs.INITIALDIR, pref.getString(pfs.PSINITIALDIR, Utility.initialFileDirectory()));
         String[] exts = {".txt"};
         i.putExtra("exts",exts);
@@ -793,11 +883,11 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         if (useTextLoadTask) {
             this.downloadedRemoteName = downloadedRemoteName;
             String defCharset = pref.getBoolean(pfs.DEFCHARSET, false) ? config.defaultCharsetEncoding : null;
-            TextLoadTask textLoadTask = new TextLoadTask(this, this, 0, defCharset);
+            TextLoadTask textLoadTask = new TextLoadTask(getActivity(), this, 0, defCharset);
             textLoadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, filename, fileEncoding);
             createProgressDialog(false);
         } else {
-            LoadFileTask loadTask = new LoadFileTask(filename, downloadedRemoteName);
+            TouchSrchFragment.LoadFileTask loadTask = new TouchSrchFragment.LoadFileTask(filename, downloadedRemoteName);
             createProgressDialog(false);
             loadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         }
@@ -820,6 +910,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     // my original load file task
     //TODO: LoadFileTaskに移動できないか？
     class LoadFileTask extends AsyncTask {
+        Context context;
         String filename;
         String remoteName;
         String text;
@@ -827,6 +918,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
 
         public LoadFileTask(String filename, String remotename) {
             super();
+            this.context = getContext();
             this.filename = filename;
             this.remoteName = remotename;
         }
@@ -842,7 +934,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
                 //e.printStackTrace();
             }
             if (!ok) {
-                AssetManager asset = getAssets();
+                AssetManager asset = context.getAssets();   //TODO: これはいいんだっけ？
                 try {
                     InputStream is = asset.open(filename);
                     text = getText(is);
@@ -860,13 +952,13 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         }
     }
 
-    private void onPostLoadFile(LoadFileTask loadTask) {
+    private void onPostLoadFile(TouchSrchFragment.LoadFileTask loadTask) {
         if (loadTask.ok) {
             editText.setText(loadTask.text);
             loadFilePost(loadTask.filename, loadTask.remoteName);
         } else {
             deleteProgressDialog();
-            Toast.makeText(this, getString(R.string.msg_file_load_failed)+" : " + loadTask.filename, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.msg_file_load_failed)+" : " + loadTask.filename, Toast.LENGTH_LONG).show();
             loadFileFailed();
         }
     }
@@ -889,7 +981,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
 
         // set title
         File file = new File(filename);
-        setTitle(orgTitle + " - " + file.getName());
+        getActivity().setTitle(orgTitle + " - " + file.getName());
 
         // load PSBookmark
         PdicJni.PSFileInfo info = loadPSBookmarks(psbmFilename);
@@ -915,8 +1007,8 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         lastPosition = position;
         //pdicJni.savePSFileInfo(psbmFilename, position, remoteFilename, info != null ? info.revision : null);   // update the date
         deleteProgressDialog();
-        //Toast.makeText(this, getString(R.string.msg_file_loaded)+" : " + filename, Toast.LENGTH_SHORT).show();
-        FileHistoryManager mgr = new FileHistoryManager(this);
+        //Toast.makeText(getContext(), getString(R.string.msg_file_loaded)+" : " + filename, Toast.LENGTH_SHORT).show();
+        FileHistoryManager mgr = new FileHistoryManager(getContext());
         mgr.add(psbmFilename, fileEncoding);
 
         // setup Audio Player //
@@ -940,12 +1032,12 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     }
 
     void saveFileUI(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(This);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setMessage("UNDERCONSTRUCTION - This will be implemented in the near future")
                 .setPositiveButton("OK", null);
         builder.show();
         return;
-        //Intent i = new Intent().setClassName(this.getPackageName(), FileSaveActivity.class.getName());
+        //Intent i = new Intent().setClassName(getContext().getPackageName(), FileSaveActivity.class.getName());
         //startActivityForResult(i, REQUEST_CODE_SAVE);
     }
 
@@ -958,7 +1050,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             createProgressDialog(true);
             saveTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } catch (IOException e){
-            Toast.makeText(this, getString(R.string.toast_save_failed) + " : " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.toast_save_failed) + " : " + file.getAbsolutePath(), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -972,14 +1064,14 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             deleteProgressDialog();
         } else {
             deleteProgressDialog();
-            Toast.makeText(this, getString(R.string.msg_file_save_failed)+" : " + saveFileName, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), getString(R.string.msg_file_save_failed)+" : " + saveFileName, Toast.LENGTH_LONG).show();
         }
     }
 
     ProgressDialog progress;
 
     void createProgressDialog(boolean save) {
-        progress = new ProgressDialog(this);
+        progress = new ProgressDialog(getContext());
         if (save){
             progress.setTitle(getString(R.string.title_prog_file_saving));
             progress.setMessage(getString(R.string.msg_prog_file_saving));
@@ -1004,8 +1096,8 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         } else {
             if (withAuth) {
                 if (!ndvUtils.appKeysConfirmed) {
-                    MyDropboxAppKeysDialog dlg = new MyDropboxAppKeysDialog();
-                    dlg.show(getFragmentManager(), "dbx app keys");
+                    TouchSrchFragment.MyDropboxAppKeysDialog dlg = new TouchSrchFragment.MyDropboxAppKeysDialog();
+                    dlg.show(getActivity().getFragmentManager(), "dbx app keys");
                 }
             }
         }
@@ -1018,7 +1110,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             ndvUtils.setInitialDir(file.getParent());
             String toFileName = ndvUtils.convertToLocalName(file.getAbsolutePath());
             File toFile = new File(toFileName);
-            ndvUtils.makeDir(this, toFile);
+            ndvUtils.makeDir(getContext(), toFile);
             executeDownloadFile(file.getAbsolutePath(), toFile);
         } else {
             loadFile(file.getPath(), null);
@@ -1043,7 +1135,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     }
 
     private void selectFileDropbox() {
-        Intent i = new Intent().setClassName(this.getPackageName(), Dropbox2FileSelectionActivity.class.getName());
+        Intent i = new Intent().setClassName(getContext().getPackageName(), Dropbox2FileSelectionActivity.class.getName());
         i.putExtra("onlySelection", true);
         String[] exts = {".txt"};
         i.putExtra("exts",exts);
@@ -1066,7 +1158,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     private void saveToFile(String filename) {
         FileOutputStream outputTextStream;
         try {
-            outputTextStream = openFileOutput(filename, MODE_PRIVATE);
+            outputTextStream = getContext().openFileOutput(filename, Context.MODE_PRIVATE);
             outputTextStream.write(editText.getText().toString().getBytes());
             outputTextStream.close();
         } catch (FileNotFoundException ex) {
@@ -1083,7 +1175,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     {
         GotoDialog dialog = new GotoDialog();
         dialog.setListener(this);
-        dialog.show(getFragmentManager(), "goto_dialog");
+        dialog.show(getActivity().getFragmentManager(), "goto_dialog");
     }
     @Override
     public void onGotoClicked(Bundle args){
@@ -1110,22 +1202,22 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     int psbmGeneration;
 
     private void viewPSBookmarkList() {
-        Intent i = new Intent().setClassName(this.getPackageName(), PSBookmarkActivity.class.getName());
+        Intent i = new Intent().setClassName(getContext().getPackageName(), PSBookmarkActivity.class.getName());
         i.putExtra("filename", psbmFilename);
         startActivityForResult(i, REQUEST_CODE_PSB);
         psbmGeneration = pdicJni.psbmGeneration;
     }
 
     private void selectFileFromHistory() {
-        Intent i = new Intent().setClassName(this.getPackageName(), FileHistorySelectionActivity.class.getName());
+        Intent i = new Intent().setClassName(getContext().getPackageName(), FileHistorySelectionActivity.class.getName());
         startActivityForResult(i, REQUEST_CODE_PSB);
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_PSB) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
                     String filename = bundle.getString("filename");
@@ -1146,7 +1238,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
                     }
                 }
             } else
-            if (resultCode==RESULT_CANCELED){
+            if (resultCode==Activity.RESULT_CANCELED){
                 if (psbmGeneration!=pdicJni.psbmGeneration) {
                     int start  = editText.getSelectionStart();  // 選択状態の保存
                     int end = editText.getSelectionEnd();
@@ -1156,7 +1248,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             }
         } else
         if (requestCode == REQUEST_CODE_SAVE){
-            if (resultCode == RESULT_OK){
+            if (resultCode == Activity.RESULT_OK){
                 Bundle bundle = data.getExtras();
                 if (bundle != null){
                     String path = bundle.getString("path");
@@ -1167,7 +1259,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
             }
         } else
         if (requestCode == REQUEST_CODE_SELECT_FILE || requestCode == REQUEST_CODE_SELECT_FILE_DBX) {
-            if (resultCode == RESULT_OK) {
+            if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();
                 if (bundle != null) {
                     String filename = bundle.getString("filename");
@@ -1229,7 +1321,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     }
 
     void openNewPSWindow(WordItem item){
-        Intent i = new Intent().setClassName(this.getPackageName(), PSWinActivity.class.getName());
+        Intent i = new Intent().setClassName(getContext().getPackageName(), TouchSrchFragment.class.getName());
         i.putExtra("word", item.word);
         i.putExtra("text", item.trans);
         startActivity(i);
@@ -1261,21 +1353,21 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     enum MarkState {
         None, MarkA, MarkAB
     }
-    private MarkState markState = MarkState.None;
+    private TouchSrchFragment.MarkState markState = TouchSrchFragment.MarkState.None;
     private int markPositionA;
     private int markPositionB;
     final int minMarkABDuration = 1000; // [msec]
     // settings
     private int stepRewindTime = 5000; // [msec]
 
-    private AudioSliderUpdateThread updateThread;
-    void initAudioPlayer(){
-        audioLayout = (LinearLayout)findViewById(R.id.container_audio);
-        audioSlider = (SeekBar)findViewById(R.id.audioSeekBar);
+    private TouchSrchFragment.AudioSliderUpdateThread updateThread;
+    void initAudioPlayer(View view){
+        audioLayout = view.findViewById(R.id.container_audio);
+        audioSlider = view.findViewById(R.id.audioSeekBar);
         audioSlider.setOnSeekBarChangeListener(this);
-        btnStepRewind = (Button)findViewById(R.id.btn_step_rewind);
-        btnPlayPause = (Button)findViewById(R.id.btn_play_stop);
-        btnMark = (Button)findViewById(R.id.btn_mark);
+        btnStepRewind = view.findViewById(R.id.btn_step_rewind);
+        btnPlayPause = view.findViewById(R.id.btn_play_stop);
+        btnMark = view.findViewById(R.id.btn_mark);
         btnStepRewind.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
@@ -1294,7 +1386,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
                 toggleAudioMark();
             }
         });
-        tvPosition = (TextView)findViewById(R.id.text_position);
+        tvPosition = view.findViewById(R.id.text_position);
         showAudio(false);
     }
     boolean openAudioPlayer(String filename) {
@@ -1324,7 +1416,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         if (!autoLooping)
             mediaPlayer.setLooping(true);
 
-        updateThread = new AudioSliderUpdateThread();
+        updateThread = new TouchSrchFragment.AudioSliderUpdateThread();
         updateThread.start();
         tvPosition.setText("sss");
 
@@ -1387,7 +1479,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
     }
     // mark operation //
     void clearAudioMark(){
-        markState = MarkState.None;
+        markState = TouchSrchFragment.MarkState.None;
         btnMark.setText("A");
     }
     void toggleAudioMark(){
@@ -1395,17 +1487,17 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
         switch (markState){
             case None:
             default:
-                setAudioMark(MarkState.MarkA, mediaPlayer.getCurrentPosition(), -1);
+                setAudioMark(TouchSrchFragment.MarkState.MarkA, mediaPlayer.getCurrentPosition(), -1);
                 break;
             case MarkA:
-                setAudioMark(MarkState.MarkAB, markPositionA, mediaPlayer.getCurrentPosition());
+                setAudioMark(TouchSrchFragment.MarkState.MarkAB, markPositionA, mediaPlayer.getCurrentPosition());
                 break;
             case MarkAB:
                 clearAudioMark();
                 break;
         }
     }
-    boolean setAudioMark(MarkState newMarkState, int newMarkA, int newMarkB){
+    boolean setAudioMark(TouchSrchFragment.MarkState newMarkState, int newMarkA, int newMarkB){
         if (mediaPlayer == null) return false;
         if (markState == newMarkState) return false;
         switch (newMarkState){
@@ -1441,7 +1533,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
 
     void saveMarkPosition(){
         if (mediaPlayer != null && Utility.isNotEmpty(openedFilename)){
-            if (markState != MarkState.None) {   // mark設定されている場合のみ保存
+            if (markState != TouchSrchFragment.MarkState.None) {   // mark設定されている場合のみ保存
                 SharedPreferences.Editor edit = pref.edit();
                 edit.putString(pfs.LAST_AUDIOFILE, openedFilename);
                 int markA = markPositionA;
@@ -1467,12 +1559,12 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
                 if (lastAudioFile.equals(openedFilename)) {
                     int markA = pref.getInt(pfs.LAST_AUDIO_MARK_A, -1);
                     int markB = pref.getInt(pfs.LAST_AUDIO_MARK_B, -1);
-                    MarkState markState;
+                    TouchSrchFragment.MarkState markState;
                     if (markA >= 0) {
                         if (markB >= 0) {
-                            markState = MarkState.MarkAB;
+                            markState = TouchSrchFragment.MarkState.MarkAB;
                         } else {
-                            markState = MarkState.MarkA;
+                            markState = TouchSrchFragment.MarkState.MarkA;
                         }
                         if (setAudioMark(markState, markA, markB)){
                             mediaPlayer.seekTo(markPositionA);
@@ -1547,7 +1639,7 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
                     }
                 }
                 // Mark AB
-                if (markState == MarkState.MarkAB){
+                if (markState == TouchSrchFragment.MarkState.MarkAB){
                     if (position >= markPositionB){
                         mediaPlayer.seekTo(markPositionA);
                         position = markPositionA;
@@ -1575,10 +1667,10 @@ public class PSWinActivity extends AppCompatActivity implements FileSelectionDia
                 }
             }
         };
-        public BluetoothManager(Context context){
+        public BluetoothManager(){
             IntentFilter intentFilter = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
             intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
-            context.registerReceiver(btReceiver, intentFilter);
+            getContext().registerReceiver(btReceiver, intentFilter);
         }
         public void unregister(Context context){
             context.unregisterReceiver(btReceiver);
@@ -1657,6 +1749,8 @@ class PSWordListAdapter extends ArrayAdapter<WordItem> {
 }
 */
 
+/*
+//TODO: あとで別クラス化
 class TWordListAdapter implements IWordListAdapter {
 
     //private TextView popupText;
@@ -1676,3 +1770,4 @@ class TWordListAdapter implements IWordListAdapter {
         popupListAdapter.add(item);
     }
 }
+*/

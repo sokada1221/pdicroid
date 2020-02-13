@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".IncrSrchFragment">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:id="@+id/container"
+        android:orientation="vertical"
+        android:layout_width="match_parent" android:layout_height="match_parent"
+        tools:ignore="MergeRootFrame" >
+
+        <SearchView android:layout_width="match_parent"
+            android:id="@+id/searchView1"
+            android:layout_height="wrap_content"></SearchView>
+        <ListView android:id="@+id/wordList"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_weight="1"></ListView>
+
+    </LinearLayout>
+
+</FrameLayout>

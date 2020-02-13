@@ -3,7 +3,6 @@ package com.reliefoffice.pdic;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
@@ -72,9 +71,9 @@ abstract public class PSBookmarkEditWindow {
         } finally {
         }
     }
-    void init(Context context){
-        ndvFM = DropboxFileManager.createInstance(context);
-        psbmFM = PSBookmarkFileManager.createInstance(context, ndvFM);
+    void init(Activity activity){
+        ndvFM = DropboxFileManager.createInstance(activity);
+        psbmFM = PSBookmarkFileManager.createInstance(activity, ndvFM);
 
         // Initialize JNI.
         pdicJni = PdicJni.createInstance(null, null);   // ほかですでにinstance化されている前提

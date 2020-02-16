@@ -118,4 +118,6 @@
     <string name="title_touch_srch">Touch Search</string>
     <string name="title_settings">Settings</string>
     <string name="title_dictionary_setting">Dictionary Setting</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

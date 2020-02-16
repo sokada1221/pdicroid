@@ -682,6 +682,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         void onFragmentInteraction(Uri uri);
     }
 
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+    }
+
     private String getWordText(int start, int end) {
         String searchText;
         String touchedText = null;
@@ -825,7 +830,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
         inflater.inflate(R.menu.menu_pswin, menu);
     }
 

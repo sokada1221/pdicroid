@@ -209,10 +209,13 @@ public class IncrSrchFragment extends Fragment implements SearchView.OnQueryText
 
         jniCallback.setWordList(null);
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String text = pref.getString(pfs.LAST_SRCH_WORD, "");
-        if (Utility.isNotEmpty(text)) {
-            searchView.setQuery(text, true);
+        String text = searchView.getQuery().toString();
+        if (Utility.isEmpty(text)) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            text = pref.getString(pfs.LAST_SRCH_WORD, "");
+            if (Utility.isNotEmpty(text)) {
+                searchView.setQuery(text, true);
+            }
         }
     }
 

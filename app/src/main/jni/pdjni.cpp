@@ -739,14 +739,16 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_loadPSBookmarkItem
 JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_loadPSBookmarkFiles
 	(JNIEnv *env, jobject thiz)
 {
-	if (!PSBookmarkCallback){ return -1;}
-	PSBookmarkCallback->SetEnv(env);
+	if (PSBookmarkCallback)
+		PSBookmarkCallback->SetEnv(env);
 
 	tnstr_vec files;
 	LoadPSBookmarkFiles(files, true);
-	foreach_tnstr_vec(files, file){
-		if (PSBookmarkCallback->enumPSBookmarkFile(file->c_str())){
-			break;
+	if (PSBookmarkCallback){
+		foreach_tnstr_vec(files, file){
+			if (PSBookmarkCallback->enumPSBookmarkFile(file->c_str())){
+				break;
+			}
 		}
 	}
 	return 0;
@@ -755,7 +757,6 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_loadPSBookmarkFiles
 JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_savePSFileInfo
 	(JNIEnv *env, jobject thiz, jstring filename, jint position, jstring revision)
 {
-	DBW("savePSFileInfo");
 	JString wfilename(env, filename);
 	JString wrevision(env, revision);
 
@@ -778,6 +779,13 @@ JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_xloadPSFileInfo
 	return position;
 }
 
+// need to call OpenPSBookmark() and LoadPSBookmarkFiles()
+JNIEXPORT jint JNICALL Java_com_reliefoffice_pdic_PdicJni_getPSBookmarkCount
+	(JNIEnv *env, jobject thiz, jstring filename)
+{
+	JString wfilename(env, filename);
+	return GetPSBookmarkCount(wfilename);
+}
 
 } /* "C" */
 

@@ -132,6 +132,15 @@ public class PSBookmarkFileManager implements INetDriveFileInfo.UpdateNotifier {
         return Utility.isNotEmpty(getFilename()) && Utility.isNotEmpty(getRemoteFilename());
     }
 
+    public void loadBookmarkFiles(){
+        pdicjni.loadPSBookmarkFiles();
+    }
+
+    // need to call loadBookmarkFiles()
+    public int getBoookmarkCount(String filename){
+        return pdicjni.getPSBookmarkCount(filename);
+    }
+
     @Override
     public void uploaded(INetDriveFileInfo ndInfo){
         SharedPreferences.Editor edit = pref.edit();

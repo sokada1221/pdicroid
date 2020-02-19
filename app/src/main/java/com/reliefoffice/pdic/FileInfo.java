@@ -19,6 +19,8 @@ public class FileInfo implements Comparable<FileInfo> {
 
     boolean m_mp3Exists = false;
 
+    int m_nrBM;
+
     // constructor
     public FileInfo( String strName, File file )
     {
@@ -55,6 +57,7 @@ public class FileInfo implements Comparable<FileInfo> {
         m_file = file;
         m_size = file.length();
         m_modDate = file.lastModified();
+        m_nrBM = 0;
     }
     public boolean isDirectory(){ return m_file!=null ? m_file.isDirectory() : m_isDir; }
 
@@ -73,9 +76,11 @@ public class FileInfo implements Comparable<FileInfo> {
     public long getFileSize() { return m_size; }
     public Long getModDate() { return m_modDate; }
     public Long getReadDate() { return m_readDate; }
+    public int getNrBM() { return m_nrBM; }
     public void setFileSize(long size) { m_size = size; }
     public void setModDate(Long date) { m_modDate = date; }
     public void setReadDate(Long date) { m_readDate = date; }
+    public void setNrBM(int num) { m_nrBM = num; }
 
     public void setRoot(){
         m_strName = "";

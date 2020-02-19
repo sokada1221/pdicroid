@@ -57,6 +57,10 @@ public class FileHistorySelectionActivity extends FileSelectionActivity {
 
         List<FileInfo> listFile = new ArrayList<FileInfo>();
         String altAudioFolder = Utility.altAudioFolder(pref);
+        INetDriveFileManager ndvFM = DropboxFileManager.createInstance(this);
+        PSBookmarkFileManager psbmFM = PSBookmarkFileManager.createInstance(this, ndvFM);
+        psbmFM.open();
+        psbmFM.loadBookmarkFiles();
         for (int i=0;i<fileHistory.size();i++) {
             String filename = fileHistory.get(i);
             File file = new File(filename);
@@ -74,8 +78,11 @@ public class FileHistorySelectionActivity extends FileSelectionActivity {
             }
             fileInfo.setReadDate(fileHistory.getDateLong(i));
             fileInfo.m_mp3Exists = Utility.mp3Exists(fileInfo.getName(), altAudioFolder);
+            fileInfo.setNrBM(psbmFM.getBoookmarkCount(filename));
             listFile.add(fileInfo);
         }
+        psbmFM.close();
+        psbmFM.deleteInstance();
         return listFile;
     }
 

@@ -172,4 +172,6 @@ public class PdicJni {
     public native int loadPSBookmarkFiles();
     public native int savePSFileInfo(String filename, int postiion, String remotename, String revision);
     private native int xloadPSFileInfo(String filename);
+
+    public native int getPSBookmarkCount(String filename);  // need to call loadPSBookmarkFiles() before
 }

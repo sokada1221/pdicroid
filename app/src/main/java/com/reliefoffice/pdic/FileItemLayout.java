@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 public class FileItemLayout extends LinearLayout {
     ImageView imageView;
     TextView textView;
+    TextView nrBM;  // number of bookmarks
     TextView fileSize;
     TextView modDate;
 
@@ -26,10 +27,11 @@ public class FileItemLayout extends LinearLayout {
     @Override
     protected void onFinishInflate(){
         super.onFinishInflate();
-        imageView = (ImageView)findViewById(R.id.file_list_item_icon);
-        textView  = (TextView)findViewById(R.id.file_list_item_text);
-        fileSize = (TextView)findViewById(R.id.file_list_item_filesize);
-        modDate = (TextView)findViewById(R.id.file_list_item_moddate);
+        imageView = findViewById(R.id.file_list_item_icon);
+        textView  = findViewById(R.id.file_list_item_text);
+        nrBM = findViewById(R.id.file_list_item_nbm);
+        fileSize = findViewById(R.id.file_list_item_filesize);
+        modDate = findViewById(R.id.file_list_item_moddate);
     }
 
     public void bindView(FileInfo item){
@@ -47,6 +49,9 @@ public class FileItemLayout extends LinearLayout {
             fileSize.setText(Utility.itocs(item.getFileSize()));
         }
         textView.setText(item.getName());
+        if (item.m_nrBM>0){
+            nrBM.setText(" ["+String.valueOf(item.m_nrBM)+"BM]");
+        }
         if (item.getModDate()!=null) {
             SimpleDateFormat sdf = new SimpleDateFormat(" HH:mm:ss");
             DateFormat df = android.text.format.DateFormat.getDateFormat(getContext());

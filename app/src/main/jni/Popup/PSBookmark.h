@@ -41,6 +41,8 @@ void LoadPSBookmarkFiles(tnstr_vec &files, bool sort);
 bool LoadPSFileInfo(const tchar *filename, int &position, tnstr *revision);
 const tchar *GetPSBookmarkFileName();
 
+int GetPSBookmarkCount(const tchar *filename);
+
 //---------------------------------------------------------------------------
 #endif
 

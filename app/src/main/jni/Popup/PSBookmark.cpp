@@ -59,6 +59,7 @@ void LoadBookmarkOne(TBookmarkItem &item, TBMLParam &p)
 class TPSBookmark {
 protected:
 	tnstr FileName;
+	map<tnstr, int> BMCount;	// ファイルごとのbookmark数(ファイル名は大文字・小文字の区別あり！）
 	//vector<int> FileLocs;	// filenameのある行のファイル上の位置
 	//map<tnstr, int> FileLoc;	// filenameのある行のファイル上の位置
 public:
@@ -81,6 +82,12 @@ public:
 	bool Save(const tchar *filename, int position, const tchar *revision, const TPSBMItem *item, bool _delete=false);
 	bool Delete(const tchar *filename, const TPSBMItem &item)
 		{ return Save(filename, -1, NULL, &item, true); }
+	int GetBMCount(const tchar *filename)
+	{
+		if (BMCount.find(filename) == BMCount.end())
+			return 0;	// no bookmark
+		return BMCount[filename];
+	}
 };
 
 int sortByDate( TPSBMFile **s1, TPSBMFile **s2 )
@@ -90,6 +97,10 @@ int sortByDate( TPSBMFile **s1, TPSBMFile **s2 )
 bool TPSBookmark::LoadFileNames(tnstr_vec &files, bool sort)
 {
 	FlexObjectArray<TPSBMFile> psbmFiles;
+
+	BMCount.clear();
+	int count = 0;
+	tnstr prev_filename;
 
 	TIFile tif;
 	if (tif.open(FileName)) return false;
@@ -101,15 +112,22 @@ bool TPSBookmark::LoadFileNames(tnstr_vec &files, bool sort)
 		if (line[0]!='\t'){
 			// filename
 			//FileLoc[line] = tif.tell();
+			if (count > 0 && prev_filename.exist()){
+				BMCount[prev_filename] = count;
+			}
 			TPSBMFile file;
 			ParseFile(line, file);
 			if (file.filename[0]){
+				prev_filename = file.filename;
 				if (sort){
 					psbmFiles.add(new TPSBMFile(file));
 				} else {
 					files.push_back(file.filename);
 				}
 			}
+			count = 0;
+		} else {
+			count++;
 		}
 	}
 	if (sort){
@@ -304,6 +322,8 @@ bool TPSBookmark::Save(const tchar *filename, int position, const tchar *revisio
 	// 同じ行が存在する場合は、桁を比較する
 	// 行と桁が一致する場合は上書きする(長さは関係ない)
 	// markした範囲が重複した場合はどうする？
+
+	BMCount.clear();
 
 	tnstr tmpfile( FileName );
 	tmpfile += _t(".tmp");
@@ -528,3 +548,11 @@ const tchar *GetPSBookmarkFileName()
 	return PSBookmark->GetFileName();
 }
 
+int GetPSBookmarkCount(const tchar *filename)
+{
+	if (!PSBookmark){
+		DBW("!!!Need OpenPSBookmark");
+		return 0;
+	}
+	return PSBookmark->GetBMCount(filename);
+}

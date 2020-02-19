@@ -121,6 +121,9 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass = null;
+
+        if (lastNavSetting)
+            setupViewFlags();
         lastNavSetting = false;
 
         switch(menuItem.getItemId()) {
@@ -194,6 +197,10 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
             }
         }
 
+        setupViewFlags();
+    }
+
+    void setupViewFlags(){
         // Setup JNI config //
         int viewFlags = 0xFFFF;
         boolean showPronExp = pref.getBoolean(pfs.SHOW_PRONEXP, config.defaultShowPronExp);

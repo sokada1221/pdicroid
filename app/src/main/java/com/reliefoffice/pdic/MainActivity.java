@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -37,7 +38,10 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
 
     SharedPreferences pref;
 
+    NavigationView navigationView;
+
     int lastNavItem = -1;    // ê›íËà»äOÇÃç≈å„ÇÃëIëitem
+    boolean lastNavSetting = false;
 
     // NetDrive //
     INetDriveFileManager ndvFM;
@@ -60,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView = findViewById(R.id.nav_view);
         //TODO: navigationView.setNavigationItemSelectedListener(this);
 
         // Initialize JNI.
@@ -117,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         // Create a new fragment and specify the fragment to show based on nav item clicked
         Fragment fragment = null;
         Class fragmentClass = null;
+        lastNavSetting = false;
 
         switch(menuItem.getItemId()) {
             case R.id.nav_main:
@@ -134,9 +139,11 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
                 break;
             case R.id.nav_settings:
                 fragmentClass = SettingsFragmentCompat.class;
+                lastNavSetting = true;
                 break;
             case R.id.nav_dic_setting:
                 fragmentClass = DicSettingFragment.class;
+                lastNavSetting = true;
                 break;
         }
 
@@ -161,6 +168,18 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         drawer.closeDrawers();
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            if (lastNavSetting)
+                displaySelectedScreenById(navigationView, lastNavItem);
+            else
+                super.onBackPressed();
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();

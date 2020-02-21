@@ -426,15 +426,12 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             orgTitle = getActivity().getTitle().toString();
         }
 
-        if (mParam1 == "word"){
+        if (isWordMode()){
             editText.setText(mParam2);
             getActivity().setTitle(orgTitle + " - " + mParam1);
             drillIntoMode = true;
         } else
-        if (mParam1 == "clip"){
-            if (loadClipboardData()) {
-                Toast.makeText(getContext(), getString(R.string.msg_clipboard_loaded), Toast.LENGTH_SHORT).show();
-            }
+        if (isClipMode()){
         } else {
             // load the latest opened file
             TouchSrchFragment.HistoryFilename histName = getLatestHistoryName();
@@ -447,6 +444,13 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
         // Bluetooth Manager //
         bluetoothManager = new TouchSrchFragment.BluetoothManager();
+    }
+
+    boolean isWordMode(){
+        return mParam1 == "word";
+    }
+    boolean isClipMode(){
+        return mParam1 == "clip";
     }
 
     class HistoryFilename {
@@ -470,15 +474,18 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         return histName;
     }
 
-    boolean loadClipboardData(){
+    int lastClipLength = 0;
+
+    int loadClipboardData(){
         ClipboardManager cm = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData cd = cm.getPrimaryClip();
         if(cd != null){
             ClipData.Item item = cd.getItemAt(0);
-            editText.setText(item.getText());
-            return true;
+            CharSequence text = item.getText();
+            editText.setText(text);
+            return lastClipLength = text.length();
         }
-        return false;
+        return 0;
     }
 
     PSBookmarkEditWindow psbEditWindow;
@@ -585,6 +592,23 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             selectFileDropbox();
         }
 
+        if (isClipMode()){
+            int len = loadClipboardData();
+            if (len>0){
+                Toast.makeText(getContext(), getString(R.string.msg_clipboard_loaded), Toast.LENGTH_LONG).show();
+                // 前回と長さが同じ場合はpositionを移動
+                int lastLength = pref.getInt(pfs.LAST_CLIP_LENGTH, 0);
+                if (lastLength == len) {
+                    int position = pref.getInt(pfs.LAST_CURSOR_POS, 0);
+                    try {
+                        editText.setSelection(position);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
         // Bluetooth Manager //
         Utility.requestBluetoothPermision(getActivity());
     }
@@ -606,6 +630,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         jniCallback.setWordList(null);
         if (PSBookmarkReady) {
             psbmFM.close();
+        }
+
+        if (lastClipLength>0) {
+            SharedPreferences.Editor edit = pref.edit();
+            edit.putInt(pfs.LAST_CLIP_LENGTH, lastClipLength);
+            int position = editText.getSelectionStart();
+            edit.putInt(pfs.LAST_CURSOR_POS, position);
+            edit.commit();
         }
 
         super.onPause();

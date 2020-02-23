@@ -423,22 +423,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             orgTitle = getActivity().getTitle().toString();
         }
 
-        if (isWordMode()){
-            editText.setText(mParam2);
-            getActivity().setTitle(orgTitle + " - " + mParam1);
-            drillIntoMode = true;
-        } else
-        if (isClipMode()){
-        } else {
-            // load the latest opened file
-            TouchSrchFragment.HistoryFilename histName = getLatestHistoryName();
-            if (histName!=null){
-                fileEncoding = histName.encoding;
-                autoStartPlayMode = false;
-                loadFile(histName.filename, histName.remoteName);
-            }
-        }
-
         // Bluetooth Manager //
         bluetoothManager = new TouchSrchFragment.BluetoothManager();
     }
@@ -583,7 +567,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         if (ndvFM.authComplete(getContext())) {
             selectFileDropbox();
         }
-
+        if (isWordMode()){
+            editText.setText(mParam1 + " " + mParam2);
+        } else
         if (isClipMode()){
             int len = loadClipboardData();
             if (len>0){
@@ -597,6 +583,16 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
+                }
+            }
+        } else {
+            if (getBackStackEntryCount() == 0){
+                // load the latest opened file
+                TouchSrchFragment.HistoryFilename histName = getLatestHistoryName();
+                if (histName!=null){
+                    fileEncoding = histName.encoding;
+                    autoStartPlayMode = false;
+                    loadFile(histName.filename, histName.remoteName);
                 }
             }
         }

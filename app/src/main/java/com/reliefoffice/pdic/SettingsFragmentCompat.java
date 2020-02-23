@@ -82,6 +82,7 @@ public class SettingsFragmentCompat extends PreferenceFragmentCompat implements 
             // DefaultAudioFolder = "/storage/sdcard0/Download";
             AudioFileFolder.setText(DefaultAudioFolder);
         }
+        AudioFileFolder.setSummary(AudioFileFolder.getText());
 
         psbmDefCharset = (CheckBoxPreference) findPreference("DefCharset");
     }

@@ -25,6 +25,8 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.Spannable;
 import android.util.Log;
 import android.view.ActionMode;
@@ -447,10 +449,10 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
 
     boolean isWordMode(){
-        return mParam1 == "word";
+        return Utility.isNotEmpty(mParam1) && !isClipMode();
     }
     boolean isClipMode(){
-        return mParam1 == "clip";
+        return mParam1 == "\\\\clip";
     }
 
     class HistoryFilename {
@@ -1360,10 +1362,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
 
     void openNewPSWindow(WordItem item){
-        Intent i = new Intent().setClassName(getContext().getPackageName(), TouchSrchFragment.class.getName());
-        i.putExtra("word", item.word);
-        i.putExtra("text", item.trans);
-        startActivity(i);
+        FragmentManager fragmentManager = getFragmentManager();
+
+        if(fragmentManager != null){
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.content_frame, this.newInstance(item.word, item.trans));
+            fragmentTransaction.addToBackStack(null);   // BackStackを設定
+            fragmentTransaction.commit();
+        }
     }
 
     void checkPSBookmarkStatus(){

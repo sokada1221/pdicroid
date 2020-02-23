@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
                 lastNavItem = menuItem.getItemId();
                 break;
             case R.id.nav_clip_search:
-                fragment = TouchSrchFragment.newInstance("clip", null);
+                fragment = TouchSrchFragment.newInstance("\\\\clip", null);
                 lastNavItem = menuItem.getItemId();
                 break;
             case R.id.nav_settings:

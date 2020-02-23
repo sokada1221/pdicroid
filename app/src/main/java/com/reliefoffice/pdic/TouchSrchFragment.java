@@ -423,6 +423,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             orgTitle = getActivity().getTitle().toString();
         }
 
+        editText.requestFocus();
+
         // Bluetooth Manager //
         bluetoothManager = new TouchSrchFragment.BluetoothManager();
     }

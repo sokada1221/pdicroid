@@ -72,7 +72,7 @@ import static java.lang.Math.abs;
  * Use the {@link TouchSrchFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class TouchSrchFragment extends Fragment implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener, SeekBar.OnSeekBarChangeListener, FragmentManager.OnBackStackChangedListener {
+public class TouchSrchFragment extends Fragment implements FileSelectionDialog.OnFileSelectListener, TextLoadTask.OnFileLoadListener, SaveFileTask.SaveFileTaskDone, GotoDialog.Listener, SeekBar.OnSeekBarChangeListener, OnBackPressedListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final String ARG_PARAM3 = "param3";
@@ -283,7 +283,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             public void onClick(View view) {
                 if (moved) return;
                 //Log.i("PDP", "onClick :" + editText.getSelectionStart() + " " + editText.getSelectionEnd());
-                getWordText(editText.getSelectionStart(), editText.getSelectionEnd());
+                popupWordText(editText.getSelectionStart(), editText.getSelectionEnd());
                 closePSBookmarkEditWindow();
             }
         });
@@ -408,6 +408,48 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         // Initial Text //
         if (Utility.isEmpty(orgTitle)){
             orgTitle = getActivity().getTitle().toString();
+        }
+
+        if (getBackStackEntryCount() > 0 && !isWordMode()){
+            // タッチ検索/クリップ検索で深い検索に入り、そこから別画面に移り、戻ってきた場合
+            faked = true;
+            mParam1 = pref.getString(pfs.LAST_TOUCH_SRCH_WORD, null);
+            mParam2 = pref.getString(pfs.LAST_TOUCH_SRCH_TRANS, null);
+        }
+
+        if (!cancel) {
+            if (isWordMode()) {
+                editText.setText(mParam1 + " " + mParam2);
+                if (getBackStackEntryCount() > 0) {
+                    SharedPreferences.Editor edit = pref.edit();
+                    edit.putString(pfs.LAST_TOUCH_SRCH_WORD, mParam1);
+                    edit.putString(pfs.LAST_TOUCH_SRCH_TRANS, mParam2);
+                    edit.commit();
+                }
+            } else if (isClipMode()) {
+                int len = loadClipboardData();
+                if (len > 0) {
+                    Toast.makeText(getContext(), getString(R.string.msg_clipboard_loaded), Toast.LENGTH_LONG).show();
+                    // 前回と長さが同じ場合はpositionを移動
+                    int lastLength = pref.getInt(pfs.LAST_CLIP_LENGTH, 0);
+                    if (lastLength == len) {
+                        int position = pref.getInt(pfs.LAST_CURSOR_POS, 0);
+                        try {
+                            editText.setSelection(position);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } else {
+                // load the latest opened file
+                TouchSrchFragment.HistoryFilename histName = getLatestHistoryName();
+                if (histName != null) {
+                    fileEncoding = histName.encoding;
+                    autoStartPlayMode = false;
+                    loadFile(histName.filename, histName.remoteName);
+                }
+            }
         }
 
         editText.requestFocus();
@@ -557,6 +599,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     public void onResume() {
         super.onResume();
 
+        if (cancel)
+            return;
+
         jniCallback.setWordList(wordListAdapter);
         if (PSBookmarkReady) {
             psbmFM.open();
@@ -566,70 +611,25 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             selectFileDropbox();
         }
 
-        if (cancel)
-            return;
-
-        if (getBackStackEntryCount() > 0 && !isWordMode()){
-            // タッチ検索/クリップ検索で深い検索に入り、そこから別画面に移り、戻ってきた場合
-            faked = true;
-            mParam1 = pref.getString(pfs.LAST_TOUCH_SRCH_WORD, null);
-            mParam2 = pref.getString(pfs.LAST_TOUCH_SRCH_TRANS, null);
-
-            getFragmentManager().addOnBackStackChangedListener(this);
-        }
-
-        if (isWordMode()){
-            editText.setText(mParam1 + " " + mParam2);
-            if (getBackStackEntryCount() > 0){
-                SharedPreferences.Editor edit = pref.edit();
-                edit.putString(pfs.LAST_TOUCH_SRCH_WORD, mParam1);
-                edit.putString(pfs.LAST_TOUCH_SRCH_TRANS, mParam2);
-                edit.commit();
-            }
-        } else
-        if (isClipMode()){
-            int len = loadClipboardData();
-            if (len>0){
-                Toast.makeText(getContext(), getString(R.string.msg_clipboard_loaded), Toast.LENGTH_LONG).show();
-                // 前回と長さが同じ場合はpositionを移動
-                int lastLength = pref.getInt(pfs.LAST_CLIP_LENGTH, 0);
-                if (lastLength == len) {
-                    int position = pref.getInt(pfs.LAST_CURSOR_POS, 0);
-                    try {
-                        editText.setSelection(position);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } else {
-            // load the latest opened file
-            TouchSrchFragment.HistoryFilename histName = getLatestHistoryName();
-            if (histName!=null){
-                fileEncoding = histName.encoding;
-                autoStartPlayMode = false;
-                loadFile(histName.filename, histName.remoteName);
-            }
-        }
-
         // Bluetooth Manager //
         Utility.requestBluetoothPermision(getActivity());
 
         fromMain = false;
     }
 
+    // MainActivityのonBackPressedから呼ばれる(OnBackPressedListener)
     @Override
-    public void onBackStackChanged() {
-        getFragmentManager().beginTransaction().remove(this).commit();
+    public boolean onBackPressed() {
+        if (faked) {
+            getFragmentManager().beginTransaction().remove(this).commit();
+        }
+        return false;
     }
 
     int lastPosition;
 
     @Override
     public void onPause() {
-        if (faked){
-            getFragmentManager().removeOnBackStackChangedListener(this);
-        }
         if (Utility.isNotEmpty(openedFilename)) {
             INetDriveFileInfo info = ndvFM.findByLocalName(openedFilename);
             if (info != null) {
@@ -732,7 +732,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         super.onPrepareOptionsMenu(menu);
     }
 
-    private String getWordText(int start, int end) {
+    private String popupWordText(int start, int end) {
         String searchText;
         String touchedText = null;
         int startPos = 0;

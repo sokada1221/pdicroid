@@ -188,8 +188,15 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         } else {
             if (lastNavSetting)
                 displaySelectedScreenById(navigationView, lastNavItem);
-            else
-                super.onBackPressed();
+            else {
+                boolean processed = false;
+                Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.content_frame);
+                if (fragment instanceof OnBackPressedListener) {
+                    processed = ((OnBackPressedListener) fragment).onBackPressed();
+                }
+                if (!processed)
+                    super.onBackPressed();
+            }
         }
     }
 

@@ -105,7 +105,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         private int delta = 0;
         private boolean movingX = false;
         private boolean movingY = false;
-        private int prevMargin = 0;     //TODO: Fragmentにしてから、下スクロールをするとend()の時点で元に戻ってしまう（原因不明）そのための対症療法
+        private int prevMargin = 0;     //TODO: Fragmentにしてから、下スクロールをするとend()の時点で元に戻ってしまう（原因不明）そのための対症療法 (git:c44ce89a311daef812aadd4cce283d423cfa1ad1)
         SwipeMove(LinearLayout layout, int moveMarginX){
             this.layout = layout;
             MOVE_MARGIN_X = moveMarginX;

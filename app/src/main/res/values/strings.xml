@@ -121,4 +121,5 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="title_clip_srch">Clipboard Search</string>
+    <string name="msg_need_clipboard_data">You need clipboard data from other application to do clip search.</string>
 </resources>

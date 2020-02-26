@@ -427,20 +427,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     edit.commit();
                 }
             } else if (isClipMode()) {
-                int len = loadClipboardData();
-                if (len > 0) {
-                    Toast.makeText(getContext(), getString(R.string.msg_clipboard_loaded), Toast.LENGTH_LONG).show();
-                    // 前回と長さが同じ場合はpositionを移動
-                    int lastLength = pref.getInt(pfs.LAST_CLIP_LENGTH, 0);
-                    if (lastLength == len) {
-                        int position = pref.getInt(pfs.LAST_CURSOR_POS, 0);
-                        try {
-                            editText.setSelection(position);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
             } else {
                 // load the latest opened file
                 TouchSrchFragment.HistoryFilename histName = getLatestHistoryName();
@@ -609,6 +595,26 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
         if (ndvFM.authComplete(getContext())) {
             selectFileDropbox();
+        }
+
+        if (isClipMode()) {
+            // 他のアプリからの切り替えに対応するため、onCreateではなくここで。
+            int len = loadClipboardData();
+            if (len > 0) {
+                Toast.makeText(getContext(), getString(R.string.msg_clipboard_loaded), Toast.LENGTH_LONG).show();
+                // 前回と長さが同じ場合はpositionを移動
+                int lastLength = pref.getInt(pfs.LAST_CLIP_LENGTH, 0);
+                if (lastLength == len) {
+                    int position = pref.getInt(pfs.LAST_CURSOR_POS, 0);
+                    try {
+                        editText.setSelection(position);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                editText.setText(R.string.msg_need_clipboard_data);
+            }
         }
 
         // Bluetooth Manager //
@@ -1587,11 +1593,13 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
     void saveMarkPosition(){
         if (mediaPlayer != null && Utility.isNotEmpty(openedFilename)){
-            if (markState != TouchSrchFragment.MarkState.None) {   // mark設定されている場合のみ保存
-                SharedPreferences.Editor edit = pref.edit();
-                edit.putString(pfs.LAST_AUDIOFILE, openedFilename);
-                int markA = markPositionA;
-                int markB = markPositionB;
+            int markA = -1;
+            int markB = -1;
+            SharedPreferences.Editor edit = pref.edit();
+            edit.putString(pfs.LAST_AUDIOFILE, openedFilename);
+            if (markState != TouchSrchFragment.MarkState.None) {   // mark設定されている場合
+                markA = markPositionA;
+                markB = markPositionB;
                 switch (markState) {
                     case MarkAB:
                         break;
@@ -1600,10 +1608,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     case MarkA:
                         markB = -1;
                 }
-                edit.putInt(pfs.LAST_AUDIO_MARK_A, markA);
-                edit.putInt(pfs.LAST_AUDIO_MARK_B, markB);
-                edit.commit();
             }
+            edit.putInt(pfs.LAST_AUDIO_POS, mediaPlayer.getCurrentPosition());
+            edit.putInt(pfs.LAST_AUDIO_MARK_A, markA);
+            edit.putInt(pfs.LAST_AUDIO_MARK_B, markB);
+            edit.commit();
         }
     }
     void reloadMarkPosition(){
@@ -1623,6 +1632,10 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                         if (setAudioMark(markState, markA, markB)){
                             mediaPlayer.seekTo(markPositionA);
                         }
+                    }
+                    int pos = pref.getInt(pfs.LAST_AUDIO_POS, -1);
+                    if (pos >= 0){
+                        mediaPlayer.seekTo(pos);
                     }
                 }
             }

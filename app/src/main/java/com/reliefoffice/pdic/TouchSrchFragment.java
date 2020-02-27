@@ -1593,13 +1593,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
     void saveMarkPosition(){
         if (mediaPlayer != null && Utility.isNotEmpty(openedFilename)){
-            int markA = -1;
-            int markB = -1;
             SharedPreferences.Editor edit = pref.edit();
-            edit.putString(pfs.LAST_AUDIOFILE, openedFilename);
-            if (markState != TouchSrchFragment.MarkState.None) {   // mark設定されている場合
-                markA = markPositionA;
-                markB = markPositionB;
+            if (markState != TouchSrchFragment.MarkState.None) {
+                // mark設定されている場合
+                int markA = markPositionA;
+                int markB = markPositionB;
                 switch (markState) {
                     case MarkAB:
                         break;
@@ -1608,17 +1606,27 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     case MarkA:
                         markB = -1;
                 }
+                edit.putString(pfs.LAST_AUDIOFILE, openedFilename);
+                edit.putInt(pfs.LAST_AUDIO_MARK_A, markA);
+                edit.putInt(pfs.LAST_AUDIO_MARK_B, markB);
+            } else {
+                // markが解除された場合
+                String lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE, "");
+                if (lastAudioFile.equals(openedFilename)) {
+                    edit.remove(pfs.LAST_AUDIO_MARK_A);
+                    edit.remove(pfs.LAST_AUDIO_MARK_B);
+                }
             }
+            edit.putString(pfs.LAST_AUDIOFILE_FOR_POS, openedFilename);
             edit.putInt(pfs.LAST_AUDIO_POS, mediaPlayer.getCurrentPosition());
-            edit.putInt(pfs.LAST_AUDIO_MARK_A, markA);
-            edit.putInt(pfs.LAST_AUDIO_MARK_B, markB);
             edit.commit();
         }
     }
     void reloadMarkPosition(){
-        String lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE, config.getDefaultAudioFolder());
-        if (Utility.isNotEmpty(lastAudioFile)){
-            if (Utility.isNotEmpty(openedFilename)){
+        if (Utility.isNotEmpty(openedFilename)) {
+            // markAB
+            String lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE, "");
+            if (Utility.isNotEmpty(lastAudioFile)) {
                 if (lastAudioFile.equals(openedFilename)) {
                     int markA = pref.getInt(pfs.LAST_AUDIO_MARK_A, -1);
                     int markB = pref.getInt(pfs.LAST_AUDIO_MARK_B, -1);
@@ -1629,12 +1637,23 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                         } else {
                             markState = TouchSrchFragment.MarkState.MarkA;
                         }
-                        if (setAudioMark(markState, markA, markB)){
+                        if (setAudioMark(markState, markA, markB)) {
                             mediaPlayer.seekTo(markPositionA);
                         }
                     }
                     int pos = pref.getInt(pfs.LAST_AUDIO_POS, -1);
-                    if (pos >= 0){
+                    if (pos >= 0) {
+                        mediaPlayer.seekTo(pos);
+                    }
+                }
+            }
+
+            // audio position
+            lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE_FOR_POS, "");
+            if (Utility.isNotEmpty(lastAudioFile)){
+                if (lastAudioFile.equals(openedFilename)) {
+                    int pos = pref.getInt(pfs.LAST_AUDIO_POS, -1);
+                    if (pos >= 0) {
                         mediaPlayer.seekTo(pos);
                     }
                 }

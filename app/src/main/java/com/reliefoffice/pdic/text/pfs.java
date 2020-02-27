@@ -11,6 +11,7 @@ public class pfs {
     public static final String SHOW_PRONEXP = "ShowPronExp";
     public static final String AUDIOFILEFOLDER = "AudioFileFolder";
     public static final String LAST_AUDIOFILE = "LastAudioFile";
+    public static final String LAST_AUDIOFILE_FOR_POS = "LastAudioFileForPos";
     public static final String LAST_AUDIO_POS = "LastAudioPos";
     public static final String LAST_AUDIO_MARK_A = "LastAudioMarkA";
     public static final String LAST_AUDIO_MARK_B = "LastAudioAMarkB";

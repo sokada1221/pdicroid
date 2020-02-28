@@ -1616,14 +1616,15 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     edit.remove(pfs.LAST_AUDIO_MARK_A);
                     edit.remove(pfs.LAST_AUDIO_MARK_B);
                 }
+                edit.putString(pfs.LAST_AUDIOFILE_FOR_POS, openedFilename);
+                edit.putInt(pfs.LAST_AUDIO_POS, mediaPlayer.getCurrentPosition());
             }
-            edit.putString(pfs.LAST_AUDIOFILE_FOR_POS, openedFilename);
-            edit.putInt(pfs.LAST_AUDIO_POS, mediaPlayer.getCurrentPosition());
             edit.commit();
         }
     }
     void reloadMarkPosition(){
         if (Utility.isNotEmpty(openedFilename)) {
+            int pos = -1;
             // markAB
             String lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE, "");
             if (Utility.isNotEmpty(lastAudioFile)) {
@@ -1640,23 +1641,22 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                         if (setAudioMark(markState, markA, markB)) {
                             mediaPlayer.seekTo(markPositionA);
                         }
-                    }
-                    int pos = pref.getInt(pfs.LAST_AUDIO_POS, -1);
-                    if (pos >= 0) {
-                        mediaPlayer.seekTo(pos);
+                        pos = markA;
                     }
                 }
             }
 
-            // audio position
-            lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE_FOR_POS, "");
-            if (Utility.isNotEmpty(lastAudioFile)){
-                if (lastAudioFile.equals(openedFilename)) {
-                    int pos = pref.getInt(pfs.LAST_AUDIO_POS, -1);
-                    if (pos >= 0) {
-                        mediaPlayer.seekTo(pos);
+            if (pos == -1) {
+                // audio position
+                lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE_FOR_POS, "");
+                if (Utility.isNotEmpty(lastAudioFile)) {
+                    if (lastAudioFile.equals(openedFilename)) {
+                        pos = pref.getInt(pfs.LAST_AUDIO_POS, -1);
                     }
                 }
+            }
+            if (pos>=0) {
+                mediaPlayer.seekTo(pos);
             }
         }
     }

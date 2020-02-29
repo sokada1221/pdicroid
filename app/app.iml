@@ -99,6 +99,7 @@
     <orderEntry type="library" name="Gradle: android.arch.lifecycle:common:1.0.3@jar" level="project" />
     <orderEntry type="library" name="Gradle: android.arch.core:common:1.0.0@jar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:design:27.0.2@aar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:preference-v7:27.0.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:appcompat-v7:27.0.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:recyclerview-v7:27.0.2@aar" level="project" />
     <orderEntry type="library" name="Gradle: com.android.support:transition:27.0.2@aar" level="project" />

@@ -130,6 +130,9 @@ bool TPSBookmark::LoadFileNames(tnstr_vec &files, bool sort)
 			count++;
 		}
 	}
+	if (count > 0 && prev_filename.exist()){
+		BMCount[prev_filename] = count;
+	}
 	if (sort){
 		psbmFiles.sort(sortByDate);
 		for (int i=0;i<psbmFiles.get_num();i++){

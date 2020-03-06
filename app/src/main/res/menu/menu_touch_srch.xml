@@ -18,6 +18,11 @@
         android:orderInCategory="100"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/action_reload_file"
+        android:title="@string/action_reload_file"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/action_savefile"
         android:title="@string/action_savefile"
         android:orderInCategory="100"

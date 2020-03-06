@@ -26,6 +26,7 @@
     <string name="action_loadfile">ファイルを開く</string>
     <string name="action_loadfile_history">ファイルを開く - 履歴から</string>
     <string name="action_loadfile_dropbox">ファイルを開く - Dropboxから</string>
+    <string name="action_reload_file">ファイルの再読み込み</string>
     <string name="action_view_bookmarklist">ブックマーク一覧</string>
     <string name="action_edit">編集</string>
     <string name="action_remove">削除</string>

@@ -904,6 +904,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             selectFileFromHistory();
         } else if (id == R.id.action_loadfile_dropbox) {
             downloadFileDropbox(true);
+        } else if (id == R.id.action_reload_file){
+            reloadFile();
         } else if (id == R.id.action_savefile){
             saveFileUI();
         } else if (id == R.id.action_goto){
@@ -1164,6 +1166,18 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     dlg.show(getActivity().getFragmentManager(), "dbx app keys");
                 }
             }
+        }
+    }
+
+    private void reloadFile(){
+        if (ndvUtils.isLocalFileForRemote(openedFilename)) {
+            fromDropbox = true;
+            FileInfo file = new FileInfo(ndvUtils.convertToRemoteName(openedFilename));
+            onFileSelect(file);
+        } else {
+            fromDropbox = false;
+            FileInfo file = new FileInfo(openedFilename);
+            onFileSelect(file);
         }
     }
 

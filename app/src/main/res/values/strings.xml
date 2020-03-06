@@ -27,6 +27,7 @@
     <string name="action_loadfile">Open file</string>
     <string name="action_loadfile_history">Open file from History</string>
     <string name="action_loadfile_dropbox">Open file from Dropbox</string>
+    <string name="action_reload_file">Reload File</string>
     <string name="action_view_bookmarklist">Bookmark List</string>
     <string name="action_edit">Edit</string>
     <string name="action_remove">Remove</string>

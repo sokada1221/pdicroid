@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.reliefoffice.pdic.text.pfs;
 
@@ -263,6 +264,7 @@ public class IncrSrchFragment extends Fragment implements SearchView.OnQueryText
             pdicJni.incSearch("");
             wordListAdapter.clear();
             pdicJni.incSearch(newText);
+            handleDebug(newText);
         }
         //Log.d("PDD", "Start first idle");
         final int firstIdleCount = 30;  //TODO: need to adjust
@@ -321,4 +323,15 @@ public class IncrSrchFragment extends Fragment implements SearchView.OnQueryText
             requestIdleProc();  // continue to run idle proc
         }
     };
+
+    private void handleDebug(String text){
+        if (text.equals("debug on") || text.equals("debug off")){
+            final boolean debug = text.contains("on");
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            SharedPreferences.Editor edit = pref.edit();
+            edit.putBoolean(pfs.DEBUG, debug);
+            edit.commit();
+            Toast.makeText(getContext(), getString(debug ? R.string.msg_debug_on : R.string.msg_debug_off), Toast.LENGTH_LONG).show();
+        }
+    }
 }

@@ -223,7 +223,10 @@ public class DicSettingFragment extends Fragment implements FileSelectionDialog.
 
         adpDicList.add(getString(R.string.label_download));
         adpDicList.add(getString(R.string.label_add_file));
-        adpDicList.add(getString(R.string.label_add_file_dropbox));
+        final boolean debug = pref.getBoolean(pfs.DEBUG, false);
+        if (debug) {
+            adpDicList.add(getString(R.string.label_add_file_dropbox));
+        }
         //adpDicList.add(getString(R.string.label_add_file_googledrive));
     }
 

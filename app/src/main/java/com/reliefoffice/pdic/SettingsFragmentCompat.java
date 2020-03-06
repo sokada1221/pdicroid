@@ -4,12 +4,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
+import android.preference.PreferenceManager;
 import android.support.v7.preference.CheckBoxPreference;
 import android.support.v7.preference.EditTextPreference;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.reliefoffice.pdic.text.pfs;
 
 import java.io.File;
 
@@ -50,15 +53,19 @@ public class SettingsFragmentCompat extends PreferenceFragmentCompat implements 
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 if (psbmSharing.isChecked()) {
-                    if (ndvFM.startAuth(false)) {
-                        selectDropboxFile();
-                    } else {
-                        if (!ndvUtils.appKeysConfirmed) {
-                            SettingsFragmentCompat.MyDropboxAppKeysDialog dlg = new SettingsFragmentCompat.MyDropboxAppKeysDialog();
-                            dlg.parent = This;
-                            dlg.show(getFragmentManager(), "dbx app keys");
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+                    boolean debug = pref.getBoolean(pfs.DEBUG, false);
+                    if (debug) {
+                        if (ndvFM.startAuth(false)) {
+                            selectDropboxFile();
                         } else {
-                            startAuth();
+                            if (!ndvUtils.appKeysConfirmed) {
+                                SettingsFragmentCompat.MyDropboxAppKeysDialog dlg = new SettingsFragmentCompat.MyDropboxAppKeysDialog();
+                                dlg.parent = This;
+                                dlg.show(getFragmentManager(), "dbx app keys");
+                            } else {
+                                startAuth();
+                            }
                         }
                     }
                 } else {

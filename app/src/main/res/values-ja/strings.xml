@@ -116,4 +116,6 @@
     <string name="navigation_drawer_close">Navigation Drawerを閉じる</string>
     <string name="title_clip_srch">クリップ検索</string>
     <string name="msg_need_clipboard_data">クリップ検索を行うには他のアプリからクリップボードへテキストをコピーする必要があります。</string>
+    <string name="msg_debug_on">デバッグを有効にしました</string>
+    <string name="msg_debug_off">デバッグを無効にしました</string>
 </resources>

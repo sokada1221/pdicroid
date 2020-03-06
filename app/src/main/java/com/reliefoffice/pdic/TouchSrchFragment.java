@@ -886,8 +886,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        if (isNormalMode())
+        if (isNormalMode()) {
             inflater.inflate(R.menu.menu_touch_srch, menu);
+            boolean debug = pref.getBoolean(pfs.DEBUG, false);
+            if (!debug){
+                menu.findItem(R.id.action_loadfile_dropbox).setVisible(false);
+                menu.findItem(R.id.action_savefile).setVisible(false);
+            }
+        }
     }
 
     @Override

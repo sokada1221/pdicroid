@@ -1188,6 +1188,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
 
     private void reloadFile(){
+        if (Utility.isEmpty(openedFilename)) return;
         if (ndvUtils.isLocalFileForRemote(openedFilename)) {
             fromDropbox = true;
             FileInfo file = new FileInfo(ndvUtils.convertToRemoteName(openedFilename));

@@ -65,7 +65,8 @@ public class JniCallback {
     {
         if (updated){
             //TODO: wordListAdapterがnullで落ちる時があった 2017.8.26 PSWinActivity.getWordText()より
-            wordListAdapter.notifyDataSetChanged();
+            if (wordListAdapter != null)
+                wordListAdapter.notifyDataSetChanged();
             if (savedFirstItem>=0) {
                 Log.i("PDD", "Restore: "+savedFirstItem+" "+savedOffset);
                 wordList.setSelectionFromTop(savedFirstItem, savedOffset);
@@ -110,6 +111,8 @@ public class JniCallback {
     }
     public void deleteWord(int index)
     {
+        if (wordListAdapter == null)
+            return;
         Log.d("PDD", "deleteWord: " + index + " num="+wordListAdapter.getCount());
         if (!updated){
             saveOffset();

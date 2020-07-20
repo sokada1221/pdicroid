@@ -112,6 +112,7 @@
     <string name="title_input_path">Direct Input Path</string>
     <string name="msg_file_not_found">Not found files</string>
     <string name="toast_download_failed">Couldn\'t download file.</string>
+    <string name="bluetooth_auto_play">Audio auto play when bluetooth conencted</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

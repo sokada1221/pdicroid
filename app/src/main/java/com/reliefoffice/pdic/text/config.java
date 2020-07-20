@@ -13,6 +13,7 @@ public class config {
     public static final String[] DicTextExtensions = {".dic", ".txt", ".md"};
     public static final String[] TextExtensions = {".txt", ".md"};
     public static final int AudioStepRewindTime = 5000; // [msec]
+    public static final boolean defaultBluetoothAutoPlay = true;    // change R.xml.preference also.
     public static final String getDefaultAudioFolder()
     {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();

@@ -29,6 +29,16 @@
     </PreferenceCategory>
     <PreferenceCategory android:title="">
         <CheckBoxPreference
+            android:summaryOn=""
+            android:summaryOff=""
+            android:title="@string/bluetooth_auto_play"
+            android:summary=""
+            android:defaultValue="true"
+            android:key="BluetoothAutoPlay">
+        </CheckBoxPreference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="">
+        <CheckBoxPreference
             android:summaryOn="@string/defcharset_summary_on"
             android:summaryOff="@string/defcharset_summary_off"
             android:title="@string/defcharset_title"

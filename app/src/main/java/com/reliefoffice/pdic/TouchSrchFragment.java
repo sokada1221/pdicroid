@@ -1818,6 +1818,12 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     int state = intent.getIntExtra(BluetoothA2dp.EXTRA_STATE, BluetoothA2dp.STATE_DISCONNECTED);
                     if (state == BluetoothA2dp.STATE_DISCONNECTED){
                         audioPlayPause(true);
+                    } else
+                    if (state == BluetoothA2dp.STATE_CONNECTED){
+                        boolean bluetoothAutoPlay = pref.getBoolean(pfs.BLUETOOTH_AUTO_PLAY, config.defaultBluetoothAutoPlay);
+                        if (bluetoothAutoPlay){
+                            audioPlayPause(false);
+                        }
                     }
                 }
             }

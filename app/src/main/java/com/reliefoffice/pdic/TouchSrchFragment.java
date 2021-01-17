@@ -1078,6 +1078,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
 
     void loadFilePost(String filename, String remotename) {
+        deleteProgressDialog();
+
+        // 回転するとactivityがnullで動作するための対症療法
+        if (getActivity() == null){
+            Log.i("PDD", "loadFilePost: activity is null");
+            return;
+        }
+
         saveMarkPosition();
 
         // setup remote filename
@@ -1120,7 +1128,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         }
         lastPosition = position;
         //pdicJni.savePSFileInfo(psbmFilename, position, remoteFilename, info != null ? info.revision : null);   // update the date
-        deleteProgressDialog();
         //Toast.makeText(getContext(), getString(R.string.msg_file_loaded)+" : " + filename, Toast.LENGTH_SHORT).show();
         FileHistoryManager mgr = new FileHistoryManager(getContext());
         mgr.add(psbmFilename, fileEncoding);

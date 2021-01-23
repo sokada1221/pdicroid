@@ -21,4 +21,5 @@ public class config {
     // この数以下ならクリップ検索を自動的に開始
     public static final int AutoClipMaxTextLen = 200;
     public static final int AutoClipMaxWordCount = 8;
+    public static final int MaxAudioMarkPositionHistory = 10;
 }

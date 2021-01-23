@@ -204,6 +204,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     float startY;
     final int marginForMove = 16;
 
+    // Audio Mark Position History //
+    MarkPositioinHistory markPositionHistory;
+
     // Bluetooth Manager //
     TouchSrchFragment.BluetoothManager bluetoothManager;
 
@@ -444,6 +447,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         }
 
         editText.requestFocus();
+
+        // Audio Mark Position History //
+        markPositionHistory = new MarkPositioinHistory(pref);
 
         // Bluetooth Manager //
         bluetoothManager = new TouchSrchFragment.BluetoothManager();
@@ -1685,6 +1691,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 edit.putString(pfs.LAST_AUDIOFILE, openedFilename);
                 edit.putInt(pfs.LAST_AUDIO_MARK_A, markA);
                 edit.putInt(pfs.LAST_AUDIO_MARK_B, markB);
+                markPositionHistory.save(openedFilename, markA, markB);
             } else {
                 // markが解除された場合
                 String lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE, "");
@@ -1694,6 +1701,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 }
                 edit.putString(pfs.LAST_AUDIOFILE_FOR_POS, openedFilename);
                 edit.putInt(pfs.LAST_AUDIO_POS, mediaPlayer.getCurrentPosition());
+                markPositionHistory.remove(openedFilename);
             }
             edit.commit();
         }
@@ -1705,20 +1713,16 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             String lastAudioFile = pref.getString(pfs.LAST_AUDIOFILE, "");
             if (Utility.isNotEmpty(lastAudioFile)) {
                 if (lastAudioFile.equals(openedFilename)) {
-                    int markA = pref.getInt(pfs.LAST_AUDIO_MARK_A, -1);
-                    int markB = pref.getInt(pfs.LAST_AUDIO_MARK_B, -1);
-                    TouchSrchFragment.MarkState markState;
-                    if (markA >= 0) {
-                        if (markB >= 0) {
-                            markState = TouchSrchFragment.MarkState.MarkAB;
-                        } else {
-                            markState = TouchSrchFragment.MarkState.MarkA;
-                        }
-                        if (setAudioMark(markState, markA, markB)) {
-                            mediaPlayer.seekTo(markPositionA);
-                        }
-                        pos = markA;
-                    }
+                    final int markA = pref.getInt(pfs.LAST_AUDIO_MARK_A, -1);
+                    final int markB = pref.getInt(pfs.LAST_AUDIO_MARK_B, -1);
+                    pos = setupMarkAB(markA, markB);
+                }
+            }
+
+            if (pos == -1){
+                final MarkPositionItem markPosItem = markPositionHistory.load(openedFilename);
+                if (markPosItem != null){
+                    pos = setupMarkAB(markPosItem.markA, markPosItem.markB);
                 }
             }
 
@@ -1735,6 +1739,22 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 mediaPlayer.seekTo(pos);
             }
         }
+    }
+    int setupMarkAB(int markA, int markB)
+    {
+        TouchSrchFragment.MarkState markState;
+        if (markA >= 0) {
+            if (markB >= 0) {
+                markState = TouchSrchFragment.MarkState.MarkAB;
+            } else {
+                markState = TouchSrchFragment.MarkState.MarkA;
+            }
+            if (setAudioMark(markState, markA, markB)) {
+                mediaPlayer.seekTo(markPositionA);
+            }
+            return markA;
+        }
+        return -1;  // invalid mark
     }
 
     void showAudio(boolean on){

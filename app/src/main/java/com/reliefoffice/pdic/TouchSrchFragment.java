@@ -1726,6 +1726,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             if (pos == -1){
                 final MarkPositionItem markPosItem = markPositionHistory.load(openedFilename);
                 if (markPosItem != null){
+                    markPositionHistory.save(openedFilename, markPosItem.markA, markPosItem.markB);
                     pos = setupMarkAB(markPosItem.markA, markPosItem.markB);
                 }
             }

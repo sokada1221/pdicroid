@@ -844,7 +844,7 @@ bool IndexData::ChangeIndexOffset( int num )
 		// num<0
 		// index—Ìˆæ‚ðL‚°‚é‚¾‚¯‚É‚·‚é
 		// datablock‚Ö‚Ì‹ó‚«—Ìˆæ‚Ì’Ç‰Á‚ÍShrinkIndex()‚Ås‚¤
-		index->MoveGrowIndex( num );
+		index->MoveGrowIndex( -num );
 	}
 	return true;
 }

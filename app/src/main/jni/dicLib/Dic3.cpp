@@ -1562,19 +1562,25 @@ bool MultiPdic::IsNetworkUsed()
 
 // return value:
 //	the number of uploaded words
-//	-1 is never returned.
+//	-1 : upload‚Í‚³‚ê‚È‚©‚Á‚½‚ªupload‚·‚éƒf[ƒ^‚ª‚ ‚é
 int MultiPdic::ReqUpload()
 {
 #if NETDIC
 	int ret = 0;
+	bool exist = false;
 	for (int i=0;i<sdic.get_num();i++){
 		InetDic *idic = sdic[i].GetInetDic();
 		if (idic){
 			int r = idic->ReqUpload();
 			if (r>0)
 				ret += r;
+			else
+			if (r<0)
+				exist = true;
 		}
 	}
+	if (ret==0 && exist)
+		ret = -1;
 	return ret;
 #else
 	return 0;

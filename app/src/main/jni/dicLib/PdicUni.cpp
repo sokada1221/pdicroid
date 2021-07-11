@@ -42,6 +42,33 @@ bool PdicUni::Load( )
 			return false;
 	}
 }
+
+bool PdicUni::ReadExtHeader(const char *key, tnstr &str)
+{
+	if (!hPdc) return false;
+
+	PDString pds = fnPDCreateString(NULL, 0);
+	int len = fnPDGetExtHeaderStr(hPdc, key, pds);
+	str.set(fnPDGetString(pds), len);
+	fnPDDeleteString(pds);
+
+	return true;
+}
+
+bool PdicUni::WriteExtHeader(const char *key, const tchar *str)
+{
+	if (!hPdc) return false;
+
+	return fnPDSetExtHeaderStr(hPdc, key, str);
+}
+
+bool PdicUni::DeleteExtHeader(const char *key)
+{
+	if (!hPdc) return false;
+
+	return fnPDDeleteExtHeader(hPdc, key);
+}
+
 bool PdicUni::_Open( HPDC hpdc, const tchar *filename, bool readonly )
 {
 	FNPDOpen fnPDOpen;

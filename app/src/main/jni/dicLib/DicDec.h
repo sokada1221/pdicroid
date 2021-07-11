@@ -23,12 +23,16 @@ protected:
 class TDicDec {
 protected:
 	class TUnzip *unzip;
+	unsigned huz;
 public:
 	TDicDec();
 	~TDicDec();
-	static bool IsDicDec(const struct HEADER *header);
+	static bool IsDicDecIndex(const struct HEADER *header);
+	static bool IsDicDecData(const struct HEADER *header);
 	unsigned GetDecodeSize(const char *data);
-	void Decode(const char *data, byte *out, unsigned size);
+	unsigned GetDecodeSizeForDB(const char *data);
+	unsigned Decode(const char *data, byte *out);
+	void DecodeForDB(const char *data, byte *out);
 };
 
 #endif

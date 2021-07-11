@@ -920,15 +920,6 @@ int IndexData::_BSearch( const _kchar *word, bool forfast, AllSearchParam *_all 
 	}
 	return ret;
 }
-#if 0	// to be deleted or moved.
-#if MIXDIC
-int IndexData::BSearch( const tchar *word, bool forfast, AllSearchParam *_all )
-{
-	return BSearch( __kwstr(word), forfast, _all );
-}
-#endif
-#endif
-
 
 void IndexData::getfjapa( Japa &j, AllSearchParam *_all )
 {

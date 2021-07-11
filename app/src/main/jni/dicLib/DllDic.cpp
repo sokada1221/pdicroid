@@ -46,6 +46,16 @@ bool DllDictionary::Load( const tchar *dllname )
 		GETPROC( PDSetOleObj, "PDSetOleObj");
 		GETPROC( PDCreateObject, "PDCreateObject");
 		GETPROC( PDGetEPWingData, "PDGetEPWingData");
+
+		GETPROC( PDGetExtHeaderStr, "PDGetExtHeaderStr");
+		GETPROC( PDSetExtHeaderStr, "PDSetExtHeaderStr");
+		GETPROC( PDDeleteExtHeader, "PDDeleteExtHeader");
+
+		GETPROC( PDCreateString, "PDCreateString");
+		GETPROC( PDDeleteString, "PDDeleteString");
+		GETPROC( PDSetString, "PDSetString");
+		GETPROC( PDGetString, "PDGetString");
+		GETPROC( PDGetStringLength, "PDGetStringLength");
 	}
 	return true;
 }

@@ -82,6 +82,10 @@ public:
 	int bsearch( const wchar_t *word );
 	void getfjapa( WJapa &j );
 	const wchar_t *getfword( );
+
+	bool ReadExtHeader(const char *key, tnstr &str);
+	bool WriteExtHeader(const char *key, const tchar *str);
+	bool DeleteExtHeader(const char *key);
 protected:
 	virtual bool _Open( HPDC , const tchar *filename, bool readonly );
 	virtual bool _Create( HPDC , const tchar *filename, PDCREATEINFO *info );

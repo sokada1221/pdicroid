@@ -128,7 +128,7 @@ public:
 	const tchar *GetDicName( int i )
 		{ return sdic[i].GetFileName( ); }
 	int SearchDicName( const tchar *dicname );
-	int GetDicNum( )				{ return sdic.get_num(); }
+	int GetDicNum( ) const				{ return sdic.get_num(); }
 #if !defined(USE_UNIVDIC)
 	int Open( int dn, const tchar *filename, const tchar *epwname, const tchar *gconvname, const tchar *flinkpath, int openflag=DICFLAG_NONE, const tchar *nettempfile=NULL );
 #endif

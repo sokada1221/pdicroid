@@ -994,11 +994,18 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     boolean fromDropbox = false;
     private String m_strInitialDir;
 
+    private static final int OPEN_DOCUMENT_REQUEST = 121;
     void selectFile() {
-        Intent i = new Intent().setClassName(getContext().getPackageName(), FileDirSelectionActivity.class.getName());
-        i.putExtra(pfs.INITIALDIR, pref.getString(pfs.PSINITIALDIR, Utility.initialFileDirectory()));
-        i.putExtra("exts", config.TextExtensions);
-        startActivityForResult(i, REQUEST_CODE_SELECT_FILE);
+        if (false){
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.setType("*.*");
+            startActivityForResult(intent, OPEN_DOCUMENT_REQUEST);
+        } else {
+            Intent i = new Intent().setClassName(getContext().getPackageName(), FileDirSelectionActivity.class.getName());
+            i.putExtra(pfs.INITIALDIR, pref.getString(pfs.PSINITIALDIR, Utility.initialFileDirectory()));
+            i.putExtra("exts", config.TextExtensions);
+            startActivityForResult(i, REQUEST_CODE_SELECT_FILE);
+        }
     }
 
     String downloadedRemoteName;
@@ -1359,6 +1366,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == OPEN_DOCUMENT_REQUEST){
+            if (resultCode == Activity.RESULT_OK){
+                Uri uri = data.getData();
+                Log.i("PDD", "uri="+uri.toString());
+                Log.i("PDD", "filename="+uri.getPath());
+//                getActivity().getContentResolver().query()
+            }
+        } else
         if (requestCode == REQUEST_CODE_PSB) {
             if (resultCode == Activity.RESULT_OK) {
                 Bundle bundle = data.getExtras();

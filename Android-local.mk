@@ -42,6 +42,7 @@ LOCAL_SRC_FILES := \
 	E:/src/Android/Pdic/app/src/main/jni/commonLib/BiPool.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/commonLib/defs.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/commonLib/defs_android.cpp \
+	E:/src/Android/Pdic/app/src/main/jni/commonLib/fileio.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/commonLib/filestr.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/commonLib/jtype.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/commonLib/jtype1.cpp \

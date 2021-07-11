@@ -1,6 +1,8 @@
 #ifndef __Dicinx_h
 #define	__Dicinx_h
 
+#define	FINX	1	// fast index
+
 #if USE_MMI
 #include "mmf.h"
 #endif
@@ -43,12 +45,19 @@ protected:
 	PINDEX alloc( int l )			//インデックス用のメモリ取得
 		{ return (PINDEX)pmem.alloc(l); }
 	void dealloc( int lbn )				//インデックスのメモリ解放
+#if FINX
+		;
+#else
 		{ pmem.free( index[lbn] ); }
+#endif
 	PINDEX *index;
 	int pindexnum;		// index配列のメモリ割り当て数
 #if USE_MMI
 	TMmfMap *mmf;
 	const INDEX16 **index16;
+#endif
+#if FINX
+	class SimpleAllocator *indexAllocator;
 #endif
 protected:
 	int seek_index( )
@@ -131,5 +140,44 @@ public:
 	bool IsModified() const
 		{ return Modified; }
 };
+
+#if FINX
+class SimpleAllocator {
+	char *buffer;
+	unsigned size;
+	char *curp;
+	unsigned used;
+public:
+	SimpleAllocator(unsigned _size)
+		:size(_size)
+	{
+		buffer = (char*)malloc(size);
+		curp = buffer;
+		used = 0;
+	}
+	~SimpleAllocator()
+	{
+		if (buffer) free(buffer);
+	}
+	bool ok() const
+	{
+		return buffer != NULL;
+	}
+	void *alloc(unsigned reqsize)
+	{
+		if (reqsize > size - used){
+			return NULL;
+		}
+		char *ret = curp;
+		curp += reqsize;
+		used += reqsize;
+		return ret;
+	}
+	bool is(const void *ptr) const
+	{
+		return ptr >= buffer && ptr < curp;
+	}
+};
+#endif
 
 #endif

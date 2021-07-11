@@ -33,6 +33,17 @@ protected:
 	FNPDSetOleObj fnPDSetOleObj;
 	FNPDCreateObject fnPDCreateObject;
 	FNPDGetEPWingData fnPDGetEPWingData;
+
+	FNPDGetExtHeaderStr fnPDGetExtHeaderStr;
+	FNPDSetExtHeaderStr fnPDSetExtHeaderStr;
+	FNPDDeleteExtHeader fnPDDeleteExtHeader;
+
+	FNPDCreateString fnPDCreateString;
+	FNPDDeleteString fnPDDeleteString;
+	FNPDSetString fnPDSetString;
+	FNPDGetString fnPDGetString;
+	FNPDGetStringLength fnPDGetStringLength;
+
 	PDRECORDPARAM prp;
 	bool UseObjectData;
 

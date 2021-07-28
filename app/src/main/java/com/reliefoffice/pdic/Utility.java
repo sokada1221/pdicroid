@@ -140,6 +140,12 @@ public class Utility {
         editText.setSelection(position);
     }
 
+    public static final String getSelectedText(EditText editText){
+        final int start = editText.getSelectionStart();
+        final int end = editText.getSelectionEnd();
+        return editText.getText().toString().substring(start, end);
+    }
+
     // setup view style for EditText
     public static final void setTextStyle(EditText editText, int start, int end, int style, int color, String text) {
         if (text == null) {

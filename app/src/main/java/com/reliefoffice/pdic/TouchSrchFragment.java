@@ -531,6 +531,10 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 }
                 @Override
                 void closeNotify(){
+                    if (psbEditWindow.isGoogleTranslate()){
+                        String text = Utility.getSelectedText(This.editText);
+                        doGoogleTranslate(text);
+                    }
                     psbEditWindow = null;
                     This.editText.requestFocus(View.FOCUS_UP);
                 }
@@ -907,6 +911,34 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             Toast.makeText(getContext(), getString(R.string.msg_no_hit_word) + word, Toast.LENGTH_SHORT).show();
         }
         return "";
+    }
+
+    void doGoogleTranslate(String text)
+    {
+        startGoogleTranslate(text);
+    }
+
+    void startGoogleTranslate(String text)
+    {
+        GoogleTranslator trans = new GoogleTranslator(text){
+            @Override
+            protected void onTranslated(String translatedText){
+                postGoogleTranslate(translatedText);
+            }
+        };
+        trans.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    void postGoogleTranslate(String text)
+    {
+        if (Utility.isEmpty(text)){
+            Toast.makeText(getContext(), getString(R.string.msg_cannot_get_or_connect), Toast.LENGTH_LONG).show();
+            return;
+        }
+        popupListAdapter.clear();
+        WordItem item = new WordItem("", text);
+        popupListAdapter.add(item);
+        showPopupList(true);
     }
 
     void showPopupList(boolean on){

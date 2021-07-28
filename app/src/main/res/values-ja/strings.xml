@@ -31,6 +31,7 @@
     <string name="action_edit">編集</string>
     <string name="action_remove">削除</string>
     <string name="action_close">閉じる</string>
+    <string name="action_google_translate">Google翻訳</string>
     <string name="action_edit_comment">コメントの編集</string>
     <string name="title_input_comment">コメントの入力</string>
     <string name="title_activity_loadfile_history">履歴一覧</string>
@@ -97,6 +98,7 @@
     <string name="line_num_btn">行</string>
     <string name="move_cursor">カーソルの移動</string>
     <string name="msg_no_hit_word">該当単語はありません</string>
+    <string name="msg_cannot_get_or_connect">接続または取得できませんでした</string>
     <string name="label_auto">自動</string>
     <string name="label_charcode">文字コード</string>
     <string name="label_sort">並び順</string>

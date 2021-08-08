@@ -922,12 +922,18 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
     void doGoogleTranslate(String text)
     {
-        startGoogleTranslate(text);
+        String apikey = pref.getString(pfs.GOOGLETRANSAPIKEY, "");
+        if (Utility.isEmpty(apikey)){
+            Toast.makeText(getContext(), getString(R.string.msg_require_google_trans_api_key), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        startGoogleTranslate(text, apikey);
     }
 
-    void startGoogleTranslate(String text)
+    void startGoogleTranslate(String text, String apikey)
     {
-        GoogleTranslator trans = new GoogleTranslator(text){
+        GoogleTranslator trans = new GoogleTranslator(text, apikey){
             @Override
             protected void onTranslated(String translatedText){
                 postGoogleTranslate(translatedText);

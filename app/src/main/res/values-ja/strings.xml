@@ -122,4 +122,6 @@
     <string name="msg_debug_on">デバッグを有効にしました</string>
     <string name="msg_debug_off">デバッグを無効にしました</string>
     <string name="bluetooth_auto_play">Bluetooth接続時に音声再生</string>
+    <string name="google_trans_api_key">Google Cloud Translation API Key</string>
+    <string name="msg_require_google_trans_api_key">Google Could Translation API Keyを取得し、設定メニューに入力する必要があります。</string>
 </resources>

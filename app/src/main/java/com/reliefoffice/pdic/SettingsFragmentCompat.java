@@ -23,6 +23,7 @@ public class SettingsFragmentCompat extends PreferenceFragmentCompat implements 
     CheckBoxPreference psbmSharing;
     EditTextPreference AudioFileFolder;
     CheckBoxPreference psbmDefCharset;
+    EditTextPreference GoogleTransApiKey;
 
     public SettingsFragmentCompat(){
 
@@ -98,6 +99,9 @@ public class SettingsFragmentCompat extends PreferenceFragmentCompat implements 
         AudioFileFolder.setSummary(AudioFileFolder.getText());
 
         psbmDefCharset = (CheckBoxPreference) findPreference("DefCharset");
+
+        GoogleTransApiKey = (EditTextPreference)findPreference("GoogleTransApiKey");
+        GoogleTransApiKey.setSummary(GoogleTransApiKey.getText());
     }
 
     @Override
@@ -110,6 +114,13 @@ public class SettingsFragmentCompat extends PreferenceFragmentCompat implements 
             new SharedPreferences.OnSharedPreferenceChangeListener() {
                 public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
                     AudioFileFolder.setSummary(AudioFileFolder.getText());
+                }
+            };
+
+    private SharedPreferences.OnSharedPreferenceChangeListener GoogleTransApiKeylistener =
+            new SharedPreferences.OnSharedPreferenceChangeListener() {
+                public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+                    GoogleTransApiKey.setSummary(GoogleTransApiKey.getText());
                 }
             };
 

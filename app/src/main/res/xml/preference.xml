@@ -46,4 +46,13 @@
             android:defaultValue="false"
             android:key="DefCharset"></CheckBoxPreference>
     </PreferenceCategory>
+    <PreferenceCategory android:title="">
+        <EditTextPreference
+            android:title="@string/google_trans_api_key"
+            android:summary=""
+            android:dialogTitle="@string/google_trans_api_key"
+            android:inputType="textUri"
+            android:key="GoogleTransApiKey">
+        </EditTextPreference>
+    </PreferenceCategory>
 </PreferenceScreen>

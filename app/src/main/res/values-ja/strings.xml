@@ -32,6 +32,7 @@
     <string name="action_remove">削除</string>
     <string name="action_close">閉じる</string>
     <string name="action_google_translate">Google翻訳</string>
+    <string name="action_tts">音声</string>
     <string name="action_edit_comment">コメントの編集</string>
     <string name="title_input_comment">コメントの入力</string>
     <string name="title_activity_loadfile_history">履歴一覧</string>

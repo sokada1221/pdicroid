@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -216,6 +217,10 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     static ArrayList<Integer> lastWordModePositions = new ArrayList<>();
 
     final static int id_google_translate = 111;
+    final static int id_tts = 112;
+
+    // TTS
+    TextToSpeech tts;
 
     public TouchSrchFragment() {
         // Required empty public constructor
@@ -251,6 +256,13 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             mParam2 = getArguments().getString(ARG_PARAM2);
             fromMain = getArguments().getBoolean(ARG_PARAM3);
         }
+
+        tts = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int i) {
+
+            }
+        });
     }
 
     @Override
@@ -333,6 +345,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             public boolean onCreateActionMode(ActionMode mode, Menu menu) {
                 //Log.d("PDD", "onCreateActionMode");
                 menu.add(Menu.NONE, id_google_translate, Menu.NONE, getString(R.string.action_google_translate));
+                menu.add(Menu.NONE, id_tts, Menu.NONE, getString(R.string.action_tts));
                 if (getBackStackEntryCount() > 0)
                     return true;
                 if (Utility.isEmpty(openedFilename)){
@@ -367,9 +380,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 int id = item.getItemId();
                 switch (id){
                     case id_google_translate:
+                    case id_tts:
                         closePSBookmarkEditWindow();
                         String text = Utility.getSelectedText(This.editText);
-                        doGoogleTranslate(text);
+                        if (id == id_google_translate) {
+                            doGoogleTranslate(text);
+                        } else {
+                            doTTS(text);
+                        }
                         return true;
                 }
                 return false;
@@ -763,6 +781,12 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         super.onDestroyView();
     }
 
+    @Override
+    public void onDestroy() {
+        tts.shutdown();
+        super.onDestroy();
+    }
+
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -931,6 +955,18 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         }
 
         startGoogleTranslate(text, apikey);
+    }
+
+    void doTTS(String text)
+    {
+//        if (Build.VERSION.SDK_INT >= 21){
+//            // SDK 21 以上
+//            CharSequence seq = text;
+//            tts.speak(seq, TextToSpeech.QUEUE_FLUSH, null, "messageID");
+//        } else
+        {
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        }
     }
 
     void startGoogleTranslate(String text, String apikey)

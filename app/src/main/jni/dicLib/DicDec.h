@@ -7,7 +7,7 @@
 class TDicDec {
 protected:
 	class TUnzip *unzip;
-	unsigned huz;
+	void *huz;
 public:
 	TDicDec();
 	~TDicDec();

@@ -58,6 +58,7 @@ LOCAL_SRC_FILES := \
 	E:/src/Android/Pdic/app/src/main/jni/dicLib/Dic3.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/dicLib/DicConv.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/dicLib/dicdata.cpp \
+	E:/src/Android/Pdic/app/src/main/jni/dicLib/DicDec.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/dicLib/Dicgrp.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/dicLib/Dicinx.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/dicLib/Dicixdt.cpp \
@@ -123,6 +124,8 @@ LOCAL_SRC_FILES := \
 	E:/src/Android/Pdic/app/src/main/jni/Square/wspaint.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/Square/Wsqusrch.cpp \
 	E:/src/Android/Pdic/app/src/main/jni/Square/Wsscroll.cpp \
+	E:/src/Android/Pdic/app/src/main/jni/zipLib/zipDll.cpp \
+	E:/src/Android/Pdic/app/src/main/jni/zipLib/LiteUnzip/LiteUnzip.c \
 
 LOCAL_C_INCLUDES += E:\src\Android\Pdic\app\src\main\jni
 LOCAL_C_INCLUDES += E:\src\Android\Pdic\app\src\debug\jni

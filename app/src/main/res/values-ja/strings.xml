@@ -125,4 +125,5 @@
     <string name="bluetooth_auto_play">Bluetooth接続時に音声再生</string>
     <string name="google_trans_api_key">Google Cloud Translation API Key</string>
     <string name="msg_require_google_trans_api_key">Google Could Translation API Keyを取得し、設定メニューに入力する必要があります。</string>
+    <string name="action_wpm">WPM計測</string>
 </resources>

@@ -365,6 +365,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 }
                 prevStart = prevEnd = 0;
                 createPSBookmarkEditWindow();
+                stopWpm();
                 return true;
             }
 
@@ -394,6 +395,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 //closePSBookmarkEditWindow();
+                restartWpm();
             }
         });
 
@@ -1054,6 +1056,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             moveCursor();
         } else if (id == R.id.action_viewpsb) {
             viewPSBookmarkList();
+        } else if (id == R.id.action_wpm) {
+            boolean checked = startStopWpm();
+            item.setChecked(checked);
         }
 
         return super.onOptionsItemSelected(item);
@@ -1246,6 +1251,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         showAudio(audioOk);
 
         reloadMarkPosition();
+
+        clearWpm();
     }
 
     // file load エラー後処理
@@ -1576,6 +1583,81 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
     void checkPSBookmarkStatus(){
         // conflictが発生していたらdialog boxで動作の選択肢を表示
+    }
+
+    // --------------------------------------- //
+    // WPM
+    // --------------------------------------- //
+    boolean wpmRunning = false;
+    int wordCount = 0;
+    int wpmCounter = 0;
+    Handler wpmHandler;
+    Runnable wpmRun;
+    boolean startStopWpm()
+    {
+        if (wordCount == 0){
+            wordCount = Utility.getWordCount(editText.getText().toString());
+        }
+        if (wpmRunning || wordCount == 0){
+            stopWpm();
+            return false;
+        } else {
+            startWpm();
+            return true;
+        }
+    }
+    void startWpm()
+    {
+        if (wpmRunning)
+            return;
+        wpmRunning = true;
+
+        // Timer for WPM
+        wpmHandler = new Handler();
+        wpmRun = new Runnable() {
+            @Override
+            public void run() {
+                // in UI thread
+                wpmCounter++;
+                updateWpm();
+                wpmHandler.postDelayed(this, 1000);
+            }
+        };
+        wpmHandler.post(wpmRun);
+    }
+    void restartWpm()
+    {
+        if (wpmRunning)
+            return;
+        if (wpmCounter == 0)
+            return; // まだ開始されたことがない(はず)
+        startWpm();
+    }
+    void stopWpm()
+    {
+        if (!wpmRunning)
+            return;
+        wpmRunning = false;
+
+        if (wpmHandler != null){
+            wpmHandler.removeCallbacks(wpmRun);
+            wpmHandler = null;
+        }
+    }
+    void clearWpm()
+    {
+        stopWpm();
+        wordCount = 0;
+        wpmCounter = 0;
+    }
+    void updateWpm()
+    {
+        if (wordCount == 0 || wpmCounter == 0 || wpmRun == null){
+            return;
+        }
+        int wpm = wordCount * 60 / wpmCounter;
+        String title = "WPM: " + wpm + "  (" + wordCount + "words)";
+        getActivity().setTitle(title);
     }
 
     // --------------------------------------- //

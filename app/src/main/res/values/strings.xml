@@ -132,4 +132,5 @@
     <string name="msg_need_clipboard_data">You need clipboard data from other application to do clip search.</string>
     <string name="msg_debug_on">Enabled debug mode.</string>
     <string name="msg_debug_off">Disabled debug mode.</string>
+    <string name="action_wpm">Start/Stop WPM</string>
 </resources>

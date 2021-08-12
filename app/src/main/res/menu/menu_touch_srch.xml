@@ -37,4 +37,9 @@
         android:title="@string/action_view_bookmarklist"
         android:orderInCategory="100"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_wpm"
+        android:title="@string/action_wpm"
+        android:orderInCategory="100"
+        android:checkable="true"
+        app:showAsAction="never"/>
 </menu>

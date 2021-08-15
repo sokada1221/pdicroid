@@ -222,6 +222,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     // TTS
     TextToSpeech tts;
 
+    // WPM
+    WpmController wpm;
+
     public TouchSrchFragment() {
         // Required empty public constructor
     }
@@ -256,6 +259,18 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             mParam2 = getArguments().getString(ARG_PARAM2);
             fromMain = getArguments().getBoolean(ARG_PARAM3);
         }
+
+        // WPM
+        wpm = new WpmController() {
+            @Override
+            protected void updateProcess(int wpm, int wordCount)
+            {
+                // String wpms = wpmRunning ? "---" : Integer.toString(wpm);
+                String wpms = Integer.toString(wpm);
+                String title = "WPM: " + wpms + "  (" + wordCount + "words)";
+                getActivity().setTitle(title);
+            }
+        };
     }
 
     @Override
@@ -365,7 +380,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 }
                 prevStart = prevEnd = 0;
                 createPSBookmarkEditWindow();
-                pauseWpm();
+                wpm.pause();
                 return true;
             }
 
@@ -395,7 +410,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             @Override
             public void onDestroyActionMode(ActionMode mode) {
                 //closePSBookmarkEditWindow();
-                restartWpm();
+                wpm.restart();
             }
         });
 
@@ -1059,10 +1074,10 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         } else if (id == R.id.action_wpm) {
             boolean checked = item.isChecked();
             if (checked)
-                stopWpm();
+                wpm.stop();
             else
-                startWpm();
-            item.setChecked(wpmRunning);
+                wpm.start(editText.getText().toString());
+            item.setChecked(wpm.isRunning());
         }
 
         return super.onOptionsItemSelected(item);
@@ -1256,7 +1271,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
         reloadMarkPosition();
 
-        clearWpm();
+        wpm.clear();
     }
 
     // file load エラー後処理
@@ -1587,101 +1602,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
     void checkPSBookmarkStatus(){
         // conflictが発生していたらdialog boxで動作の選択肢を表示
-    }
-
-    // --------------------------------------- //
-    // WPM
-    // --------------------------------------- //
-    boolean wpmRunning = false;
-    boolean wpmPaused = false;
-    int wordCount = 0;
-    int wpmCounter = 0;
-    Handler wpmHandler;
-    Runnable wpmRun;
-    void startWpm()
-    {
-        if (!wpmRunning) {
-            if (wordCount == 0){
-                wordCount = Utility.getWordCount(editText.getText().toString());
-            }
-            if (wordCount == 0)
-                return;
-            wpmRunning = true;
-            wpmPaused = true;
-        }
-        restartWpm();
-    }
-    void pauseWpm()
-    {
-        if (!wpmRunning)
-            return;
-        if (wpmPaused)
-            return;
-        if (wpmHandler != null){
-            wpmHandler.removeCallbacks(wpmRun);
-            wpmHandler = null;
-        }
-        wpmPaused = true;
-    }
-    void restartWpm()
-    {
-        if (!wpmRunning)
-            return;
-        if (!wpmPaused)
-            return;
-
-        // Timer for WPM
-        wpmHandler = new Handler();
-        wpmRun = new Runnable() {
-            @Override
-            public void run() {
-                // in UI thread
-                wpmCounter++;
-                updateWpm(false);
-                wpmHandler.postDelayed(this, 1000);
-            }
-        };
-        wpmHandler.post(wpmRun);
-        wpmPaused = false;
-        updateWpm(true);
-    }
-    void stopWpm()
-    {
-        if (!wpmRunning)
-            return;
-        stopWpmNoUpdate();
-        updateWpm(true);
-    }
-    void stopWpmNoUpdate()
-    {
-        if (!wpmRunning)
-            return;
-        pauseWpm();
-        wpmRunning = false;
-        wpmPaused = false;
-    }
-    void clearWpm()
-    {
-        stopWpmNoUpdate();
-        wordCount = 0;
-        wpmCounter = 0;
-    }
-    void updateWpm(boolean force)
-    {
-        if (wordCount == 0 || wpmCounter == 0){
-            return;
-        }
-        if (!force){
-            // ５秒に一回更新
-            if (wpmCounter % 5 != 1){
-                return;
-            }
-        }
-        int wpm = wordCount * 60 / wpmCounter;
-//        String wpms = wpmRunning ? "---" : Integer.toString(wpm);
-        String wpms = Integer.toString(wpm);
-        String title = "WPM: " + wpms + "  (" + wordCount + "words)";
-        getActivity().setTitle(title);
     }
 
     // --------------------------------------- //

@@ -23,5 +23,13 @@ public class pfs {
     public static final String LAST_CLIP_LENGTH = "LastClipLength";
     public static final String LAST_TOUCH_SRCH_WORD = "LastTouchSrchWord";
     public static final String LAST_TOUCH_SRCH_TRANS = "LastTouchSrchTrans";
+    public static final String ENABLE_SLEEP_TIMER = "EnableSleepTimer";
+    public static final String SLP_AFTER = "SLPAfter";
+    public static final String SLP_TRANS_TIME = "SLPTransTime";
+    public static final String SLP_TARGET_VOLUME = "SLPTargetVolume";
+    public static final String ENABLE_WAKEUP_TIMER = "EnableWakeupTimer";
+    public static final String WKU_FROM = "WKUFrom";
+    public static final String WKU_TRANS_TIME = "WKUTransTime";
+    public static final String WKU_TARGET_VOLUME = "WKUTargetVolume";
     public static final String DEBUG = "Debug";
 }

@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -63,6 +64,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static java.lang.Math.abs;
@@ -248,6 +250,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         fragment.setArguments(args);
         return fragment;
     }
+
+    SleepTimer slp;
+    SleepTimer wku;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -737,6 +742,54 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         InputMethodManager inputMethodManager = (InputMethodManager)getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
         if (inputMethodManager != null)
             inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+
+        setupSleepTimer();
+    }
+
+    void setupSleepTimer()
+    {
+        SleepTimerConfig config = new SleepTimerConfig();
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        config.load(pref);
+        if (config.EnableSleepTimer) {
+            if (slp == null || slp.isEnd()) {
+                if (slp != null) slp.stop();
+                AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+                slp = new SleepTimer(audioManager);
+                slp.startByAfter(config.SLPAfter, config.SLPTransTime, config.SLPTargetVolume);
+            }
+        } else {
+            if (slp != null){
+                slp.stop();
+                slp = null;
+            }
+        }
+        if (config.EnableWakeupTimer){
+            if (wku == null || wku.isEnd()) {
+                if (wku != null) wku.stop();
+                AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+                wku = new SleepTimer(audioManager);
+                wku.startByTime(config.getWKUFromByHM(), config.WKUTransTime, config.WKUTargetVolume);
+            }
+        } else {
+            if (wku != null){
+                wku.stop();
+                wku = null;
+            }
+
+        }
+    }
+
+    void clearSleepTimer()
+    {
+        if (slp != null){
+            slp.stop();
+            slp = null;
+        }
+        if (wku != null){
+            wku.stop();
+            wku = null;
+        }
     }
 
     // MainActivityのonBackPressedから呼ばれる(OnBackPressedListener)
@@ -1069,6 +1122,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             if (!debug){
                 menu.findItem(R.id.action_loadfile_dropbox).setVisible(false);
                 menu.findItem(R.id.action_savefile).setVisible(false);
+                menu.findItem(R.id.action_sleep_timer).setVisible(false);
             }
         }
     }
@@ -1100,6 +1154,13 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 wpm.stop();
             else
                 wpm.start();
+        } else if (id == R.id.action_sleep_timer) {
+            clearSleepTimer();
+            SleepTimerSettingFragment fragment = new SleepTimerSettingFragment();
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            transaction.addToBackStack(null);
+            transaction.replace(R.id.content_frame, fragment);
+            transaction.commit();
         }
 
         return super.onOptionsItemSelected(item);
@@ -1986,6 +2047,31 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             String text = String.format("%d:%02d/%d:%02d", sec/60, sec % 60, audioDurationSec/60, audioDurationSec%60);
             tvPosition.setText(text);
             //tvPosition.setText( Integer.toString(sec/60) + ":" + Integer.toString(sec % 60) + "/" + Integer.toString(audioDurationSec/60) + ":" + Integer.toString(audioDurationSec%60));
+
+            if (slp!=null){
+                slp.handleTimer();
+                if (slp.isEnd()){
+                    slp.stop();
+                    slp = null;
+                    SleepTimerConfig config = new SleepTimerConfig();
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+                    config.load(pref);
+                    config.EnableSleepTimer = false;
+                    config.save(pref);
+                }
+            }
+            if (wku!=null){
+                wku.handleTimer();
+                if (wku.isEnd()){
+                    wku.stop();
+                    wku = null;
+                    SleepTimerConfig config = new SleepTimerConfig();
+                    SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+                    config.load(pref);
+                    config.EnableWakeupTimer = false;
+                    config.save(pref);
+                }
+            }
         }
     };
 

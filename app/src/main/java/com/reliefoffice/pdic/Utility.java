@@ -19,6 +19,7 @@ import android.text.style.CharacterStyle;
 import android.text.style.StrikethroughSpan;
 import android.text.style.StyleSpan;
 import android.text.style.UnderlineSpan;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,7 @@ import com.reliefoffice.pdic.text.pfs;
 import java.io.File;
 import java.security.NoSuchAlgorithmException;
 import java.text.NumberFormat;
+import java.util.Calendar;
 
 import javax.net.ssl.SSLContext;
 
@@ -279,5 +281,18 @@ public class Utility {
         } catch (GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
+    }
+
+    // Debug
+    public static final void printDate(String tag, Calendar cal)
+    {
+        String s = Integer.toString(cal.get(Calendar.MONTH)+1);
+        s += "/";
+        s += Integer.toString(cal.get(Calendar.DAY_OF_MONTH));
+        s += " ";
+        s += Integer.toString(cal.get(Calendar.HOUR_OF_DAY));
+        s += ":";
+        s += Integer.toString(cal.get(Calendar.MINUTE));
+        Log.d(tag, s);
     }
 }

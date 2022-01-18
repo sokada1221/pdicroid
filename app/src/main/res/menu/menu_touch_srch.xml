@@ -41,4 +41,8 @@
         android:title="@string/action_wpm"
         android:orderInCategory="100"
         app:showAsAction="never"/>
+    <item android:id="@+id/action_sleep_timer"
+        android:title="@string/action_sleep_timer"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
 </menu>

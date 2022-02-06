@@ -6,6 +6,8 @@
 #include	"pdver.h"
 #include	"id.h"
 
+#if defined(WINCE) /*&& !defined(PKTPC)*/
+
 #if defined(DIC_UTF8) || defined(DIC_UTF16) || defined(DIC_BOCU)
 #define	VERSION	"1.51"
 #else
@@ -16,7 +18,6 @@
 
 #pragma	message(">>>> Version --- Ver." VERSION)
 
-#if defined(WINCE) /*&& !defined(PKTPC)*/
 ProjectRCVersion::ProjectRCVersion ( const tchar *appFName )
 {
 }

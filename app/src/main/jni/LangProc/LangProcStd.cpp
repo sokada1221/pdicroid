@@ -63,7 +63,9 @@ bool TLangProcStd::OpenIrreg()
 
 #define	OLDCASE	0	// using old type dictionary without ignoring cases.
 
-#if 0
+#define	USEDBW	0
+
+#if USEDBW
 #define	D	DBW		// for debug
 #else
 #define	D	(void)
@@ -86,12 +88,12 @@ bool TLangProcStd::CompareStd( COMPARE_STRUCT &cs, const int _flags )
 			return true;
 		// ~による置換
 		dp = cs.dp;
-		if ( *(dp-2) == '~' )
-			return true;
-		if (cs.str == dp)	// no string
-			return true;
-		*dp++ = '~';
-		*dp = '\0';
+		if ( *(dp-2) != '~' ){
+			if (cs.str == dp)	// no string
+				return true;
+			*dp++ = '~';
+			*dp = '\0';
+		}
 		convf |= SLW_REPLACEANY;
 		goto jsrch;
 	}
@@ -101,13 +103,13 @@ bool TLangProcStd::CompareStd( COMPARE_STRUCT &cs, const int _flags )
 			return true;
 		// __による置換
 		dp = cs.dp;
-		if ( *(dp-2) == '_' )
-			return true;
-		if (cs.str == dp)	// no string
-			return true;
-		*dp++ = '_';
-		*dp++ = '_';
-		*dp = '\0';
+		if ( *(dp-2) != '_' ){
+			if (cs.str == dp)	// no string
+				return true;
+			*dp++ = '_';
+			*dp++ = '_';
+			*dp = '\0';
+		}
 		convf |= SLW_REPLACEANY3;
 		goto jsrch;
 	}
@@ -116,23 +118,21 @@ bool TLangProcStd::CompareStd( COMPARE_STRUCT &cs, const int _flags )
 	sp = cs.sp;
 
 	if ( _flags & SLW_REPLACEANY2 ){
-//		continue;
 		// ~の追加
-		if ( *(dp-2) == '~' )
-			return true;
-		*dp++ = '~';
-		*dp++ = ' ';
+		if ( *(dp-2) != '~' ){
+			*dp++ = '~';
+			*dp++ = ' ';
+		}
 		convf |= SLW_REPLACEANY2;
 	}
 
 	if ( _flags & SLW_REPLACEANY4 ){
-//		continue;
 		// __の追加
-		if ( *(dp-2) == '_' )
-			return true;
-		*dp++ = '_';
-		*dp++ = '_';
-		*dp++ = ' ';
+		if ( *(dp-2) != '_' ){
+			*dp++ = '_';
+			*dp++ = '_';
+			*dp++ = ' ';
+		}
 		convf |= SLW_REPLACEANY4;
 	}
 
@@ -216,7 +216,7 @@ bool TLangProcStd::CompareStd( COMPARE_STRUCT &cs, const int _flags )
 			}
 		}
 		if ( _flags & SLW_APOSTROPHE ){
-			if ( c == '\'' ){
+			if ( c == '\'' || c == CODE_APOSTROPHE){
 				convf |= SLW_APOSTROPHE;
 				break;
 			}
@@ -614,9 +614,10 @@ bool TLangProcStd::CompareStd( COMPARE_STRUCT &cs, const int _flags )
 					*(dp-1) = 'y';
 				} else
 				if ( (dp3 == dp[-4]) &&
-					( dp3=='b' || dp3=='d' || dp3=='f' || dp3=='g' || dp3=='l' || dp3=='m' || dp3=='n' || dp3=='p' || /*dp3=='s' ||*/ dp3=='r' || dp3=='t' || dp3=='z' ) ){
+					( dp3=='b' || dp3=='d' || dp3=='g' /*|| dp3=='l'*/ || dp3=='m' || dp3=='n' || dp3=='p' || /*dp3=='s' ||*/ dp3=='r' || dp3=='t' || dp3=='z' ) ){
 						// -gged, -pped, -nned, -rred, -tted, -mmed
 						// 2012.9.5 -ssedを除外した。discussedなど多くの単語が discus になってしまうため。
+						// 2019.11.20 -lledを除外。killedがヒットしないため
 					dp-=3;
 				} else {
 					dp -= 2;
@@ -670,8 +671,9 @@ bool TLangProcStd::CompareStd( COMPARE_STRUCT &cs, const int _flags )
 
 	}
 	if ( _flags & SLW_DEUTCH1 ){
-		if ( *cs.dp == 'g' && *(cs.dp+1) == 'e' ){	// -eg
+		if ( *cs.dp == 'g' && *(cs.dp+1) == 'e' ){	// ge-
 			memmove( cs.dp, cs.dp+2, LENTOBYTE(_tcslen(cs.dp+2)+1) );
+			dp -= 2;
 			convf |= SLW_DEUTCH1;
 		}
 	}
@@ -789,7 +791,7 @@ jsrch:
 					return true;
 				}
 			}
-			D("Hit-2-2:%ws",cs.str);
+			D("Hit-2-2:%ws _flags=%X",cs.str, _flags);
 			if ( _flags == 0 ){
 				cs.notrans_part->Add( cs.str, convf|cs.srcflags, cs.numword );
 			}
@@ -1057,10 +1059,11 @@ jnext:;
 			if ( notrans_part.get_num() ){
 				for ( ;notrans_part.get_num(); ){
 					// 重複チェック
+					// 変換ありの部分一致より変換無しの部分一致を優先する
 					for (int i=0;i<dstpart->size();i++){
 						if ( ((*dstpart)[i]).word == notrans_part[0].word ){
 							dstpart->del(i);
-							break;
+							i--;
 						}
 					}
 
@@ -1086,6 +1089,7 @@ jnext:;
 			// ただし、部分一致が２回以下であれば続ける
 			// その場合、srccompは、partになる。
 			// partにもひとつもなければ終了！！
+			//DBW("dstpart: %d", dstpart->get_num());
 			if ( dstpart->get_num() ){
 				// すべてがSLW_REPLACEANYxである場合、後続追加でヒットしない場合があるため
 				// 今回使用したものも再度使用する
@@ -1099,10 +1103,23 @@ jnext:;
 				if (i == dstpart->size()){
 					// すべてSLW_REPLACEANYxのみ
 					// やり直し方式と通常処理がある - どちらがいいだろうか？
+					// →とりあえずやり直し方式になっている(2022.2.5)
 					compindex ^= 1;
 					srccomp->insert_discard(0, *dstpart);
 					to_continue = true;
 				} else {
+					// 2022.2.5 最も変換が少ないものなのだが、とりあえず変換無しだけ
+					// もし変換ありも含めるとマージ処理が複雑になる。問題になるケースがあれば対応する
+					// 複雑になる理由：
+					//	最小になる単語が複数ある場合
+					//	bitcountでinsert先を探す必要あり(bitcountでいいのかという問題もあり）
+					//	同一単語があるか調べる必要あり
+					// ※無変換なら最後に追加するだけ、重複する単語（熟語）は無いはず
+					for (i=0;i<srccomp->size();i++){
+						if ((*srccomp)[i].flag == 0){
+							dstpart->AddCompLast(new MATCHINFO((*srccomp)[i]));
+						}
+					}
 					srccomp = dstpart;
 				}
 				if (skip_retry==-1) skip_retry = 0;
@@ -1146,7 +1163,6 @@ jnext:;
 			}
 		}
 	}
-//jend:;
 	return r == -1 ? -1 : maxlen;
 }
 
@@ -1351,15 +1367,6 @@ bool TLangProcStd::BuildMorphWords(const tchar *word, tnstr_vec &items, tnstr_ve
 //
 int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const tchar *prevwords, int flags, MatchArray *HitWords )
 {
-#if 0
-	if ( dic.find2( words ) == 3 ){
-		if ( HitWords ) HitWords->add( words );
-		return _tcslen(words);
-	}
-#endif
-
-//	byte HitLevel[2][MAX_COMP];
-
 	tchar *_str = new tchar[ _tcslen( words ) + LWORD ];
 	_str[0] = '\0';	// 不正アクセス防止
 	_str[1] = '\0';
@@ -1541,31 +1548,6 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 		// すべてのオプションについて試す
 //		for ( int i=0;i<=SLW_MASK1;i++ )
 		{
-#if 0
-			if ( i != 0 && (~flags & SLW_MASK1 & i) ){
-				continue;
-			}
-#endif
-#if 0
-			dp = __dp;
-			sp = __sp;
-#endif
-
-//			int _flags = i;
-
-//			int convf = 0;
-
-#if 0	//未対応
-			// 先頭case反転
-			if ( _flags & SLW_CASEIGNORE1 ){
-				if ( (tuchar)*sp >= 'A' && (tuchar)*sp <= 'Z' ){
-					*dp++ = *sp++;
-					convf |= SLW_CASEIGNORE1;
-				}
-			}
-#endif
-//			tuchar c;
-//			while ( ((flags & SLW_COMPLETE) && *sp) || IsWordChar( *sp ) || IsDBCSLeadByte(*sp) )
 			{
 				{
 #ifndef _UNICODE
@@ -1577,11 +1559,6 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 				}
 			}
 			*dp = '\0';
-#if 0
-			if ( i != 0 ){
-				if ( i != convf ) continue;
-			}
-#endif
 			if ( STR_DIFF(dp,str) > LWORD ){
 				continue;
 			}
@@ -1591,7 +1568,6 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 					break;
 				case 1:	// 部分一致
 				case 2:
-#if 1
 					if ( flags & SLW_WORDDELIM ){
 						tnstr_vec fwords;
 						if ( dic.SearchPart( str, fwords, dicflag ) ){
@@ -1611,9 +1587,6 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 									}
 								}
 							}
-							//** 順位記録
-							//D("Hit-2-1:%ws",cs.str);
-							//return true;
 						}
 					}
 #if 0	//TODO:
@@ -1623,24 +1596,8 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 					}
 					cs.dstpart->Add( cs.str, convf|cs.srcflags, cs.numword );
 #endif
-#else
-#if 0	//未対応
-					foundflag = 1;
-					if ( flags & SLW_WORDDELIM ){
-						tnstr fword;
-						dic.Search( str, fword, NULL );
-						tchar c = fword[_tcslen(str)];
-						if ( !IsWordChar(c) && c != ' ' ){
-							// 完全一致と同じ扱い
-							goto j10;
-						}
-					}
-					LastFound = str;
-#endif
-#endif
 					continue;
 				case 3: // 完全一致
-//				j10:
 					{
 						// ヒット候補から完全一致を探す
 						tnstr_vec fwords;
@@ -1673,12 +1630,6 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 			}
 		}
 		if ( !foundflag ) break;	// １種類も見つからない
-#if 0
-		if ( flags & SLW_COMPLETE ) break;
-		if ( foundflag == 1 ){
-			_tcscpy( __dp, LastFound );
-		}
-#endif
 	}	// while(*sp)
 
 	if (maxlen>curpos-offset)
@@ -1701,91 +1652,17 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 	return r == -1 ? -1 : maxlen;
 }
 
-
-#if 0
-int TLangProcStd::_SearchLongestWordOptional( MultiPdic &dic, const tchar *words, int flags, tnstr *found )
-{
-	int r;
-	int i;
-	int maxlen = 0;
-	tnstr *fstr;
-	if ( found ){
-		fstr = new tnstr;
-	} else {
-		fstr = NULL;
-	}
-
-	// オリジナルで検索
-	r = SearchLongestWord( dic, words, 0, fstr );
-	if ( r == -1 ){
-		goto exit;
-	}
-
-	maxlen = r;
-	if ( found ) found->set( *fstr );
-
-	// すべてのフラグについて試す
-	for ( i=0;i<=(SLW_REPLACEONES|SLW_ELIMHYPHEN|SLW_DESINENCE|SLW_DESINENCE2);i++ ){
-		if ( !(flags & (SLW_REPLACEONES|SLW_ELIMHYPHEN|SLW_DESINENCE|SLW_DESINENCE2) & i) ){
-			continue;
-		}
-		r = SearchLongestWord( dic, words, (flags & ~(SLW_REPLACEONES|SLW_ELIMHYPHEN|SLW_DESINENCE|SLW_DESINENCE2)) | i , fstr );
-		if ( r == -1 ) break;
-		if ( r > maxlen ){
-			maxlen = r;
-			if ( found ) found->set( *fstr );
-		}
-	}
-
-exit:
-	if ( fstr ) delete fstr;
-
-	return maxlen;
-}
-#endif	// 0
-
 // prevwords : 前置検索単語 prevwords <= words or prevwords = NULL
 int TLangProcStd::SearchLongestWordOptional( MultiPdic &dic, const tchar *words, const tchar *prevwords, int flags, MatchArray *HitWords )
 {
 	int r;
 	int maxlen = 0;
-#if 0
-	tnstr *fstr;
-	if ( HitWords ){
-		fstr = new tnstr;
-	} else {
-		fstr = NULL;
-	}
-#endif
 	tchar *temp = NULL;
 
 	r = SearchLongestWord( dic, words, prevwords, flags, HitWords );
 	if ( r == -1 ) goto exit;
 
 	maxlen = r;
-//	if ( found ) found->set( *fstr );
-
-#if 0
-	if ( flags & SLW_CASEIGNORE ){
-		temp = new tchar[ _tcslen(words) + 20 ];
-		_tcscpy( temp, words );
-		if ( temp[0] >= 'A' && temp[0] <= 'Z' ){
-			temp[0] += (tchar)0x20;
-		} else
-		if ( temp[0] >= 'a' && temp[0] <= 'z' ){
-			temp[0] -= (tchar)0x20;
-		} else {
-			goto next1;
-		}
-		r = SearchLongestWordOptional( dic, temp, flags, fstr );
-		if ( r == -1 ){
-			maxlen = r;
-			if ( found ) found->set( *fstr );
-		}
-	}
-#endif
-
-//next1:
 
 	if ( flags & SLW_CONJUGATE ){
 		if ( !temp )
@@ -1817,7 +1694,6 @@ int TLangProcStd::SearchLongestWordOptional( MultiPdic &dic, const tchar *words,
 	}
 
 exit:
-//	if ( fstr ) delete fstr;
 	if ( temp ) delete[] temp;
 
 	return maxlen;
@@ -1828,24 +1704,14 @@ int TLangProcStd::mbSearchLongestWordOptional( MultiPdic &dic, const tchar *word
 {
 	int r;
 	int maxlen = 0;
-#if 0
-	tnstr *fstr;
-	if ( found ){
-		fstr = new tnstr;
-	} else {
-		fstr = NULL;
-	}
-#endif
 	tchar *temp = NULL;
 
 	r = mbSearchLongestWord( dic, words, curpos, flags, found );
 	if ( r == -1 ) goto exit;
 
 	maxlen = r;
-//	if ( found ) found->set( *fstr );
 
 exit:
-//	if ( fstr ) delete fstr;
 	if ( temp ) delete temp;
 
 	return maxlen;

@@ -393,9 +393,8 @@ void TPopupForWordsParam::SetWord(const tchar *__word, const tchar *__prevword, 
 	curi = 0;
 }
 // 検索のみ行い、ポップアップ表示は行わない
-void TPopupSearch::SearchHitWords( const tchar *_word, const tchar *_prevword, tnstr_vec &hitwords )
+void TPopupSearch::SearchHitWords( const tchar *_word, const tchar *_prevword, int curpos, tnstr_vec &hitwords )
 {
-	const int curpos = 0;
 	int r = PrePopupSearch( _word, _prevword, curpos, false, PopupConfig.GetOption() | SLW_ELIMHYPHEN );
 	if ( r ){
 		for ( int i=0;i<HitWords->get_num();i++ ){
@@ -1286,7 +1285,6 @@ int TPopupSearch::OpenPopupSearch(TComponent *owner, IPopupSearch *parent, const
 	
 #else	// !PSIMOPEN
 
-	//const int curpos = 0;
 	int r = PrePopupSearch( _word, _prevword, curpos, complete, option );
 #endif
 	if ( r == -1 )

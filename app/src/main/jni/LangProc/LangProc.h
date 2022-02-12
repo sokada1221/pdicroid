@@ -91,7 +91,7 @@ public:
 	inline FNPreCodeTranslate GetDecodeKT()
 		{ return KCodeTranslate.decodeKT; }
 
-	// Kyeword generator
+	// Keyword generator
 	virtual tnstr CompositeWord(const tchar *word);
 	tnstr KWord(const tchar *word)
 		{ return Normalize(word); }
@@ -111,7 +111,7 @@ public:
 
 	// Popup Search related //
 	virtual bool Compare( struct COMPARE_STRUCT &cs, const int _flags ) = 0;
-	virtual int Search( COMPARE_STRUCT &cs, const tchar *words, tchar *str, MatchArray *HitWords ) = 0;
+	virtual int Search( COMPARE_STRUCT &cs, const tchar *words, int curpos, tchar *str, MatchArray *HitWords ) = 0;
 	//virtual int FindLoop(COMPARE_STRUCT &cs) = 0;
 	virtual const tchar *GetConjugateWords() = 0;
 	virtual int SearchLongestWord( class MultiPdic *dic, const tchar *words, const tchar *prevwords, int curpos, int option, class MatchArray *HitWords ) = 0;
@@ -157,7 +157,7 @@ const tchar *find_cword_pos(const tchar *word);
 inline bool is_composit_word(const tchar *word)
 	{ return find_cword_pos(word)!=word; }
 
-const tchar *FindWordTop(const tchar *word, int offset, const tchar **top2=NULL);
+const tchar *FindWordTop(const tchar *word, int &offset, const tchar **top2=NULL);
 
 #endif
 

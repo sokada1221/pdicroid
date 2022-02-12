@@ -391,7 +391,7 @@ tnstr join_word(const tchar *cword, const tchar *kword)
 #endif
 }
 
-const tchar *FindWordTop(const tchar *word, int offset, const tchar **_top2)
+const tchar *FindWordTop(const tchar *word, int &offset, const tchar **_top2)
 {
 	const tchar *p;
 
@@ -452,14 +452,17 @@ const tchar *FindWordTop(const tchar *word, int offset, const tchar **_top2)
 #endif
 
 	if (top){
+		offset -= STR_DIFF(top, word);
 		return top;
 	} else
 	if (top1){
+		offset -= STR_DIFF(top1, word);
 		return top1;
 	}
 #if USE_PREV2
 	else
 	if (top2){
+		offset -= STR_DIFF(top2, word);
 		return top2;
 	}
 #endif

@@ -25,7 +25,7 @@ public:
 	//__override bool OpenIrreg();
 	__override bool Compare( struct COMPARE_STRUCT &cs, const int flags )
 		{ return false; }	// not supported.
-	__override int Search( COMPARE_STRUCT &cs, const tchar *words, tchar *str, MatchArray *HitWords )
+	__override int Search( COMPARE_STRUCT &cs, const tchar *words, int curpos, tchar *str, MatchArray *HitWords )
 		{ return 0; }
 protected:
 	int FindLoop(COMPARE_STRUCT &cs)

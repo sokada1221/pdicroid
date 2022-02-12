@@ -114,7 +114,7 @@ public:
 public:
 	void Initialize();
 	int GetBaseStyle() const;
-	void SearchHitWords( const tchar *_word, const tchar *_prevword, tnstr_vec &hitwords );
+	void SearchHitWords( const tchar *_word, const tchar *_prevword, int curpos, tnstr_vec &hitwords );
 	void PopupForWords( const tchar*word, int click_pos, const tchar *prevword, tnstr *fondword, bool tmp_clickpopup, const tchar *url=NULL );
 	static void PopupForWordsLoop( TPopupSearch *ps, tnstr *foundword, bool tmp_clickpopup, const tchar *url=NULL );
 	int PopupForWordsLoopStart(bool tmp_clickpopup, const tchar *url=NULL);

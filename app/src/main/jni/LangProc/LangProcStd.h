@@ -27,11 +27,11 @@ public:
 	__override bool OpenIrreg();
 	__override bool Compare( struct COMPARE_STRUCT &cs, const int flags )
 		{ return CompareStd(cs, flags); }
-	__override int Search( COMPARE_STRUCT &cs, const tchar *words, tchar *str, MatchArray *HitWords )
-		{ return SearchStd(cs, words, str, HitWords); }
+	__override int Search( COMPARE_STRUCT &cs, const tchar *words, int curpos, tchar *str, MatchArray *HitWords )
+		{ return SearchStd(cs, words, curpos, str, HitWords); }
 protected:
 	bool CompareStd( struct COMPARE_STRUCT &cs, const int flags );
-	int SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str, MatchArray *HitWords );
+	int SearchStd( COMPARE_STRUCT &cs, const tchar *words, int curpos, tchar *str, MatchArray *HitWords );
 	int FindLoop(COMPARE_STRUCT &cs);
 public:
 	// Poup Search related
@@ -44,9 +44,9 @@ public:
 	__override bool BuildMorphWords(const tchar *word, tnstr_vec &items, tnstr_vec *features);
 protected:
 	// SLW specific search //
-	int SearchLongestWord( MultiPdic &dic, const tchar *words, const tchar *prevwords, int flags, MatchArray *HitWords );
+	int SearchLongestWord( MultiPdic &dic, const tchar *words, const tchar *prevwords, int curpos, int flags, MatchArray *HitWords );
 	int mbSearchLongestWord( MultiPdic &dic, const tchar *words, int curpos, int /* flags */, MatchArray *found );
-	int SearchLongestWordOptional( MultiPdic &dic, const tchar *words, const tchar *prevwords, int flags, MatchArray *HitWords );
+	int SearchLongestWordOptional( MultiPdic &dic, const tchar *words, const tchar *prevwords, int curpos, int flags, MatchArray *HitWords );
 	int mbSearchLongestWordOptional( MultiPdic &dic, const tchar *words, int curpos, int flags, MatchArray *found );
 #if USE_WEBSRCH
 	// web search thread //

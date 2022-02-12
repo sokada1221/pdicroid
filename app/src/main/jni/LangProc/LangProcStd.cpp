@@ -797,10 +797,10 @@ jsrch:
 					// 完全一致と同じ扱い
 					//** これは優先順位を低くしたいなぁ
 					//Note: ...,ABC#2, ABC#1と数値逆順にするためにreversed adding.
-					int len = _tcslen(cs.str);
-					const int MAX_SUFFIX_LEN = 4+1;	// #以降が4文字以降は除外
+					int sfxlen = _tcslen(cs.str);
+					const int MAX_SUFFIX_LEN = 4+1;	// #以降が4文字以上は除外
 					for (int i=fwords.size()-1;i>=0;i--){
-						if (_tcslen(find_cword_pos(fwords[i]+len)) > MAX_SUFFIX_LEN) continue;	// #以降が長い場合は除外
+						if (_tcslen(find_cword_pos(fwords[i]+sfxlen)) > MAX_SUFFIX_LEN) continue;	// #以降が長い場合は除外
 						cs.dstcomp2->AddComp( fwords[i], convf|cs.srcflags, cs.numword, point );
 					}
 					//** 順位記録
@@ -856,8 +856,9 @@ jsrch:
 
 #define	MAX_COMP	20	// 最大保存ヒット語数
 // words : 検索対象語
+// curpos : wordsの先頭からclickした文字までの文字数（SLW_ELIMANY2とSLW_ELIMHYPHEN3でしか参照しない。不要であれば0にしておく）
 // str   : 前置単語を含んだ作業用バッファ
-int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str, MatchArray *HitWords )
+int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, int curpos, tchar *str, MatchArray *HitWords )
 {
 	MatchArray *srccomp, *dstcomp, *dstpart;	// 現在の完全一致リスト・スロット
 
@@ -894,6 +895,7 @@ int TLangProcStd::SearchStd( COMPARE_STRUCT &cs, const tchar *words, tchar *str,
 	int r = 0;
 	bool inc_pdelim = false;	// include phase delimitor
 	bool clicked_passed = false;	// clicked wordを跨いだ時だけtrue
+	const tchar *clicked_ptr = words + curpos;
 	while ( r != -1 ){
 //		if ( STR_DIFF(dp,str) > LWORD ) break;
 		// １語コピー //
@@ -1046,6 +1048,24 @@ jnext:;
 				MATCHINFO &mi = (*dstcomp)[i];
 				if (mi.flag & SLW_REPLACEANYx){
 					mi.flag |= SLW_PENALTY2;
+				}
+			}
+			// ハイフン削除された単語がclickしたところにあった場合
+			for (i=0;i<dstcomp->get_num();i++){
+				MATCHINFO &mi = (*dstcomp)[i];
+				if (cs.FoundHyphen){
+					if (mi.flag & SLW_ELIMHYPHEN2){
+						if ((cs.FoundHyphen < clicked_ptr) && (clicked_ptr < sp)){
+							// ハイフン結合単語の後半削除時、clicked_ptrがハイフンより後ろ、次の単語より前にある場合
+							mi.flag |= SLW_PENALTY2;
+						}
+					} else
+					if (mi.flag & SLW_ELIMHYPHEN3){
+						if (cs.FoundHyphen > clicked_ptr){
+							// ハイフン結合単語の前半削除時、clicked_ptrがハイフンより前にある場合
+							mi.flag |= SLW_PENALTY2;
+						}
+					}
 				}
 			}
 		}
@@ -1273,7 +1293,7 @@ int TLangProcStd::FindLoop(COMPARE_STRUCT &cs)
 								}
 								// hyphen //
 								if ( cs.flags & SLW_ELIMHYPHEN ){
-									cs.FoundHyphen = false;
+									cs.FoundHyphen = NULL;
 									if ( !Compare( cs, _flags | SLW_ELIMHYPHEN3 ) ){
 										return -1;
 									}
@@ -1319,7 +1339,7 @@ int TLangProcStd::SearchLongestWord( class MultiPdic *dic, const tchar *words, c
 #else
 	if ( !_tiskanji(words[0]) && (curpos==0 || !_tiskanji(words[curpos]))){
 		// 英語
-		return SearchLongestWordOptional( *dic, words, prevwords, flags, HitWords );
+		return SearchLongestWordOptional( *dic, words, prevwords, curpos, flags, HitWords );
 	} else {
 		// 日本語
 		return mbSearchLongestWordOptional( *dic, words, curpos, flags, HitWords );
@@ -1384,7 +1404,7 @@ bool TLangProcStd::BuildMorphWords(const tchar *word, tnstr_vec &items, tnstr_ve
 // wordsの前に変換を加えるような場合には対応していない。(foundflag参照)
 // １種類も見つからない場合は検索を中止する(foundflag参照)
 //
-int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const tchar *prevwords, int flags, MatchArray *HitWords )
+int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const tchar *prevwords, int curpos, int flags, MatchArray *HitWords )
 {
 	tchar *_str = new tchar[ _tcslen( words ) + LWORD ];
 	_str[0] = '\0';	// 不正アクセス防止
@@ -1404,7 +1424,7 @@ int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const t
 
 	// 前置単語なしの場合
 	*str = '\0';
-	int r = Search( cs, words, str, HitWords );
+	int r = Search( cs, words, curpos, str, HitWords );
 	if ( r == -1 ){
 		delete[] _str;
 		return -1;
@@ -1424,7 +1444,7 @@ int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const t
 			int cs_flags = cs.flags;
 			cs.flags = SLW_COMPLETE;
 			str[0] = '\0';
-			r = Search(cs, _words, str, HitWords);
+			r = Search(cs, _words, curpos, str, HitWords);
 			if ( maxlen < r )
 				maxlen = r;
 			cs.fComplete = false;
@@ -1467,7 +1487,8 @@ int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const t
 				cs.dic = &dic;
 				tnstr str_backup(str);
 				str[0] = '\0';
-				Search( cs, str_backup, str, &prev_hits );
+				const int curpos = 0;	// SLW_ELIMHYPHEN2,SLW_ELIMHYPHEN3を使わないため0でOK
+				Search( cs, str_backup, curpos, str, &prev_hits );
 
 				// 検索語が辞書になく、変化形でヒットした場合、検索語が対象にならない問題の対策
 				bool found = false;
@@ -1489,7 +1510,7 @@ int TLangProcStd::SearchLongestWord( MultiPdic &dic, const tchar *words, const t
 				_tcscpy(str, find_cword_pos(prev_hits[i].word));
 
 				MatchArray hits;
-				r = Search( cs, words, str, &hits );
+				r = Search( cs, words, curpos, str, &hits );
 				if ( r == -1 )
 					break;
 				if ( maxlen < r )
@@ -1599,7 +1620,10 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 								if ( maxlen < len ){
 									maxlen = len;
 									if (found){
+										int sfxlen = _tcslen(str);
+										const int MAX_SUFFIX_LEN = 4+1;	// #以降が4文字以上は除外
 										for (int i=fwords.size()-1;i>=0;i--){
+											if (_tcslen(find_cword_pos(fwords[i]+sfxlen)) > MAX_SUFFIX_LEN) continue;	// #以降が長い場合は除外
 											MATCHINFO *mi = new MATCHINFO( fwords[i], 0 /*convf*/, numword, NULL, offset );
 											found->AddComp(mi);
 										}
@@ -1672,30 +1696,30 @@ int TLangProcStd::mbSearchLongestWord( MultiPdic &dic, const tchar *words, int c
 }
 
 // prevwords : 前置検索単語 prevwords <= words or prevwords = NULL
-int TLangProcStd::SearchLongestWordOptional( MultiPdic &dic, const tchar *words, const tchar *prevwords, int flags, MatchArray *HitWords )
+int TLangProcStd::SearchLongestWordOptional( MultiPdic &dic, const tchar *words, const tchar *prevwords, int curpos, int flags, MatchArray *HitWords )
 {
 	int r;
 	int maxlen = 0;
-	tchar *temp = NULL;
 
-	r = SearchLongestWord( dic, words, prevwords, flags, HitWords );
-	if ( r == -1 ) goto exit;
+	r = SearchLongestWord( dic, words, prevwords, curpos, flags, HitWords );
+	if ( r == -1 ) return 0;
 
 	maxlen = r;
 
+	tchar *temp = NULL;
 	if ( flags & SLW_CONJUGATE ){
-		if ( !temp )
-			temp = new tchar[ _tcslen(words) + 20 ];
+		temp = new tchar[ _tcslen(words) + 20 ];
 		const tchar *sp = dic.GetLangProc()->GetConjugateWords();
 		if (sp && sp[0]){
 			const tchar *ssp = sp;
 			while ( 1 ){
 				if ( *sp == ';' || *sp == '\0' ){
 					if ( STR_DIFF( sp, ssp ) ){
-						_tcsncpy( temp, ssp, STR_DIFF(sp,ssp) );
-						_tcscpy( temp + STR_DIFF(sp,ssp), _T(" ") );
+						const int cjlen = STR_DIFF(sp, ssp);
+						_tcsncpy( temp, ssp, cjlen );		// copy a conjugate word
+						_tcscpy( temp + cjlen, _T(" ") );	// word separator
 						_tcscat( temp, words );
-						r = SearchLongestWord( dic, temp, NULL, flags, HitWords );
+						r = SearchLongestWord( dic, temp, NULL, curpos+cjlen+1, flags, HitWords );
 						if ( r == -1 ){
 							maxlen = r;
 	//						if ( HitWords ) found->set( *fstr );
@@ -1712,8 +1736,7 @@ int TLangProcStd::SearchLongestWordOptional( MultiPdic &dic, const tchar *words,
 		}
 	}
 
-exit:
-	if ( temp ) delete[] temp;
+	delete[] temp;
 
 	return maxlen;
 }

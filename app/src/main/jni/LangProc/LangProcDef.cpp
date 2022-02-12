@@ -33,11 +33,12 @@ int MATCHINFO::CalcPoint() const
 	}
 	if (flag & SLW_PENALTY2){
 		// clicked wordがない場合はpenalty大
-		_point -= 61;
+		_point -= 65;
 		// 2018.12.11 ここの調整は難しい
 		// "have reshuffled the deck when it comes to"でreshuffledをclickしてもhitしないため、
 		// 60以上にする必要あり
-		// 2022.2.9 一つ増やした。"and multi-tenancy allow diverse and changing"でtenancyをclickしたときに"and change"がtopになるため
+		// 2022.2.11 60→65に変更
+		// "capture-to-color-space conversion" で先頭をclickしたのに、"space conversion"がhitしてしまうため
 	}
 	if ((flag & SLW_ENGLISH) && cword[0] >= 'A' && cword[0] <= 'Z'){
 		_point -= 16;	// 先頭が大文字の場合は固有名詞であるため変化形によるヒットはpenalty

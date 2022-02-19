@@ -1068,17 +1068,18 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     {
         GoogleTranslator trans = new GoogleTranslator(text, apikey){
             @Override
-            protected void onTranslated(String translatedText){
-                postGoogleTranslate(translatedText);
+            protected void onTranslated(String translatedText, String debugText){
+                postGoogleTranslate(translatedText, debugText);
             }
         };
         trans.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    void postGoogleTranslate(String text)
+    void postGoogleTranslate(String text, String debugText)
     {
         if (Utility.isEmpty(text)){
-            Toast.makeText(getContext(), getString(R.string.msg_cannot_get_or_connect), Toast.LENGTH_LONG).show();
+            String msg = getString(R.string.msg_cannot_get_or_connect) + " " + debugText;
+            Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
             return;
         }
         popupListAdapter.clear();

@@ -3,10 +3,14 @@ package com.reliefoffice.pdic;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.text.Editable;
@@ -243,11 +247,25 @@ public class Utility {
     }
 
     public static final boolean requestStoragePermision(Activity activity){
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_CODE_PERMISSION);
-            return false;
+        if (Build.VERSION.SDK_INT >= 30){
+            if(!Environment.isExternalStorageManager()){
+                try {
+                    Uri uri = Uri.parse("package:" + BuildConfig.APPLICATION_ID);
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, uri);
+                    activity.startActivity(intent);
+                } catch (Exception ex) {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
+                    activity.startActivity(intent);
+                }
+            }
+        } else {
+            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_CODE_PERMISSION);
+                return false;
+            }
         }
         return true;
     }

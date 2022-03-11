@@ -5,7 +5,7 @@ android {
 
     defaultConfig {
         applicationId "com.reliefoffice.pdic"
-        minSdkVersion 19
+        minSdkVersion 21
         compileSdkVersion 30
         targetSdkVersion 30
         versionCode 820

@@ -125,8 +125,9 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         Fragment fragment = null;
         Class fragmentClass = null;
 
-        if (lastNavSetting)
-            setupViewFlags();
+        if (lastNavSetting) {
+            restart();
+        }
         lastNavSetting = false;
 
         boolean needAllPop = false;
@@ -232,6 +233,13 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         }
 
         setupViewFlags();
+    }
+
+    void restart()
+    {
+        closeDictionary();
+        setupViewFlags();
+        openDictionary();
     }
 
     void setupViewFlags(){

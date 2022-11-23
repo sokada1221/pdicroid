@@ -103,6 +103,9 @@ public class SleepTimer {
     }
     public void handleTimer()
     {
+        // configuration
+        final boolean cancelIfAdverseVolChange = false;
+
         if (state == State.Idle || state == State.End)
             return;
 
@@ -125,7 +128,7 @@ public class SleepTimer {
                     // changed by user intentionally
                     if (endVol <= startVol){
                         // sleep timer
-                        if (sysvol > curVol){
+                        if (cancelIfAdverseVolChange && sysvol > curVol){
                             // 音量を上げられた->中止？
                             setState(State.End);
                             Log.d("PDX", "force to stop");

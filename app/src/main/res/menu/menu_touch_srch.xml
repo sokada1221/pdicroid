@@ -33,6 +33,11 @@
         android:orderInCategory="100"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/action_goto_play_line"
+        android:title="@string/action_goto_play_line"
+        android:orderInCategory="100"
+        app:showAsAction="never"/>
+
     <item android:id="@+id/action_viewpsb"
         android:title="@string/action_view_bookmarklist"
         android:orderInCategory="100"

@@ -528,6 +528,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
 
     boolean faked = false;
+    // LLM関連
+    boolean LLM = false;
+    LLMManager llmManager = new LLMManager();
 
     boolean isNormalMode(){
         return Utility.isEmpty(mParam1) && Utility.isEmpty(mParam2);
@@ -538,6 +541,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     boolean isClipMode(){
         return mParam1 == "\\\\clip";
     }
+    boolean isLLMode() { return LLM; }
 
     int getBackStackEntryCount(){
         return getFragmentManager().getBackStackEntryCount();
@@ -879,6 +883,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
     @Override
     public void onDestroy() {
+        closeAudioPlayer();
         super.onDestroy();
     }
 
@@ -1125,6 +1130,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 menu.findItem(R.id.action_savefile).setVisible(false);
                 menu.findItem(R.id.action_sleep_timer).setVisible(false);
             }
+            if (!isLLMode()){
+                menu.findItem(R.id.action_goto_play_line).setVisible(false);
+            }
         }
     }
 
@@ -1148,6 +1156,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             saveFileUI();
         } else if (id == R.id.action_goto){
             moveCursor();
+        } else if (id == R.id.action_goto_play_line){
+            moveCursorPlayingLine();
         } else if (id == R.id.action_viewpsb) {
             viewPSBookmarkList();
         } else if (id == R.id.action_wpm) {
@@ -1224,7 +1234,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     @Override
     public void onFileLoaded(StringBuilder result, String filename, String charset, int linebreak, int mOffset) {
         if (result != null) {
-            editText.setText(result);
+            if (Utility.isLLMFile(filename)){
+                editText.setText( llmManager.setup(result.toString()) );
+            } else {
+                editText.setText(result);
+            }
             //editText.setChanged(false);
             loadFilePost(filename, downloadedRemoteName);
         }
@@ -1277,12 +1291,17 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
     private void onPostLoadFile(TouchSrchFragment.LoadFileTask loadTask) {
         if (loadTask.ok) {
-            editText.setText(loadTask.text);
+            if (Utility.isLLMFile(loadTask.filename)){
+                editText.setText( llmManager.setup(loadTask.text) );
+            } else {
+                editText.setText(loadTask.text);
+            }
             loadFilePost(loadTask.filename, loadTask.remoteName);
         } else {
             deleteProgressDialog();
             Toast.makeText(getContext(), getString(R.string.msg_file_load_failed)+" : " + loadTask.filename, Toast.LENGTH_LONG).show();
             loadFileFailed();
+            llmManager.clear();
         }
     }
 
@@ -1353,6 +1372,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             audioOk = openAudioPlayer(audioFileName);
         }
         showAudio(audioOk);
+
+        LLM = Utility.isLLMFile(filename) && audioOk;
+        if (!LLM){
+            llmManager.clear();
+        }
 
         reloadMarkPosition();
 
@@ -1539,6 +1563,13 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             // use line number
             Utility.setCursorLine(editText, value);
         }
+    }
+    void moveCursorPlayingLine()
+    {
+        if (!isLLMode() || mediaPlayer == null) return;
+        int linenum = llmManager.timestampToLine(mediaPlayer.getCurrentPosition());
+        if (linenum < 0) return;
+        Utility.setCursorLineSelect(editText, linenum);
     }
 
     // --------------------------------------- //
@@ -1785,6 +1816,12 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     void closeAudioPlayer(){
         closeAudioPlayer(true);
     }
+    void hideAudioPlayer(){
+        audioLayout = null;
+        btnMark = null;
+        audioSlider = null;
+        tvPosition = null;
+    }
     void closeAudioPlayer(boolean showControl){
         clearAudioMark();
 
@@ -1836,7 +1873,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     // mark operation //
     void clearAudioMark(){
         markState = TouchSrchFragment.MarkState.None;
-        btnMark.setText("A");
+        if (btnMark != null)
+            btnMark.setText("A");
     }
     void toggleAudioMark(){
         if (mediaPlayer == null) return;
@@ -1973,6 +2011,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
 
     void showAudio(boolean on){
+        if (audioLayout == null)
+            return;
+
         if (audioLayout.getVisibility()==View.GONE){
             // to visible
             if (!on) return;
@@ -2043,11 +2084,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     }
                 }
             }
-            audioSlider.setProgress(position);
-            int sec = position / 1000;
-            String text = String.format("%d:%02d/%d:%02d", sec/60, sec % 60, audioDurationSec/60, audioDurationSec%60);
-            tvPosition.setText(text);
-            //tvPosition.setText( Integer.toString(sec/60) + ":" + Integer.toString(sec % 60) + "/" + Integer.toString(audioDurationSec/60) + ":" + Integer.toString(audioDurationSec%60));
+
+            if (audioSlider != null){
+                audioSlider.setProgress(position);
+                int sec = position / 1000;
+                String text = String.format("%d:%02d/%d:%02d", sec/60, sec % 60, audioDurationSec/60, audioDurationSec%60);
+                tvPosition.setText(text);
+                //tvPosition.setText( Integer.toString(sec/60) + ":" + Integer.toString(sec % 60) + "/" + Integer.toString(audioDurationSec/60) + ":" + Integer.toString(audioDurationSec%60));
+            }
 
             if (slp!=null){
                 slp.handleTimer();

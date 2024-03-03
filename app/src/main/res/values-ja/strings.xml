@@ -95,6 +95,7 @@
     <string name="title_activity_file_save">ファイルの保存</string>
     <string name="title_activity_file_selection">ファイルの選択</string>
     <string name="action_goto">カーソルの移動</string>
+    <string name="action_goto_play_line">再生中の行へ</string>
     <string name="percent_btn">%</string>
     <string name="line_num_btn">行</string>
     <string name="move_cursor">カーソルの移動</string>

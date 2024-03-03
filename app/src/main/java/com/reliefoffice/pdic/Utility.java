@@ -70,6 +70,16 @@ public class Utility {
         return Environment.getExternalStorageDirectory().getAbsolutePath();
     }
 
+    public static String getFileExtension(String filename)
+    {
+        int position = filename.lastIndexOf(".");
+        if (position == -1){
+            // 拡張子がない場合
+            return "";
+        }
+        return filename.substring(position + 1);
+    }
+
     // ファイル名の拡張子を変更する
     public static final String changeExtension(String filename, String extention){
         File in = new File(filename);
@@ -113,13 +123,20 @@ public class Utility {
 
     // filenameに対するmp3ファイルが存在するか？
     public static boolean mp3Exists(String filename, String altAudioFolder){
-        String audioFileName = Utility.changeExtension(filename, "mp3");
-        boolean mp3Exists = Utility.fileExists(audioFileName);
+        String audioFileName = changeExtension(filename, "mp3");
+        boolean mp3Exists = fileExists(audioFileName);
         if (!mp3Exists){
-            audioFileName = Utility.changePath(audioFileName, altAudioFolder);
-            mp3Exists = Utility.fileExists(audioFileName);
+            audioFileName = changePath(audioFileName, altAudioFolder);
+            mp3Exists = fileExists(audioFileName);
         }
         return mp3Exists;
+    }
+
+    //TODO: .txtのLLM:1形式は未対応
+    public static boolean isLLMFile(String filename)
+    {
+        String extension = getFileExtension(filename);
+        return extension.toLowerCase().equals("llm");
     }
 
     // general purpose for EditText
@@ -144,6 +161,20 @@ public class Utility {
             position = editText.length();
         }
         editText.setSelection(position);
+    }
+    // 指定行へ移動＆行選択
+    public static final void setCursorLineSelect(EditText editText, int line){
+        Layout layout = editText.getLayout();
+        int position;
+        int pos2;
+        try {
+            position = layout.getOffsetForHorizontal(line, 0);
+            pos2 = layout.getOffsetForHorizontal(line+1, 0);
+        } catch(IndexOutOfBoundsException e){
+            position = editText.length();
+            pos2 = position;
+        }
+        editText.setSelection(position, pos2);
     }
 
     public static final String getSelectedText(EditText editText){

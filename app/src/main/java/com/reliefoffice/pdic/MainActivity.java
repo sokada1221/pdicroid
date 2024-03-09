@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
 
     NavigationView navigationView;
 
-    int lastNavItem = -1;    // İ’èˆÈŠO‚ÌÅŒã‚Ì‘I‘ğitem
+    int lastNavItem = -1;    // è¨­å®šä»¥å¤–ã®æœ€å¾Œã®é¸æŠitem
     boolean lastNavSetting = false;
 
     // NetDrive //
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
 
         setupDrawerContent(navigationView);
 
-        // ‹N“®‚Ì‰Šú‘I‘ğitem
+        // èµ·å‹•æ™‚ã®åˆæœŸé¸æŠitem
         int navItem = pref.getInt(pfs.LAST_NAV_ITEM, -1);
         switch (navItem){
             case R.id.nav_main:
@@ -170,7 +170,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         FragmentManager fragmentManager = getSupportFragmentManager();
 
         if (needAllPop){
-            // ƒ^ƒbƒ`ŒŸõ¨drill mode¨ƒNƒŠƒbƒvŒŸõ‚É‚µ‚½ê‡ApopBackStackImmediate()‚Åƒ^ƒbƒ`ŒŸõ‚ªÄ¶¬‚³‚êA”ñ“¯Šú‚Èfile load‚ª‘–‚èA‚±‚±‚Å‚ÌØ‚è‘Ö‚¦ˆ—‚ªI‚í‚Á‚½ŒãAƒ^ƒbƒ`ŒŸõ‚Ìfile loadŠ®—¹ˆ—‚ª‘–‚é‚½‚ß
+            // ã‚¿ãƒƒãƒæ¤œç´¢â†’drill modeâ†’ã‚¯ãƒªãƒƒãƒ—æ¤œç´¢ã«ã—ãŸå ´åˆã€popBackStackImmediate()ã§ã‚¿ãƒƒãƒæ¤œç´¢ãŒå†ç”Ÿæˆã•ã‚Œã€éåŒæœŸãªfile loadãŒèµ°ã‚Šã€ã“ã“ã§ã®åˆ‡ã‚Šæ›¿ãˆå‡¦ç†ãŒçµ‚ã‚ã£ãŸå¾Œã€ã‚¿ãƒƒãƒæ¤œç´¢ã®file loadå®Œäº†å‡¦ç†ãŒèµ°ã‚‹ãŸã‚
             TouchSrchFragment.setCancel(true);
             while (fragmentManager.getBackStackEntryCount()>0) {
                 fragmentManager.popBackStackImmediate();
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
         drawer.closeDrawers();
     }
 
-    // fragment‚Åtoolbar(actionbar) click‚ğó‚¯æ‚é³®‚È•û–@‚ªŒ©‚Â‚©‚ç‚È‚©‚Á‚½‚Ì‚Å
+    // fragmentã§toolbar(actionbar) clickã‚’å—ã‘å–ã‚‹æ­£å¼ãªæ–¹æ³•ãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã®ã§
     void onToolbarClicked()
     {
         if (curFragment != null && curFragment.getClass() == TouchSrchFragment.class){
@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity implements IncrSrchFragment.
 
     }
 
-    //TODO: ‚±‚ê‚¢‚éH
+    //TODO: ã“ã‚Œã„ã‚‹ï¼Ÿ
     /**
      * A placeholder fragment containing a simple view.
      */

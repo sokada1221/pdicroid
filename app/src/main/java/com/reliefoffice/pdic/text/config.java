@@ -18,7 +18,7 @@ public class config {
     {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath();
     }
-    // ‚±‚Ì”ˆÈ‰º‚È‚çƒNƒŠƒbƒvŒŸõ‚ğ©“®“I‚ÉŠJn
+    // ã“ã®æ•°ä»¥ä¸‹ãªã‚‰ã‚¯ãƒªãƒƒãƒ—æ¤œç´¢ã‚’è‡ªå‹•çš„ã«é–‹å§‹
     public static final int AutoClipMaxTextLen = 200;
     public static final int AutoClipMaxWordCount = 8;
     public static final int MaxAudioMarkPositionHistory = 10;

@@ -308,7 +308,7 @@ public class IncrSrchFragment extends Fragment implements SearchView.OnQueryText
     private final Runnable idleProc = new Runnable() {
         @Override
         public void run() {
-            if (pdicJni == null) return;    // destroy‚µ‚½‚ ‚Æ‚ÉŒÄ‚Î‚ê‚éH
+            if (pdicJni == null) return;    // destroyã—ãŸã‚ã¨ã«å‘¼ã°ã‚Œã‚‹ï¼Ÿ
             final int maxLoop = 100;
             for (int i=0;i<maxLoop;i++){
                 if (pdicJni.idleProc(0)==1) {

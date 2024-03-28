@@ -67,6 +67,8 @@
         <activity
             android:name=".FileSaveActivity"
             android:label="@string/title_activity_file_save" />
+
+        <service android:name=".AudioPlayService" />
     </application>
 
 </manifest>

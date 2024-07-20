@@ -2073,7 +2073,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 Log.e("PDD", "audioPlayService is still null!?!?");
                 return;
             }
-            audioPlayService.seekAudioPosition(pos);
+            if (audioPlayService.isPlayerOpened())
+                audioPlayService.seekAudioPosition(pos);
         } else {
             mediaPlayer.seekTo(pos);
         }

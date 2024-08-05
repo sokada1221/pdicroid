@@ -36,6 +36,7 @@ mkpath:
 copymk:
 	-mkdir app\build\intermediates\ndk
 	-mkdir app\build\intermediates\ndk\debug
+	-mkdir app\src\main\jniLibs
 	-mkdir app\src\main\jniLibs\armeabi
 	-mkdir app\src\main\jniLibs\armeabi-v7a
 	-mkdir app\src\main\jniLibs\arm64-v8a

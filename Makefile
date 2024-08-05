@@ -1,4 +1,8 @@
 
+# 初期設定：
+#  - Android-local.mkは環境に合わせて修正せよ！
+#  - APP_STLはc++_sharedにする必要があるかもしれない
+#  - armeabi, mipsはいずれ削除
 # Android.mkのoriginalはrootにある"Android-local.mk"だった！
 
 build:

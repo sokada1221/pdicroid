@@ -2025,11 +2025,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         btnMark = null;
         audioSlider = null;
         tvPosition = null;
-    }
-    // 完全にaudioをclose
-    void closeAudioPlayer(boolean showControl){
-        clearAudioMark();
-
         if (updateThread != null){
             updateThread.runnable = false;
             updateThread.interrupt();
@@ -2040,6 +2035,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             }
             updateThread = null;
         }
+    }
+    // 完全にaudioをclose
+    void closeAudioPlayer(boolean showControl){
+        clearAudioMark();
+
         if (use_service){
             if (audioPlayService != null)
                 audioPlayService.closeAudioPlayer();

@@ -68,6 +68,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import static android.support.v4.content.ContextCompat.startForegroundService;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 import static java.lang.Math.abs;
 
@@ -1828,6 +1829,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 intent.putExtra("filename", filename);
             getActivity().startService(intent);
             audioPlayServiceIntent = intent;
+            startForegroundService(getActivity(), intent);
         }
         if (serviceConnection == null){
             serviceConnection = new ServiceConnection() {

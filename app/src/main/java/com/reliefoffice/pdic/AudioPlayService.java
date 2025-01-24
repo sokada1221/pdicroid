@@ -1,5 +1,8 @@
 package com.reliefoffice.pdic;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothA2dp;
 import android.bluetooth.BluetoothHeadset;
@@ -11,10 +14,12 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 
 import com.reliefoffice.pdic.text.config;
 import com.reliefoffice.pdic.text.pfs;
@@ -91,6 +96,30 @@ public class AudioPlayService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        // foregroundに設定
+        String CHANNEL_ID = "PdicAudioPlayer";
+
+        // Android 8.0 以降では必ず通知チャネルを作成する必要がある
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+             String channel_name = "PdicAudioChannel";
+             NotificationChannel mChannel =
+                    new NotificationChannel(CHANNEL_ID, channel_name, NotificationManager.IMPORTANCE_DEFAULT);
+             NotificationManager manager = getSystemService(NotificationManager.class);
+            // 既存の通知チャネルを作成しても問題ない
+            manager.createNotificationChannel(mChannel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+//                .setSmallIcon(R.drawable.notification_icon)
+//                .setContentTitle(textTitle)
+//                .setContentText(textContent)
+                .setPriority(NotificationCompat.PRIORITY_LOW);
+        Notification notification = builder.build();
+
+        // Android 8.0 よりも前では `CHANNEL_ID` は無視される
+        startForeground(1, notification);
+
+
         // 音楽を再生
         String filename = intent.getStringExtra("filename");
         if (Utility.isNotEmpty(filename))

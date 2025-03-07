@@ -1,1 +1,8 @@
 *.bak
+*.aab
+*.so
+.gradle
+.history
+.idea
+build
+

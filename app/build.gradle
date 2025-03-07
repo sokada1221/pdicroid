@@ -24,17 +24,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets {
-        main {
-            jni.srcDirs = []	//                ←　最初はコメントアウトしておく！！
-//            jniLibs.srcDir "src/main/libs"	//  ←　最初はコメントアウトしておく！！
-        }
+    namespace 'com.reliefoffice.pdic'
+    lint {
+        disable 'MissingTranslation'
     }
-	lintOptions {
-		disable 'MissingTranslation'
-//		checkReleaseBuilds false
-//		abortOnError false
-	}
 }
 
 dependencies {

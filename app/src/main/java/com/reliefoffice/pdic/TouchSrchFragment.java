@@ -2458,7 +2458,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 //tvPosition.setText( Integer.toString(sec/60) + ":" + Integer.toString(sec % 60) + "/" + Integer.toString(audioDurationSec/60) + ":" + Integer.toString(audioDurationSec%60));
             }
             if (FollowPlayingLineEnabled){
-                moveCursorPlayingLine(true);
+                moveCursorPlayingLine(false);
             }
 
             if (!use_service){

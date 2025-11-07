@@ -6,10 +6,10 @@ android {
     defaultConfig {
         applicationId "com.reliefoffice.pdic"
         minSdkVersion 21
-        compileSdkVersion 30
-        targetSdkVersion 30
-        versionCode 821
-        versionName "0.8.21 alpha"
+        compileSdkVersion 35
+        targetSdkVersion 35
+        versionCode 825
+        versionName "0.8.25 alpha"
         ndk {
             moduleName "pdjni"
             stl "gnustl_shared"

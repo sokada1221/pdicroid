@@ -21,6 +21,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -1887,7 +1888,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     // use_service == trueのときのみ生成
     void initServiceNotification() {
         if (!use_service) return;
-        getActivity().registerReceiver(playStatusNotification, new IntentFilter(AudioPlayService.PlayStatusNotificationName));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {  // Build.VERSION_CODES.TIRAMISU = 33
+            getActivity().registerReceiver(playStatusNotification, new IntentFilter(AudioPlayService.PlayStatusNotificationName), Context.RECEIVER_NOT_EXPORTED);
+        }else {
+            getActivity().registerReceiver(playStatusNotification, new IntentFilter(AudioPlayService.PlayStatusNotificationName));
+        }
     }
     void cleanupServiceNotification(){
         if (!use_service) return;

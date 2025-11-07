@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+
 
     <application
         android:requestLegacyExternalStorage="true"
@@ -14,6 +16,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -42,6 +45,7 @@
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
+            android:exported="false"
             android:launchMode="singleTask">
             <intent-filter>
 
@@ -67,7 +71,9 @@
             android:name=".FileSaveActivity"
             android:label="@string/title_activity_file_save" />
 
-        <service android:name=".AudioPlayService" />
+        <service
+            android:name=".AudioPlayService"
+            android:foregroundServiceType="mediaPlayback" />
     </application>
 
 </manifest>

@@ -1307,6 +1307,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             //editText.setChanged(false);
             loadFilePost(filename, downloadedRemoteName);
         }
+        deleteProgressDialog();
     }
 
     // my original load file task
@@ -1779,7 +1780,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                         File file = new File(fullpath);
                         String name = filename;
                         fileEncoding = Utility.getFileEncodingFromUri(uri, getContext());
-                        loadFile(fullpath, null);
                     }
                 }
             }

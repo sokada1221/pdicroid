@@ -323,6 +323,16 @@ public class Utility {
     }
 
     public static final boolean requestStoragePermission(Activity activity){
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_CODE_PERMISSION);
+            return false;
+        }
+        return true;
+    }
+
+    public static final boolean requestStorageAllPermission(Activity activity){
         if (Build.VERSION.SDK_INT >= 30){
             if(!Environment.isExternalStorageManager()){
                 try {

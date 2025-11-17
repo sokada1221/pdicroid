@@ -32,6 +32,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.Layout;
 import android.text.Spannable;
 import android.util.Log;
 import android.view.ActionMode;
@@ -846,19 +847,34 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
 
     int lastPosition;
+    int getEditScrollY() {
+        Layout layout = editText.getLayout();
+        if (layout != null) {
+            return layout.getLineForVertical(editText.getScrollY());
+        }
+        return 0;
+    }
+    void setEditScrollY(int firstVisibleLine) {
+        Layout layout = editText.getLayout();
+        if (layout != null) {
+            int y = layout.getLineTop(firstVisibleLine);
+            editText.scrollTo(0, y);
+        }
+    }
+    // レイアウト完全完了後にスクロール位置を設定（起動時など） - これでは対応できなかったが、これで解決できた方が良いのでコードは残す
+    void setEditScrollYAfterLayout(int firstVisibleLine) {
+        editText.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                editText.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                setEditScrollY(firstVisibleLine);
+            }
+        });
+    }
 
     @Override
     public void onPause() {
-        if (Utility.isNotEmpty(openedFilename)) {
-            INetDriveFileInfo info = ndvFM.findByLocalName(openedFilename);
-            if (info != null) {
-                //remoteRevision = info.remoteRevision;
-                if (lastPosition!=editText.getSelectionStart()) {
-                    lastPosition = editText.getSelectionStart();
-                    pdicJni.savePSFileInfo(psbmFilename, lastPosition, remoteFilename, info.remoteRevision);
-                }
-            }
-        }
+        savePSBookmark();
         jniCallback.setWordList(null);
         if (PSBookmarkReady) {
             psbmFM.close();
@@ -1383,6 +1399,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
         audioPause();
         saveMarkPosition();
+        savePSBookmark();
 
         // setup remote filename
         if (Utility.isNotEmpty(remotename)) {
@@ -1410,20 +1427,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             // add to ndvFM
             ndvFM.add(openedFilename, remoteFilename, info.revision, null);  //TODO: 現在はdownloadのみだからいいけど。。
         }
-        int position = 0;
-        if (info!=null) {
-            position = info.position;
-            if (position >= 0) {
-                try {
-                    editText.setSelection(position);
-                } catch (Exception e){
-                    e.printStackTrace();
-                    position = 0;
-                }
-            } else
-            if (position < 0) position = editText.getSelectionStart();
-        }
-        lastPosition = position;
+        lastPosition = (info!=null ? info.position : 0);
         //pdicJni.savePSFileInfo(psbmFilename, position, remoteFilename, info != null ? info.revision : null);   // update the date
         //Toast.makeText(getContext(), getString(R.string.msg_file_loaded)+" : " + filename, Toast.LENGTH_SHORT).show();
         FileHistoryManager mgr = new FileHistoryManager(getContext());
@@ -1431,6 +1435,17 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
         // setup Audio Player //
         loadFilePostAudio();
+        
+        // スクロール復元は全ての初期化処理後に実行
+        if (initialLoading) {
+            // 暫定対策：起動時は全ての処理完了後に復元（200ms遅延）
+            new Handler().postDelayed(() -> {
+                setEditScrollY(lastPosition);
+            }, 200);
+        } else {
+            // 通常は post() で十分
+            editText.post(() -> setEditScrollY(lastPosition));
+        }
 
         wpm.clear();
     }
@@ -1822,6 +1837,15 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         Spannable word = Utility.removeSpannable(text);
         editText.setText(word, TextView.BufferType.SPANNABLE);
         loadPSBookmarks(psbmName);
+    }
+
+    void savePSBookmark() {
+        if (Utility.isEmpty(openedFilename) || Utility.isEmpty(psbmFilename)) return;
+        if (lastPosition != getEditScrollY()) {
+            lastPosition = getEditScrollY();
+            INetDriveFileInfo info = ndvFM.findByLocalName(openedFilename);
+            pdicJni.savePSFileInfo(psbmFilename, lastPosition, remoteFilename, info!=null ? info.remoteRevision : null);
+        }
     }
 
     void openNewPSWindow(WordItem item){

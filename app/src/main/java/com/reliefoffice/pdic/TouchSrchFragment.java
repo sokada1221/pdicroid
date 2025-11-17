@@ -1381,6 +1381,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             return;
         }
 
+        audioPause();
         saveMarkPosition();
 
         // setup remote filename
@@ -2130,6 +2131,11 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         if (isPlayerClosed()) return;
         audioPlayPause(isPlaying());
     }
+    void audioPause(){
+        if (!isPlaying()) return;
+        audioPlayPause(true);
+    }
+    boolean audioPlaying = false;
     // 互換性関数
     boolean isPlaying(){
         if (use_service){
@@ -2139,6 +2145,9 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             if (mediaPlayer == null) return false;
             return mediaPlayer.isPlaying();
         }
+    }
+    boolean isPlayingSafe(){
+        return audioPlaying;
     }
     MarkState getMarkState()
     {
@@ -2185,6 +2194,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     }
     // End of 互換性関数
     void audioPlayPause(boolean pause){
+        if (pause)
+            audioPlaying = false;
         if (use_service){
             if (audioPlayService != null)
                 audioPlayService.audioPlayPause(pause);
@@ -2199,6 +2210,8 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
             }
         }
         updatePlayPause();
+        if (!pause)
+            audioPlaying = true;
     }
     void updatePlayPause(){
         if (isPlaying()){
@@ -2402,7 +2415,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 while (runnable){
                     if (use_service){
                         if (!audioPlayService.isPlayerOpened()) break;  // 非同期で終了した？
-                        if (isPlaying()){
+                        if (isPlayingSafe()){
                             int currentPosition = getAudioCurrentPosition();
                             Message msg = new Message();
                             msg.what = currentPosition;
@@ -2410,7 +2423,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                         }
                     } else {
                         if (mediaPlayer != null) {
-                            if (isPlaying()) {
+                            if (isPlayingSafe()) {
                                 int currentPosition = mediaPlayer.getCurrentPosition();    //現在の再生位置を取得
                                 Message msg = new Message();
                                 msg.what = currentPosition;
@@ -2418,7 +2431,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                             }
                         }
                     }
-                    if (isPlaying()){
+                    if (isPlayingSafe()){
                         Thread.sleep(200);
                     } else {
                         Thread.sleep(1000);

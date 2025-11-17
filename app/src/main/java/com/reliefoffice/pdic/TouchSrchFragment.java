@@ -850,15 +850,21 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     int getEditScrollY() {
         Layout layout = editText.getLayout();
         if (layout != null) {
-            return layout.getLineForVertical(editText.getScrollY());
+            int lineHeight = editText.getLineHeight();
+            int y = editText.getScrollY();
+            return y / lineHeight;
         }
         return 0;
     }
     void setEditScrollY(int firstVisibleLine) {
         Layout layout = editText.getLayout();
         if (layout != null) {
-            int y = layout.getLineTop(firstVisibleLine);
-            editText.scrollTo(0, y);
+            try {
+                int y = layout.getLineTop(firstVisibleLine);
+                editText.scrollTo(0, y);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
     // レイアウト完全完了後にスクロール位置を設定（起動時など） - これでは対応できなかったが、これで解決できた方が良いのでコードは残す

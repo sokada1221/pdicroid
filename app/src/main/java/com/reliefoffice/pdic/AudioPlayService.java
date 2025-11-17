@@ -28,6 +28,8 @@ import java.io.IOException;
 
 public class AudioPlayService extends Service {
     public static final String PlayStatusNotificationName = "play_status_notification";
+    private static final int NOTIF_ID = 1;
+    private static final String CHANNEL_ID = "PdicAudioPlayer";
     public boolean isPlayerOpened(){
         return mediaPlayer != null;
     }
@@ -39,9 +41,11 @@ public class AudioPlayService extends Service {
         return mediaPlayer.isPlaying();
     }
     public int getCurrentPosition(){
+        if (mediaPlayer == null) return 0;
         return mediaPlayer.getCurrentPosition();
     }
     public void seekAudioPosition(int pos){
+        if (mediaPlayer == null) return;
         mediaPlayer.seekTo(pos);
     }
 
@@ -96,35 +100,70 @@ public class AudioPlayService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // foregroundに設定
-        String CHANNEL_ID = "PdicAudioPlayer";
-
-        // Android 8.0 以降では必ず通知チャネルを作成する必要がある
+        // 通知チャネルだけは作成しておく（通知は再生開始時に表示する）
+        ensureNotificationChannel();
+        // startForegroundService() で起動された場合に備え、
+        // onStartCommand 内で速やかに startForeground() を呼んでおく。
+        // 再生が始まらない場合は直ちに stopForeground(true) で通知を消す。
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-             String channel_name = getString(R.string.audio_channel_name);
-             NotificationChannel mChannel =
-                    new NotificationChannel(CHANNEL_ID, channel_name, NotificationManager.IMPORTANCE_DEFAULT);
-             NotificationManager manager = getSystemService(NotificationManager.class);
-            // 既存の通知チャネルを作成しても問題ない
-            manager.createNotificationChannel(mChannel);
+            try{
+                startForeground(NOTIF_ID, buildNotification());
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-//                .setSmallIcon(R.drawable.notification_icon)
-//                .setContentTitle(textTitle)
-//                .setContentText(textContent)
-                .setPriority(NotificationCompat.PRIORITY_LOW);
-        Notification notification = builder.build();
-
-        // Android 8.0 よりも前では `CHANNEL_ID` は無視される
-        startForeground(1, notification);
-
-
         // 音楽を再生
-        String filename = intent.getStringExtra("filename");
-        if (Utility.isNotEmpty(filename))
+        String filename = intent != null ? intent.getStringExtra("filename") : null;
+        if (Utility.isNotEmpty(filename)){
             openAudioPlayer(filename);
+        } else {
+            // 再生が開始されないならプレースホルダ通知を消す
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                try{
+                    stopForegroundNotification(true);
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
         return START_STICKY; // システムによって終了された場合に再起動する
+    }
+
+    private void ensureNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            String channel_name = getString(R.string.audio_channel_name);
+            NotificationChannel mChannel =
+                    new NotificationChannel(CHANNEL_ID, channel_name, NotificationManager.IMPORTANCE_LOW);
+            NotificationManager manager = getSystemService(NotificationManager.class);
+            manager.createNotificationChannel(mChannel);
+        }
+    }
+
+    private Notification buildNotification(){
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setPriority(NotificationCompat.PRIORITY_LOW)
+                .setOngoing(true)
+                .setSmallIcon(getApplicationInfo().icon);
+        // activityを開くIntentなどを追加したければここでセット
+        return builder.build();
+    }
+
+    private void startForegroundNotification(){
+        try{
+            Notification notification = buildNotification();
+            startForeground(NOTIF_ID, notification);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void stopForegroundNotification(boolean removeNotification){
+        try{
+            stopForeground(removeNotification);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -197,6 +236,8 @@ public class AudioPlayService extends Service {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        // プレイヤーを閉じたら通知を消す
+        stopForegroundNotification(true);
     }
     void audioStepRewind(){
         int pos = mediaPlayer.getCurrentPosition();
@@ -214,10 +255,14 @@ public class AudioPlayService extends Service {
             if (mediaPlayer.isPlaying())
                 mediaPlayer.pause();
             lastPlaying = false;
+            // 再生が止まったらフォアグラウンド解除（通知を消す）
+            stopForegroundNotification(true);
         } else {
             if (!mediaPlayer.isPlaying())
                 mediaPlayer.start();
             lastPlaying = true;
+            // 再生開始時にフォアグラウンドへ（通知を表示）
+            startForegroundNotification();
         }
         return true;    // status changed
     }

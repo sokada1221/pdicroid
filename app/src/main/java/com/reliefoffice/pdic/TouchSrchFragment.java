@@ -351,7 +351,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                         moved = false;
                         startX = e.getX();
                         startY = e.getY();
-                        Log.d("PDD", "ActionDown Y="+startY);
+                        // Log.d("PDD", "ActionDown Y="+startY);
                         break;
                     case MotionEvent.ACTION_MOVE:
                         lastX = e.getX();
@@ -362,10 +362,10 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                     case MotionEvent.ACTION_UP:
                         lastX = e.getX();
                         lastY = e.getY();
-                        Log.d("PDD", "ActionUp Y="+lastY);
+                        // Log.d("PDD", "ActionUp Y="+lastY);
                         if (abs(lastX-startX) > marginForMove || abs(lastY-startY) > marginForMove){
                             moved = true;
-                            Log.d("PDD", "moved!");
+                            // Log.d("PDD", "moved!");
                         }
                         swipeMove.end(e);
                         break;

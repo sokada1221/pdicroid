@@ -2066,7 +2066,6 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
 
         updateThread = new AudioSliderUpdateThread();
         updateThread.start();
-        tvPosition.setText("sss");
     }
 
     // viewは破棄、serviceは終了しない

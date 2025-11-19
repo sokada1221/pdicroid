@@ -54,7 +54,7 @@ zip:
 
 deploy:
 	copy app\release\app-release.apk pdicroid.apk
-	perl -S deploy.pl pdicroid.apk -vapp/build.gradle -hs:\web\NIFTY\android\index.html -hkey:Apk @sakura
+	perl -S deploy.pl pdicroid.apk -vapp/build.gradle -hs:\web\sakura-pdic\android\index.html -hkey:Apk @sakura
 	perl -S deploy.pl pdicroid.apk -vapp/build.gradle -rename -copy release
 #	pause zip‚µ‚Ü‚·
 #	make zip

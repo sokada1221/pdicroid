@@ -1736,10 +1736,10 @@ void CatStr( _jMixChar &dest, const tchar *delim, const tchar *src )
 // _mcscpyのreturn valueが次のdestination pointer version
 // return valueは終端'\0'の次へのpointer
 // japaでしか使用しないのでここで宣言
-_mchar *_tcscpy2( register _mchar *dst, register const _mchar *src )
+_mchar *_tcscpy2( _mchar *dst, const _mchar *src )
 {
 	for(;;){
-		register _mchar c = *src++;
+		_mchar c = *src++;
 		*dst++ = c;
 		if ( c == '\0' ){
 			break;

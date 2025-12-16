@@ -186,7 +186,7 @@ int TIFile::getline( tnstr &buf )
 	tchar *p = fbuf;
 	int len = 0;
 	buf.clear();
-	register int l;
+	int l;
 	while ( 1 ){
 		int cc = get();
 		if ( cc == -1 ){

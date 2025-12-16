@@ -465,7 +465,7 @@ bool Squre::CanCloseMessage( )
 
 }
 
-#include "dicproc.h"
+#include "Dicproc.h"
 #include "filestr.h"
 #include "msgdlg.h"
 #include "id.h"

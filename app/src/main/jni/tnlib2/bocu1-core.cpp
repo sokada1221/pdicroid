@@ -51,7 +51,7 @@ static unsigned long NoCodeTranslate(unsigned long code)
  * to trail byte values 0..19 (0..0x13) as used in the difference calculation.
  * External byte values that are illegal as trail bytes are mapped to -1.
  */
-static char
+static signed char
 bocu1ByteToTrail[BOCU1_MIN]={
 /*  0     1     2     3     4     5     6     7    */
 	-1,   0x00, 0x01, 0x02, 0x03, 0x04, 0x05, -1,
@@ -74,7 +74,7 @@ bocu1ByteToTrail[BOCU1_MIN]={
  * from trail byte values 0..19 (0..0x13) as used in the difference calculation
  * to external byte values 0x00..0x20.
  */
-static char
+static signed char
 bocu1TrailToByte[BOCU1_TRAIL_CONTROLS_COUNT]={
 /*  0     1     2     3     4     5     6     7    */
 	0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x10, 0x11,

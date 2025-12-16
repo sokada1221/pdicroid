@@ -6,11 +6,9 @@ include env.mk
 APP_BUILD_SCRIPT_PATH=.\Android.mk
 
 build:
-	$(NDK_PATH)ndk-build.cmd NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=$(APP_BUILD_SCRIPT_PATH) APP_PLATFORM=android-21 NDK_OUT=.\app\build\intermediates\ndk\debug\obj NDK_LIBS_OUT=.\app\build\intermediates\ndk\debug\lib APP_STL=gnustl_shared APP_ABI=armeabi,mips,armeabi-v7a,arm64-v8a,x86,x86_64
-	$(CP) app/build/intermediates/ndk/debug/lib/armeabi//*.so app/src/main/jniLibs/armeabi/
+	$(NDK_PATH)ndk-build.cmd NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=$(APP_BUILD_SCRIPT_PATH) APP_PLATFORM=android-21 NDK_OUT=.\app\build\intermediates\ndk\debug\obj NDK_LIBS_OUT=.\app\build\intermediates\ndk\debug\lib APP_STL=c++_shared APP_ABI=armeabi-v7a,arm64-v8a,x86,x86_64
 	$(CP) app/build/intermediates/ndk/debug/lib/armeabi-v7a/*.so app/src/main/jniLibs/armeabi-v7a/
 	$(CP) app/build/intermediates/ndk/debug/lib/arm64-v8a/*.so app/src/main/jniLibs/arm64-v8a/
-	$(CP) app/build/intermediates/ndk/debug/lib/mips/*.so app/src/main/jniLibs/mips/
 	$(CP) app/build/intermediates/ndk/debug/lib/x86/*.so app/src/main/jniLibs/x86/
 	$(CP) app/build/intermediates/ndk/debug/lib/x86_64/*.so app/src/main/jniLibs/x86_64/
 

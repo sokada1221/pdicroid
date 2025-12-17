@@ -1,33 +1,33 @@
-# ŠÂ‹«\’z
+# ç’°å¢ƒæ§‹ç¯‰
 
-## “®ìŠÂ‹«
+## å‹•ä½œç’°å¢ƒ
 
-- Windows‚ğ‘O’ñ
+- Windowsã‚’å‰æ
 
-## NDK‚Ìƒrƒ‹ƒh
+## NDKã®ãƒ“ãƒ«ãƒ‰
 
-- AndroidStudio‚ÅNDK‚ğinstall‚·‚é
-  - Tools - SDK Manager‚É‚ÄA
-    - SDK Toolsƒ^ƒu‚ÅNDK‚ğ‘I‘ğ
-      - ‰E‰º‚Ì"Show Package Details"‚ğƒ`ƒFƒbƒN‚µ‚Äg—p‚·‚éNDK version‚ğ‘I‘ğ
-      - ŒŸØÏ‚İversion
+- AndroidStudioã§NDKã‚’installã™ã‚‹
+  - Tools - SDK Managerã«ã¦ã€
+    - SDK Toolsã‚¿ãƒ–ã§NDKã‚’é¸æŠ
+      - å³ä¸‹ã®"Show Package Details"ã‚’ãƒã‚§ãƒƒã‚¯ã—ã¦ä½¿ç”¨ã™ã‚‹NDK versionã‚’é¸æŠ
+      - æ¤œè¨¼æ¸ˆã¿version
         - 29.0.1420685
         - 21.0.6113669
-      - g—p‚·‚éNDK version‚É‰‚¶‚ÄMakefile‚ÌƒRƒ}ƒ“ƒhƒ‰ƒCƒ“ƒIƒvƒVƒ‡ƒ“‚ğ•ÏX‚·‚é
-        - target build:‚Ì‚Æ‚±‚ë‚ğQÆ
+      - ä½¿ç”¨ã™ã‚‹NDK versionã«å¿œã˜ã¦Makefileã®ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’å¤‰æ›´ã™ã‚‹
+        - target build:ã®ã¨ã“ã‚ã‚’å‚ç…§
 
-- MSYS2, MinGW‚È‚ÇAmake, cpƒRƒ}ƒ“ƒh‚ªÀs‚Å‚«‚éŠÂ‹«‚ğ—pˆÓ‚·‚é
-  - MSYS2‚ğg—p‚·‚éê‡
-    - https://www.msys2.org/ ‚æ‚è installer‚ğdownload/install
+- MSYS2, MinGWãªã©ã€make, cpã‚³ãƒãƒ³ãƒ‰ãŒå®Ÿè¡Œã§ãã‚‹ç’°å¢ƒã‚’ç”¨æ„ã™ã‚‹
+  - MSYS2ã‚’ä½¿ç”¨ã™ã‚‹å ´åˆ
+    - https://www.msys2.org/ ã‚ˆã‚Š installerã‚’download/install
 
-- ŠÂ‹«•Ï”
-  - ndk-build.cmd‚Ö‚Ìpath‚ğİ’è‚·‚é
-  - ’Êí C:\Users\<user>\AppData\Local\Android\Sdk\ndk\<installed version> ‚ÉƒCƒ“ƒXƒg[ƒ‹‚³‚ê‚é
-  - Ÿ‚Ì‚¢‚¸‚ê‚©B
-    - ndk-build.cmd‚Ö‚Ìpath‚ğŠÂ‹«•Ï”PATH‚Éİ’è
-    - NDK_PATH=ndk-build.cmd‚Ö‚Ìpath‚ğ‹Lq
+- ç’°å¢ƒå¤‰æ•°
+  - ndk-build.cmdã¸ã®pathã‚’è¨­å®šã™ã‚‹
+  - é€šå¸¸ C:\Users\<user>\AppData\Local\Android\Sdk\ndk\<installed version> ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã‚‹
+  - æ¬¡ã®ã„ãšã‚Œã‹ã€‚
+    - ndk-build.cmdã¸ã®pathã‚’ç’°å¢ƒå¤‰æ•°PATHã«è¨­å®š
+    - NDK_PATH=ndk-build.cmdã¸ã®pathã‚’è¨˜è¿°
 
-## Šm”FÏ‚İversion
+## ç¢ºèªæ¸ˆã¿version
 
 ndk-build.cmd --version
 GNU Make 3.82.90, 4.4.1

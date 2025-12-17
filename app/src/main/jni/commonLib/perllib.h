@@ -23,11 +23,13 @@ typedef vector<int> int_vec;
 #define	foreach_string_vec(obj, it) foreach(obj, it, string_vec)
 #define	foreach_map(obj, it, type) \
 	for (type::iterator it=(obj).begin();it!=(obj).end();it++)
+#define	foreach_map_const(obj, it, type) \
+	for (type::const_iterator it=(obj).begin();it!=(obj).end();it++)
 #define	foreach_string_map(obj, it) foreach_map(obj, it, string_map)
 #define	foreach_int_map(obj, it) foreach_map(obj, it, int_map)
 
 inline int get_map(int_map &m, const string &key)
-	{ return m.count(key) ? m[key] : 0; }
+	{ return m.find(key) != m.end() ? m[key] : 0; }
 
 #endif
 

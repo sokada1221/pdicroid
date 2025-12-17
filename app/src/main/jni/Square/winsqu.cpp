@@ -204,28 +204,20 @@ Squre::Squre(class TSquareFrame*frame, class TSquareView *view, TSquItemView &it
 
 Squre::~Squre()
 {
-	if (SrchParams)
-		delete SrchParams;
-	if (sub_srchparams)
-		delete sub_srchparams;
-	if (sub_words)
-		delete sub_words;
+	delete SrchParams;
+	delete sub_srchparams;
+	delete sub_words;
 	while (DelFiles.size()){
 		DeleteFile(DelFiles[0]);
 		DelFiles.del(0);
 	}
-	if (dicGroup)
-		delete dicGroup;
-	if (&Dic)
-		delete &Dic;
+	delete dicGroup;
+	delete &Dic;
 #if INETDIC
-	if (InetDicMan)
-		delete InetDicMan;
+	delete InetDicMan;
 #endif
-	if (MouseCap)
-		delete MouseCap;
-	if (SrchMed)
-		delete SrchMed;
+	delete MouseCap;
+	delete SrchMed;
 }
 
 void Squre::SetUIMain(TSquUIMain *uimain)
@@ -632,8 +624,7 @@ jretry:;
 #endif
 #endif
 #if INETDIC
-		if (InetDicMan)
-			delete InetDicMan;
+		delete InetDicMan;
 		InetDicMan = TInetDicUIMan::CreateInstance(*TUIMain::GetInstance(), Dic);
 #endif
 		Open( );

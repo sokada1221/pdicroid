@@ -1060,7 +1060,7 @@ void Squre::ChangeSubSearchToMain(const tchar *word)
 			for (int i=0;i<HitWords.get_num();i++){
 				const tchar *aword = HitWords[i].word;
 				if (WordCount(find_cword_pos(aword))>=wc){	// word countが少ないものは対象外
-					if (sub_words_map.count(aword)){
+					if (map_find(sub_words_map, aword)){
 						// 別の検索(phase1)で見つかった場合
 						int index = sub_words->FindWord(aword);
 						__assert(index>=0);

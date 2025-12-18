@@ -20,9 +20,7 @@ TIFile::TIFile()
 
 TIFile::~TIFile()
 {
-	if ( readbuff ){
-		delete readbuff;
-	}
+	delete readbuff;
 }
 
 int TIFile::open(const tchar* _filename, int defcharcode )
@@ -37,8 +35,7 @@ int TIFile::open(const tchar* _filename, int defcharcode )
 			return -1;
 		}
 	}
-	if (readbuff)
-		delete readbuff;
+	delete readbuff;
 #ifdef _UNICODE
 	bom = skipmark();
 	if (!bom && defcharcode){
@@ -312,8 +309,7 @@ int TIFile::getA( )
 {
 	if (unicode){
 		__off_t loc = tell();
-		if (readbuff)
-			delete readbuff;
+		delete readbuff;
 		unicode = false;
 		readbuff = new TTextFileBufferAnsi(fd, BUFFSIZE);
 		if (!readbuff)
@@ -434,8 +430,7 @@ j1:
 
 bool TIFile::createFixedTextBuffer(int buffsize)
 {
-	if (readbuff)
-		delete readbuff;
+	delete readbuff;
 	readbuff = new TTextFileBufferT<tchar>(0, buffsize);
 	if (!readbuff)
 		return false;

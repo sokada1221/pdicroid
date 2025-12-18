@@ -303,8 +303,7 @@ TOFileT<T>::TOFileT()
 template <class T>
 TOFileT<T>::~TOFileT()
 {
-	if (writebuff)
-		delete[] writebuff;
+	delete[] writebuff;
 }
 
 class TOFileW : public TOFileT<utf16_t> {

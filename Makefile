@@ -5,10 +5,7 @@ APP_BUILD_SCRIPT_PATH=.\Android.mk
 
 build:
 	$(MAKE) mkdirs
-	# for 29.0.14206865
-	$(NDK_PATH)ndk-build.cmd NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=$(APP_BUILD_SCRIPT_PATH) APP_PLATFORM=android-21 NDK_OUT=.\app\build\intermediates\ndk\debug\obj NDK_LIBS_OUT=.\app\build\intermediates\ndk\debug\lib APP_STL=$(APP_STL_VAL) APP_CPPFLAGS='-std=c++14' APP_ABI=armeabi-v7a,arm64-v8a,x86,x86_64
-	# for 21.0.6113669
-#	$(NDK_PATH)ndk-build.cmd NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=$(APP_BUILD_SCRIPT_PATH) APP_PLATFORM=android-21 NDK_OUT=.\app\build\intermediates\ndk\debug\obj NDK_LIBS_OUT=.\app\build\intermediates\ndk\debug\lib APP_STL=$(APP_STL_VAL) APP_ABI=armeabi-v7a,arm64-v8a,x86,x86_64
+	$(NDK_PATH)ndk-build.cmd NDK_PROJECT_PATH=null APP_BUILD_SCRIPT=$(APP_BUILD_SCRIPT_PATH) APP_PLATFORM=android-21 NDK_OUT=.\app\build\intermediates\ndk\debug\obj NDK_LIBS_OUT=.\app\build\intermediates\ndk\debug\lib APP_STL=$(APP_STL_VAL) APP_ABI=armeabi-v7a,arm64-v8a,x86,x86_64
 	$(CP) app/build/intermediates/ndk/debug/lib/armeabi-v7a/*.so app/src/main/jniLibs/armeabi-v7a/
 	$(CP) app/build/intermediates/ndk/debug/lib/arm64-v8a/*.so app/src/main/jniLibs/arm64-v8a/
 	$(CP) app/build/intermediates/ndk/debug/lib/x86/*.so app/src/main/jniLibs/x86/

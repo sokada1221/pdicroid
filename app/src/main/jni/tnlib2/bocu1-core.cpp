@@ -23,9 +23,9 @@
 #include <string.h>
 
 #ifndef __ANDROID__
+typedef unsigned char uint8_t;
 typedef long int32_t;
 #endif
-typedef unsigned char byte;
 #define	U_INLINE	inline
 #define	U_CFUNC
 
@@ -251,8 +251,7 @@ int DEF_NAME(bocu1EncodeLength)(const bocu_t *src, const bocu_t *end, unsigned c
 	}
 	unsigned char *cend = DEF_NAME(bocu1Encode)(src, end, dst);
 	int clen = (int)(cend-dst);
-	if (temp)
-		delete[] temp;
+	delete[] temp;
 	return clen;	// compressed length
 }
 // outmaxlength : in charactor in UTF-16
@@ -405,20 +404,20 @@ bocu_t *DEF_NAME(bocu1Decode)( const unsigned char **_src, const unsigned char *
 					// change UTF-32 to UTF-8
 					if ( c < 0x80 ){
 						// 1 octet
-						*dst++ = (byte)c;
+						*dst++ = (uint8_t)c;
 					} else {
 						if ( c < 0x800 ){
-							*dst++ = (byte)((c>>6)+0xC0);
+							*dst++ = (uint8_t)((c>>6)+0xC0);
 						} else {
 							if ( c < 0x10000 ){
-								*dst++ = (byte)((c>>12)+0xE0);
+								*dst++ = (uint8_t)((c>>12)+0xE0);
 							} else {
-								*dst++ = (byte)((c>>18)+0xF0);
-								*dst++ = (byte)(((c>>12)&0x3F)+0x80);
+								*dst++ = (uint8_t)((c>>18)+0xF0);
+								*dst++ = (uint8_t)(((c>>12)&0x3F)+0x80);
 							}
-							*dst++ = (byte)(((c>>6)&0x3F)+0x80);
+							*dst++ = (uint8_t)(((c>>6)&0x3F)+0x80);
 						}
-						*dst++ = (byte)((c&0x3F)+0x80);
+						*dst++ = (uint8_t)((c&0x3F)+0x80);
 					}
 #endif	// BOCU_UTF8
 					if (dst>=dstend)

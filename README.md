@@ -22,7 +22,7 @@
 
 - 環境変数
   - ndk-build.cmdへのpathを確認する
-  - 通常 C:\Users\\<user>\AppData\Local\Android\Sdk\ndk\<installed version>
+  - 通常 C:\Users\\`<user>`\AppData\Local\Android\Sdk\ndk\\`<installed version>`
   - 次のいずれかの設定を行う
     - ndk-build.cmdへのpathを環境変数PATHに設定
     - NDK_PATH=ndk-build.cmdへのpathを記述

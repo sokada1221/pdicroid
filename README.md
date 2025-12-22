@@ -14,7 +14,6 @@
       - 検証済みversion
         - 29.0.1420685
         - 21.0.6113669
-      - 使用するNDK versionに応じてenv.mkを変更する
 
 - MSYS2, MinGWなど、make, cp, rmコマンドが実行できる環境を用意する
   - MSYS2を使用する場合

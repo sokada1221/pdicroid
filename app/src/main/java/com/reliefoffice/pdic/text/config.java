@@ -14,6 +14,9 @@ public class config {
     public static final String[] DicTextExtensions = {".dic", ".txt", ".md"};
     public static final String[] TextExtensions = {".txt", ".md", ".llm"};
     public static final int AudioStepRewindTime = 5000; // [msec]
+    public static final int AudioStepRewindTimeLong = 20000; // [msec]
+    public static final int AudioStepForwardTime = 5000; // [msec]
+    public static final int AudioStepForwardTimeLong = 20000; // [msec]
     public static final boolean defaultBluetoothAutoPlay = true;    // change R.xml.preference also.
     public static final String getDefaultAudioFolder()
     {

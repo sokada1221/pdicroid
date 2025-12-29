@@ -20,6 +20,8 @@ import android.os.IBinder;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
+import android.view.KeyEvent;
+import android.support.v4.media.session.MediaSessionCompat;
 
 import com.reliefoffice.pdic.text.config;
 import com.reliefoffice.pdic.text.pfs;
@@ -101,6 +103,7 @@ public class AudioPlayService extends Service {
     @Override
     public void onCreate() {
         setupBluetooth();
+        setupMediaSession();
         super.onCreate();
     }
 
@@ -176,6 +179,11 @@ public class AudioPlayService extends Service {
     public void onDestroy() {
         closeAudioPlayer();
         cleanupBluetooth();
+        // Release MediaSession used to receive media button events
+        if (mediaSession != null) {
+            mediaSession.release();
+            mediaSession = null;
+        }
         super.onDestroy();
     }
 
@@ -246,14 +254,37 @@ public class AudioPlayService extends Service {
         stopForegroundNotification(true);
     }
     void audioStepRewind(){
+        audioStepRewindByValue(config.AudioStepRewindTime);
+    }
+    void audioPrev(){
+        audioStepRewindByValue(config.AudioStepRewindTimeLong);
+    }
+    void audioStepRewindByValue(int value){
         int pos;
         try {
             pos = mediaPlayer.getCurrentPosition();
         } catch (IllegalStateException e){
             pos = lastPlayPosition;
         }
-        pos -= config.AudioStepRewindTime;
+        pos -= value;
         if (pos < 0) pos = 0;
+        mediaPlayer.seekTo(pos);
+    }
+    void audioStepForward() {
+        audioStepForwardByValue(config.AudioStepForwardTime);
+    }
+    void audioNext() {
+        audioStepForwardByValue(config.AudioStepForwardTimeLong);
+    }
+    void audioStepForwardByValue(int value) {
+        int pos;
+        try {
+            pos = mediaPlayer.getCurrentPosition();
+        } catch (IllegalStateException e){
+            pos = lastPlayPosition;
+        }
+        pos += value;
+        if (pos > audioDuration) pos = audioDuration;
         mediaPlayer.seekTo(pos);
     }
     void audioPlayPause(){
@@ -422,6 +453,9 @@ public class AudioPlayService extends Service {
         }
     };
 
+    // MediaSession to receive media button events (Bluetooth/headset)
+    private MediaSessionCompat mediaSession;
+
     BluetoothManager bluetoothManager;
     boolean setupBluetooth(){
         if (bluetoothManager != null) return true;  // already setup
@@ -432,6 +466,77 @@ public class AudioPlayService extends Service {
         if (bluetoothManager == null) return;
         bluetoothManager.unregister(getApplicationContext());
         bluetoothManager = null;
+    }
+
+    // Setup MediaSession to receive media button events (recommended over raw ACTION_MEDIA_BUTTON receiver)
+    void setupMediaSession() {
+        if (mediaSession != null) return;
+        mediaSession = new MediaSessionCompat(getApplicationContext(), "PdicMediaSession");
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSession.setCallback(new MediaSessionCompat.Callback() {
+            @Override
+            public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+                KeyEvent keyEvent = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
+                if (keyEvent != null && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
+                    switch (keyEvent.getKeyCode()) {
+                        case KeyEvent.KEYCODE_MEDIA_FAST_FORWARD:
+                            audioStepForward();
+                            notifyPlayPosition();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_NEXT:
+                            audioNext();
+                            notifyPlayPosition();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_REWIND:
+                            audioStepRewind();
+                            notifyPlayPosition();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PREVIOUS:
+                            audioPrev();
+                            notifyPlayPosition();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
+                            audioPlayPause();
+                            notifyStatus();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PLAY:
+                            audioPlayPause(false);
+                            notifyStatus();
+                            break;
+                        case KeyEvent.KEYCODE_MEDIA_PAUSE:
+                            audioPlayPause(true);
+                            notifyStatus();
+                            break;
+                    }
+                }
+                return super.onMediaButtonEvent(mediaButtonIntent);
+            }
+
+            @Override
+            public void onPlay() {
+                audioPlayPause(false);
+                notifyStatus();
+            }
+
+            @Override
+            public void onPause() {
+                audioPlayPause(true);
+                notifyStatus();
+            }
+
+            @Override
+            public void onSkipToNext() {
+                audioStepForward();
+                notifyPlayPosition();
+            }
+
+            @Override
+            public void onSkipToPrevious() {
+                audioStepRewind();
+                notifyPlayPosition();
+            }
+        });
+        mediaSession.setActive(true);
     }
     class BluetoothManager {
         private final BroadcastReceiver btReceiver = new BroadcastReceiver() {
@@ -460,6 +565,7 @@ public class AudioPlayService extends Service {
         public BluetoothManager(){
             IntentFilter intentFilter = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
             intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
+            intentFilter.addAction(Intent.ACTION_MEDIA_BUTTON);
             getApplicationContext().registerReceiver(btReceiver, intentFilter);
         }
         public void unregister(Context context){

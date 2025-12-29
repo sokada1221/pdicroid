@@ -287,9 +287,9 @@ public class AudioPlayService extends Service {
         if (pos > audioDuration) pos = audioDuration;
         mediaPlayer.seekTo(pos);
     }
-    void audioPlayPause(){
-        if (mediaPlayer == null) return;
-        audioPlayPause(mediaPlayer.isPlaying());
+    boolean audioPlayPause(){
+        if (mediaPlayer == null) return false;
+        return audioPlayPause(mediaPlayer.isPlaying());
     }
     boolean audioPlayPause(boolean pause){
         if (mediaPlayer == null) return false;
@@ -496,16 +496,19 @@ public class AudioPlayService extends Service {
                             notifyPlayPosition();
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE:
-                            audioPlayPause();
-                            notifyStatus();
+                            if (audioPlayPause()) {
+                                notifyStatus();
+                            }
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PLAY:
-                            audioPlayPause(false);
-                            notifyStatus();
+                            if (audioPlayPause(false)) {
+                                notifyStatus();
+                            }
                             break;
                         case KeyEvent.KEYCODE_MEDIA_PAUSE:
-                            audioPlayPause(true);
-                            notifyStatus();
+                            if (audioPlayPause(true)) {
+                                notifyStatus();
+                            }
                             break;
                     }
                 }

@@ -1938,10 +1938,14 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
                 int status = intent.getIntExtra("status", 0);
                 if (status == 0){
                     lastPlaying = false;
+                    audioPlaying = false;
                 } else {
                     lastPlaying = true;
                 }
                 updatePlayPause();
+                if (status==1){
+                    audioPlaying = true;
+                }
             }
         }
     };

@@ -361,11 +361,32 @@ public class Utility {
     }
 
     public static final boolean requestStoragePermission(Activity activity){
-        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(activity,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_CODE_PERMISSION);
-            return false;
+        if (Build.VERSION.SDK_INT >= 33) {
+            // API 33以上：READ_MEDIA_*権限が必要
+            String[] permissions = {
+                    Manifest.permission.READ_MEDIA_IMAGES,
+                    Manifest.permission.READ_MEDIA_VIDEO,
+                    Manifest.permission.READ_MEDIA_AUDIO
+            };
+            boolean needRequest = false;
+            for (String permission : permissions) {
+                if (ContextCompat.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
+                    needRequest = true;
+                    break;
+                }
+            }
+            if (needRequest) {
+                ActivityCompat.requestPermissions(activity, permissions, REQUEST_CODE_PERMISSION);
+                return false;
+            }
+        } else {
+            // API 32以下：WRITE_EXTERNAL_STORAGE権限を使用
+            if (ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(activity,
+                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                        REQUEST_CODE_PERMISSION);
+                return false;
+            }
         }
         return true;
     }

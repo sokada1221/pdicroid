@@ -276,7 +276,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         // 画面ON/OFFのBroadcastReceiverを登録
         screenOnReceiver = new ScreenOnReceiver();
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-        getContext().registerReceiver(screenOnReceiver, filter);
+        getContext().registerReceiver(screenOnReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
 
         initServiceNotification();
         startAudioPlayService(null);
@@ -1925,7 +1925,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
     // use_service == trueのときのみ生成
     void initServiceNotification() {
         if (!use_service) return;
-        getActivity().registerReceiver(playStatusNotification, new IntentFilter(AudioPlayService.PlayStatusNotificationName));
+        getActivity().registerReceiver(playStatusNotification, new IntentFilter(AudioPlayService.PlayStatusNotificationName), Context.RECEIVER_NOT_EXPORTED);
     }
     void cleanupServiceNotification(){
         if (!use_service) return;
@@ -2577,7 +2577,7 @@ public class TouchSrchFragment extends Fragment implements FileSelectionDialog.O
         public BluetoothManager(){
             IntentFilter intentFilter = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
             intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
-            getContext().registerReceiver(btReceiver, intentFilter);
+            getContext().registerReceiver(btReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
         }
         public void unregister(Context context){
             context.unregisterReceiver(btReceiver);

@@ -569,7 +569,7 @@ public class AudioPlayService extends Service {
             IntentFilter intentFilter = new IntentFilter(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED);
             intentFilter.addAction(BluetoothHeadset.ACTION_CONNECTION_STATE_CHANGED);
             intentFilter.addAction(Intent.ACTION_MEDIA_BUTTON);
-            getApplicationContext().registerReceiver(btReceiver, intentFilter);
+            getApplicationContext().registerReceiver(btReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED);
         }
         public void unregister(Context context){
             context.unregisterReceiver(btReceiver);

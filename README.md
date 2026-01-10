@@ -2,16 +2,21 @@
 
 ## 動作環境
 
-- Windows 10以上
-- Android Studio
+- OS
+  - Windows 10以上
+  - macOS
+- IDE
+  - Android Studio
 
 ## NDKのビルド
 
 - AndroidStudioでNDKをinstallする
   - Tools - SDK Managerにて、SDK ToolsタブでNDKを選択、右下の"Show Package Details"をチェックして使用するNDK versionを選択
     - 検証済みversion
-      - 29.0.1420685
+      - 29.0.14206865
       - 21.0.6113669
+
+### Windows
 
 - MSYS2, MinGWなど、make, cp, rmコマンドが実行できる環境を用意する
   - MSYS2を使用する場合
@@ -27,10 +32,26 @@
 - ビルドの実行
   - make
 
+### macOS
+
+- Xcode Command Line Tools を installする（`make`, `cp`, `rm` など）
+  - `xcode-select --install`
+
+- 環境変数
+  - ndk-buildへのpathを確認する
+    - 通常 `~/Library/Android/sdk/ndk/<installed version>/ndk-build`
+  - 次のいずれかの設定を行う（`NDK_PATH` は NDK のルートディレクトリ、末尾スラッシュ不要）
+    - ndk-buildへのpathを環境変数PATHに設定
+    - env.mkのNDK_PATHにNDKのpathを記述
+      - 例: `NDK_PATH=${HOME}/Library/Android/sdk/ndk/29.0.14206865`
+
+- ビルドの実行
+  - make
+
 ## 確認済みversion
 
 - Android Studio Narwhal 4 Feature Drop|2025.1.4
-- ndk-build.cmd 29.0.1420685, 21.0.6113669
+- ndk-build / ndk-build.cmd 29.0.14206865, 21.0.6113669
 - GNU Make 3.82.90, 4.4.1
 
 # 参考情報

@@ -7,7 +7,7 @@ LOCAL_LDLIBS := \
 	-landroid \
 
 JNI_PATH=./app/src/main/jni
-APP_SRC_PATH=.\app\src
+APP_SRC_PATH=./app/src
 
 LOCAL_SRC_FILES := \
 	$(JNI_PATH)/pdjni.cpp \
@@ -130,26 +130,26 @@ LOCAL_SRC_FILES := \
 	$(JNI_PATH)/zipLib/zipDll.cpp \
 	$(JNI_PATH)/zipLib/LiteUnzip/LiteUnzip.c \
 
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\bookmark
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\commonLib
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\dicLib
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\dicUtil
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\History
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\LangProc
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\pdcom
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\pdcom2
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\pdic
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\pdicLib
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\PdicMain
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\PdicMain\android
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\Popup
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\profile
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\profile\android
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\tnlib2
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\tnlib2\cbxe
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\Search
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\Square
-LOCAL_C_INCLUDES += $(APP_SRC_PATH)\main\jni\Square\android
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/bookmark
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/commonLib
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/dicLib
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/dicUtil
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/History
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/LangProc
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/pdcom
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/pdcom2
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/pdic
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/pdicLib
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/PdicMain
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/PdicMain/android
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/Popup
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/profile
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/profile/android
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/tnlib2
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/tnlib2/cbxe
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/Search
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/Square
+LOCAL_C_INCLUDES += $(APP_SRC_PATH)/main/jni/Square/android
 
 include $(BUILD_SHARED_LIBRARY)
